@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 import 'screens/login.dart';
@@ -10,6 +11,7 @@ import 'screens/interests.dart';
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static const themeColor =  Color(0xff3B5F43);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,7 +27,33 @@ class MyApp extends StatelessWidget {
       ],
       onGenerateTitle: (BuildContext context) =>
           AppLocalizations.of(context)!.appTitle,
-      theme: ThemeData(),
+
+      theme: ThemeData(
+        useMaterial3: true,
+
+        // Define default brightness and colors.
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: themeColor,
+          brightness: Brightness.light,
+          
+        ),
+
+        // Define default 'TextTheme'
+        textTheme: TextTheme(
+          displayLarge: const TextStyle(
+            fontSize: 72,
+            fontWeight: FontWeight.bold,
+          ),
+
+          titleLarge: GoogleFonts.raleway(
+            fontSize: 30,
+          ),
+
+          bodyMedium: GoogleFonts.raleway(),
+          displaySmall: GoogleFonts.raleway(),
+        ),
+
+      ),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
       onGenerateRoute: (RouteSettings routeSettings) {
