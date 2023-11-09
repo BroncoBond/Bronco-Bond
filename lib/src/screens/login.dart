@@ -1,4 +1,4 @@
-import 'package:bronco_bond/src/screens/signup.dart';
+import 'package:bronco_bond/src/screens/signin.dart';
 import 'package:flutter/material.dart';
 
 /// Displays detailed information about a SampleItem.
@@ -24,7 +24,7 @@ class LoginPage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SignupPage()),
+                  MaterialPageRoute(builder: (context) => const SigninPage()),
                   );
               },
               child: const Text('Go to Sign Up Page'),
