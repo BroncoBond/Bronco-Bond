@@ -36,7 +36,7 @@ class SignInView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 150.0),
+                padding: const EdgeInsets.only(top: 160.0),
                 child: Image.asset('assets/images/BroncoBond_logo.png'),
               ),
             ],
@@ -52,8 +52,8 @@ class SignInView extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 16.0,
-            right: 16.0,
+            bottom: 12.0,
+            right: 12.0,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextButton(
@@ -63,14 +63,24 @@ class SignInView extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => const LoginPage()),
                   );
                 },
-                child: Text(
-                  "Join Now",
-                  style: GoogleFonts.raleway(
-                    textStyle: Theme.of(context).textTheme.displaySmall,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
+                child: Row (
+                  children: [
+                    Text(
+                      "Join Now",
+                      style: GoogleFonts.raleway(
+                        textStyle: Theme.of(context).textTheme.displaySmall,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(),
+                        Image.asset(
+                          'assets/images/arrow_right.png',
+                          width: 25.0,
+                          height: 25.0,
+                        ),
+                  ],
                 ),
               ),
             ),
