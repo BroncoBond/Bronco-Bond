@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 
 import 'screens/login.dart';
-import 'screens/signup.dart';
+import 'screens/signin.dart';
 import 'screens/interests.dart';
 
 class MyApp extends StatelessWidget {
@@ -66,17 +66,22 @@ class MyApp extends StatelessWidget {
               case 'signup':
                 return MaterialPageRoute<void>(
                   settings: routeSettings,
-                  builder: (BuildContext context) => const SignupPage()
+                  builder: (BuildContext context) => const SigninPage()
                 );
               case 'interests':
                 return MaterialPageRoute<void>(
                   settings: routeSettings,
                   builder: (BuildContext context) => const InterestsPage()
                 );
+              case 'verification':
+                return MaterialPageRoute<void>(
+                  settings: routeSettings,
+                  builder: (BuildContext context) => const SigninPage()
+                );
               default:
                 return MaterialPageRoute<void>(
                   settings: routeSettings,
-                  builder: (BuildContext context) => const LoginPage()
+                  builder: (BuildContext context) => const SigninPage()
                 );
             }
       },
