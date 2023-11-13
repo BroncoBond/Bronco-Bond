@@ -1,3 +1,4 @@
+import 'package:bronco_bond/src/screens/interests.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -51,11 +52,13 @@ class UserInfoPageState extends State<UserInfoPage> {
             buildTextField("Preferred Name"),
             buildCheckBox("Display Name on Profile", displayNameOnProfile),
             buildProfileIcon(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             buildDropDown("Major*", majors),
             buildCheckBox("Planning on Changing Majors", changingMajor),
             buildDropDown("Minor", majors),
+            const SizedBox(height: 10),
             buildTextArea(),
+            buildButton(),
           ],
         ),
       ),
@@ -251,5 +254,72 @@ class UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-  Widget buildTextArea() {}
+  // Widget for Bio TextArea, uses multiple lines
+  Widget buildTextArea() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Text label
+        Text(
+          "Bio",
+          style: GoogleFonts.raleway(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: Colors.black,
+          ),
+          textAlign: TextAlign.start,
+        ),
+        // Text field
+        SizedBox(
+          width: 327,
+          height: 101,
+          child: TextField(
+            maxLines: 5,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderSide: const BorderSide(color: Color(0xFFABABAB)),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              contentPadding: const EdgeInsets.all(12.0),
+            ),
+            textAlign: TextAlign.start,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildButton() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: const Color(0xFF3B5F43),
+          ),
+          child: TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const InterestsPage(),
+                ),
+              );
+            },
+            child: Text(
+              "Next",
+              style: GoogleFonts.raleway(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
