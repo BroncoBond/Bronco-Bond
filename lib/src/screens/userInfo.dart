@@ -46,7 +46,6 @@ class UserInfoPageState extends State<UserInfoPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 50),
             buildTextField("Username*"),
             const SizedBox(height: 10),
             buildTextField("Preferred Name"),
@@ -58,7 +57,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             buildDropDown("Minor", majors),
             const SizedBox(height: 10),
             buildTextArea(),
-            buildButton(),
+            buildButton("Next", const InterestsPage()),
           ],
         ),
       ),
@@ -104,7 +103,7 @@ class UserInfoPageState extends State<UserInfoPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 15, top: 0),
+          padding: const EdgeInsets.only(left: 15, top: 0, right: 5),
           child: CheckboxListTile(
             title: Text(
               label,
@@ -289,13 +288,13 @@ class UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-  Widget buildButton() {
+  Widget buildButton(String label, Widget destination) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Container(
-          width: double.infinity,
+          width: 329,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
             color: const Color(0xFF3B5F43),
@@ -305,12 +304,12 @@ class UserInfoPageState extends State<UserInfoPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const InterestsPage(),
+                  builder: (context) => destination,
                 ),
               );
             },
             child: Text(
-              "Next",
+              label,
               style: GoogleFonts.raleway(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
