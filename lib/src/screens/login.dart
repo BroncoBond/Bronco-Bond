@@ -1,64 +1,203 @@
+import 'package:bronco_bond/src/screens/forgotpassword.dart';
 import 'package:bronco_bond/src/screens/userInfo.dart';
+import 'package:bronco_bond/src/screens/verification.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Displays detailed information about a SampleItem.
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  LoginPageState createState() => LoginPageState();
+}
+
+class LoginPageState extends State<LoginPage> {
+  bool staySignedIn = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-        ),
-        child: Stack(
+      appBar: AppBar(
+        title: buildTitle("Verification", 25, FontWeight.w300),
+        automaticallyImplyLeading: false,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Text(
-                  "BroncoBond",
-                  style: GoogleFonts.raleway(
-                    textStyle: Theme.of(context).textTheme.displaySmall,
-                    fontSize: 50,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF3B5F43),
-                  ),
-                ),
-              ),
+            const SizedBox(height: 70),
+            buildTitle("BroncoBond", 50.0, FontWeight.w800),
+            const SizedBox(height: 8),
+            buildTextFieldWithIcon("Email", Icons.email, "example@cpp.edu"),
+            const SizedBox(height: 30),
+            buildTextFieldWithIcon("Password", Icons.lock, "Password"),
+            const SizedBox(height: 30),
+            buildButton("Login", context, const VerificationPage()),
+            buildCheckBox("Stay signed in", staySignedIn),
+            const SizedBox(height: 70),
+            buildTextButton(
+              "Can't Sign In?",
+              context,
+              const ForgotPasswordPage(),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const UserInfoPage(),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    "Create Account",
-                    style: GoogleFonts.raleway(
-                      textStyle: Theme.of(context).textTheme.displaySmall,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF3B5F43),
-                    ),
-                  ),
-                ),
-              ),
+            const SizedBox(height: 8),
+            buildTextButton(
+              "Create Account",
+              context,
+              const UserInfoPage(),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildTitle(String label, double size, FontWeight weight) {
+    // Title
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Text(
+          label,
+          style: GoogleFonts.raleway(
+            fontSize: size,
+            fontWeight: weight,
+            color: const Color(0xFF3B5F43),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildTextButton(
+      String label, BuildContext context, Widget destination) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 0),
+      child: TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => destination,
+            ),
+          );
+        },
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.all(Colors.transparent),
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.raleway(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF3B5F43),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildButton(String label, BuildContext context, Widget destination) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Container(
+        width: 329,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: const Color(0xFF3B5F43),
+        ),
+        child: TextButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => destination,
+              ),
+            );
+          },
+          child: Text(
+            label,
+            style: GoogleFonts.raleway(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget for TextFields
+  Widget buildTextFieldWithIcon(String label, IconData icon, String hint) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Text label
+        Text(
+          label,
+          style: GoogleFonts.raleway(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: Colors.black,
+          ),
+          textAlign: TextAlign.start,
+        ),
+        // Text field
+        SizedBox(
+          width: 327,
+          height: 43,
+          child: TextField(
+            decoration: InputDecoration(
+              suffixIcon: Icon(
+                icon,
+                size: 16,
+                color: const Color(0xFF1E1E1E),
+              ),
+              hintText: hint,
+              hintStyle: const TextStyle(
+                color: Color(0xFFABABAB),
+              ),
+              border: OutlineInputBorder(
+                borderSide: const BorderSide(color: Color(0xFFABABAB)),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            ),
+            textAlign: TextAlign.start,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Widget for Display Name on Profile checkbox
+  Widget buildCheckBox(String label, bool currentVal) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 15, top: 0, right: 5),
+          child: CheckboxListTile(
+            title: Text(
+              label,
+              style: GoogleFonts.raleway(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.black,
+              ),
+            ),
+            value: currentVal, // Set default value of checkbox to false
+            onChanged: (bool? newVal) {
+              setState(() {
+                /* Add checkbox functionality here */
+              });
+            },
+            controlAffinity: ListTileControlAffinity.leading,
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
     );
   }
 }
