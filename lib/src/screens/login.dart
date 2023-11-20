@@ -13,7 +13,38 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   bool staySignedIn = false;
+
+  void loginUser() async {
+    // add backend functionality here
+    // sample code from flutter_todo_with_nodejs
+    /*
+    if(emailController.text.isNotEmpty && passwordController.text.isNotEmpty){
+
+      var reqBody = {
+        "email":emailController.text,
+        "password":passwordController.text
+      };
+
+      var response = await http.post(Uri.parse(login),
+          headers: {"Content-Type":"application/json"},
+          body: jsonEncode(reqBody)
+      );
+
+      var jsonResponse = jsonDecode(response.body);
+      if(jsonResponse['status']){
+          var myToken = jsonResponse['token'];
+          prefs.setString('token', myToken);
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>Dashboard(token: myToken)));
+      }else{
+        print('Something went wrong');
+      }
+
+    }
+    */
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +60,11 @@ class LoginPageState extends State<LoginPage> {
             const SizedBox(height: 70),
             buildTitle("BroncoBond", 50.0, FontWeight.w800),
             const SizedBox(height: 8),
-            buildTextFieldWithIcon("Email", Icons.email, "example@cpp.edu"),
+            buildTextFieldWithIcon(
+                "Email", Icons.email, "example@cpp.edu", emailController),
             const SizedBox(height: 30),
-            buildTextFieldWithIcon("Password", Icons.lock, "Password"),
+            buildTextFieldWithIcon(
+                "Password", Icons.lock, "Password", passwordController),
             const SizedBox(height: 30),
             buildButton("Login", context, const VerificationPage()),
             buildCheckBox("Stay signed in", staySignedIn),
@@ -130,7 +163,8 @@ class LoginPageState extends State<LoginPage> {
   }
 
   // Widget for TextFields
-  Widget buildTextFieldWithIcon(String label, IconData icon, String hint) {
+  Widget buildTextFieldWithIcon(String label, IconData icon, String hint,
+      TextEditingController fieldController) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -149,6 +183,8 @@ class LoginPageState extends State<LoginPage> {
           width: 327,
           height: 43,
           child: TextField(
+            controller: fieldController,
+            keyboardType: TextInputType.text,
             decoration: InputDecoration(
               suffixIcon: Icon(
                 icon,

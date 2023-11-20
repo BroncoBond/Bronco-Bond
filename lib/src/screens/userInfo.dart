@@ -11,6 +11,10 @@ class UserInfoPage extends StatefulWidget {
 }
 
 class UserInfoPageState extends State<UserInfoPage> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController preferredNameController = TextEditingController();
   bool displayNameOnProfile = false;
   bool changingMajor = false;
   // String? selectedValue;
@@ -19,6 +23,10 @@ class UserInfoPageState extends State<UserInfoPage> {
     "Computer Science",
     "Biology"
   ]; // List of majors (implement later)
+
+  void registerUser() async {
+    // add backend functionality here
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,12 +54,11 @@ class UserInfoPageState extends State<UserInfoPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            buildTextField("Email*"),
-            buildTextField("Password*"),
+            buildTextField("Email*", emailController),
+            buildTextField("Password*", passwordController),
             const SizedBox(height: 10),
-            buildTextField("Username*"),
-            const SizedBox(height: 10),
-            buildTextField("Preferred Name"),
+            buildTextField("Username*", usernameController),
+            buildTextField("Preferred Name", preferredNameController),
             buildCheckBox("Display Name on Profile", displayNameOnProfile),
             buildProfileIcon(),
             const SizedBox(height: 10),
@@ -68,7 +75,7 @@ class UserInfoPageState extends State<UserInfoPage> {
   }
 
   // Widget for TextFields
-  Widget buildTextField(String label) {
+  Widget buildTextField(String label, TextEditingController fieldController) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -87,6 +94,8 @@ class UserInfoPageState extends State<UserInfoPage> {
           width: 327,
           height: 43,
           child: TextField(
+            controller: fieldController,
+            keyboardType: TextInputType.text,
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderSide: const BorderSide(color: Color(0xFFABABAB)),
