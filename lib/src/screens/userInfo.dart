@@ -46,6 +46,9 @@ class UserInfoPageState extends State<UserInfoPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            buildTextField("Email*"),
+            buildTextField("Password*"),
+            const SizedBox(height: 10),
             buildTextField("Username*"),
             const SizedBox(height: 10),
             buildTextField("Preferred Name"),
