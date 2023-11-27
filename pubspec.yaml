@@ -15,6 +15,11 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   google_fonts: ^6.1.0
+  velocity_x:
+  http:
+  shared_preferences:
+  jwt_decoder:
+  flutter_slidable:
 
 dev_dependencies:
   flutter_test:

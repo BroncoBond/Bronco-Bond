@@ -1,9 +1,13 @@
 import 'package:bronco_bond/src/screens/forgotpassword.dart';
-import 'package:bronco_bond/src/screens/userInfo.dart';
 import 'package:bronco_bond/src/screens/register.dart';
 import 'package:bronco_bond/src/screens/verification.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:convert';
+import 'package:bronco_bond/src/screens/searchpage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:bronco_bond/src/config.dart';
 
 /// Displays detailed information about a SampleItem.
 class LoginPage extends StatefulWidget {
@@ -16,35 +20,42 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  late SharedPreferences prefs;
   bool staySignedIn = false;
 
-  void loginUser() async {
-    // add backend functionality here
-    // sample code from flutter_todo_with_nodejs
-    /*
-    if(emailController.text.isNotEmpty && passwordController.text.isNotEmpty){
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+  }
 
-      var reqBody = {
-        "email":emailController.text,
-        "password":passwordController.text
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  void loginUser() async {
+    if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+      var regBody = {
+        "email": emailController.text,
+        "password": passwordController.text
       };
 
       var response = await http.post(Uri.parse(login),
-          headers: {"Content-Type":"application/json"},
-          body: jsonEncode(reqBody)
-      );
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(regBody));
 
       var jsonResponse = jsonDecode(response.body);
-      if(jsonResponse['status']){
-          var myToken = jsonResponse['token'];
-          prefs.setString('token', myToken);
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>Dashboard(token: myToken)));
-      }else{
-        print('Something went wrong');
+      if (jsonResponse['status']) {
+        var myToken = jsonResponse['token'];
+        prefs.setString('token', myToken);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => SearchPage(token: myToken)));
+      } else {
+        print('Something Went Wrong!');
       }
-
     }
-    */
   }
 
   @override

@@ -1,6 +1,12 @@
-import 'package:bronco_bond/src/screens/userInfo.dart';
+import 'package:bronco_bond/src/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:convert';
+import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:velocity_x/velocity_x.dart';
+import 'package:http/http.dart' as http;
+import 'package:bronco_bond/src/config.dart';
 
 /// Displays detailed information about a SampleItem.
 class RegisterPage extends StatefulWidget {
@@ -13,35 +19,37 @@ class RegisterPage extends StatefulWidget {
 class RegisterPageState extends State<RegisterPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+  bool _isNotValidate = false;
 
-  void registerUser() async {
-    /*
+  void registerUser(BuildContext context) async {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      var regBody = {
-        "email": emailController.text,
-        "password": passwordController.text
-      };
+      if (passwordController.text == confirmPasswordController.text) {
+        var regBody = {
+          "email": emailController.text,
+          "password": passwordController.text
+        };
 
-      var response = await http.post(Uri.parse(registration),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(regBody));
+        var response = await http.post(Uri.parse(registration),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode(regBody));
 
-      var jsonResponse = jsonDecode(response.body);
+        var jsonResponse = jsonDecode(response.body);
 
-      print(jsonResponse['status']);
+        print(jsonResponse['status']);
 
-      if (jsonResponse['status']) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => SignInPage()));
-      } else {
-        print("SomeThing Went Wrong");
+        if (jsonResponse['status']) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => LoginPage()));
+        } else {
+          print("SomeThing Went Wrong");
+        }
       }
     } else {
       setState(() {
         _isNotValidate = true;
       });
     }
-    */
   }
 
   @override
@@ -72,82 +80,78 @@ class RegisterPageState extends State<RegisterPage> {
           children: [
             buildTextField("Email*", emailController),
             buildTextField("Password*", passwordController),
-            buildTextField(" Confirm Password*", passwordController),
+            buildTextField(" Confirm Password*", confirmPasswordController),
             const SizedBox(height: 10),
-            buildButton("Register", context, const UserInfoPage()),
+            buildButton("Register", context),
           ],
         ),
       ),
     );
   }
-}
 
-// Widget for TextFields
-Widget buildTextField(String label, TextEditingController fieldController) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Text label
-      Text(
-        label,
-        style: GoogleFonts.raleway(
-          fontSize: 16,
-          fontWeight: FontWeight.w800,
-          color: Colors.black,
-        ),
-        textAlign: TextAlign.start,
-      ),
-      // Text field
-      SizedBox(
-        width: 327,
-        height: 43,
-        child: TextField(
-          controller: fieldController,
-          keyboardType: TextInputType.text,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: const BorderSide(color: Color(0xFFABABAB)),
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+  // Widget for TextFields
+  Widget buildTextField(String label, TextEditingController fieldController) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Text label
+        Text(
+          label,
+          style: GoogleFonts.raleway(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: Colors.black,
           ),
           textAlign: TextAlign.start,
         ),
-      ),
-    ],
-  );
-}
-
-Widget buildButton(String label, BuildContext context, Widget destination) {
-  return Align(
-    alignment: Alignment.bottomCenter,
-    child: Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Container(
-        width: 329,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          color: const Color(0xFF3B5F43),
-        ),
-        child: TextButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => destination,
+        // Text field
+        SizedBox(
+          width: 327,
+          height: 43,
+          child: TextField(
+            controller: fieldController,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderSide: const BorderSide(color: Color(0xFFABABAB)),
+                borderRadius: BorderRadius.circular(8.0),
               ),
-            );
-          },
-          child: Text(
-            label,
-            style: GoogleFonts.raleway(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            ),
+            textAlign: TextAlign.start,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildButton(String label, BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Container(
+          width: 329,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: const Color(0xFF3B5F43),
+          ),
+          child: TextButton(
+            onPressed: () {
+              print("Sign in");
+              registerUser(context);
+            },
+            child: Text(
+              label,
+              style: GoogleFonts.raleway(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
