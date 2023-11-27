@@ -33,7 +33,7 @@ class LoginPageState extends State<LoginPage> {
     prefs = await SharedPreferences.getInstance();
   }
 
-  void loginUser() async {
+  void loginUser(BuildContext context) async {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       var regBody = {
         "email": emailController.text,
@@ -78,7 +78,7 @@ class LoginPageState extends State<LoginPage> {
             buildTextFieldWithIcon(
                 "Password", Icons.lock, "Password", passwordController),
             const SizedBox(height: 30),
-            buildButton("Login", context, const VerificationPage()),
+            buildLoginButton("Login", context),
             buildCheckBox("Stay signed in", staySignedIn),
             const SizedBox(height: 70),
             buildTextButton(
@@ -137,6 +137,36 @@ class LoginPageState extends State<LoginPage> {
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: const Color(0xFF3B5F43),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildLoginButton(String label, BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Container(
+          width: 329,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: const Color(0xFF3B5F43),
+          ),
+          child: TextButton(
+            onPressed: () {
+              print("Sign in");
+              loginUser(context);
+            },
+            child: Text(
+              label,
+              style: GoogleFonts.raleway(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ),
