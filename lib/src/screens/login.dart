@@ -1,5 +1,6 @@
 import 'package:bronco_bond/src/screens/forgotpassword.dart';
 import 'package:bronco_bond/src/screens/userInfo.dart';
+import 'package:bronco_bond/src/screens/register.dart';
 import 'package:bronco_bond/src/screens/verification.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -78,7 +79,7 @@ class LoginPageState extends State<LoginPage> {
             buildTextButton(
               "Create Account",
               context,
-              const UserInfoPage(),
+              const RegisterPage(),
             ),
           ],
         ),

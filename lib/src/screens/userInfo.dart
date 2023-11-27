@@ -11,10 +11,6 @@ class UserInfoPage extends StatefulWidget {
 }
 
 class UserInfoPageState extends State<UserInfoPage> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController usernameController = TextEditingController();
-  TextEditingController preferredNameController = TextEditingController();
   bool displayNameOnProfile = false;
   bool changingMajor = false;
   // String? selectedValue;
@@ -54,11 +50,11 @@ class UserInfoPageState extends State<UserInfoPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            buildTextField("Email*", emailController),
-            buildTextField("Password*", passwordController),
+            buildTextField("Email*"),
+            buildTextField("Password*"),
             const SizedBox(height: 10),
-            buildTextField("Username*", usernameController),
-            buildTextField("Preferred Name", preferredNameController),
+            buildTextField("Username*"),
+            buildTextField("Preferred Name"),
             buildCheckBox("Display Name on Profile", displayNameOnProfile),
             buildProfileIcon(),
             const SizedBox(height: 10),
@@ -75,7 +71,7 @@ class UserInfoPageState extends State<UserInfoPage> {
   }
 
   // Widget for TextFields
-  Widget buildTextField(String label, TextEditingController fieldController) {
+  Widget buildTextField(String label) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -94,7 +90,6 @@ class UserInfoPageState extends State<UserInfoPage> {
           width: 327,
           height: 43,
           child: TextField(
-            controller: fieldController,
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
               border: OutlineInputBorder(
