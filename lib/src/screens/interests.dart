@@ -53,92 +53,92 @@ class InterestsPage extends StatelessWidget {
           ]),
           SizedBox(height: 10),
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-            buildTag("Cooking"),
-            buildTag("Spanish"),
-            buildTag("English"),
-            buildTag("Running"),
+            buildButton("Cooking"),
+            buildButton("Spanish"),
+            buildButton("English"),
+            buildButton("Running"),
           ]),
           SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              buildTag("Engineering"),
-              buildTag("Mechanical Engineering"),
-              buildTag("Movies")
+              buildButton("Engineering"),
+              buildButton("Mechanical Engineering"),
+              buildButton("Movies")
             ],
           ),
           SizedBox(height: 5),
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-            buildTag("Aerospace Engineering"),
-            buildTag("Skiing"),
-            buildTag("Dancing")
+            buildButton("Aerospace Engineering"),
+            buildButton("Skiing"),
+            buildButton("Dancing")
           ]),
           SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              buildTag("Space"),
-              buildTag("Esports"),
-              buildTag("Billiards"),
-              buildTag("Singing")
+              buildButton("Space"),
+              buildButton("Esports"),
+              buildButton("Billiards"),
+              buildButton("Singing")
             ],
           ),
           SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              buildTag("Badminton"),
-              buildTag("Basketball"),
-              buildTag("Eating"),
-              buildTag("Soccer")
+              buildButton("Badminton"),
+              buildButton("Basketball"),
+              buildButton("Eating"),
+              buildButton("Soccer")
             ],
           ),
           SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              buildTag("Football"),
-              buildTag("Agriculture"),
-              buildTag("Art"),
-              buildTag("Internships")
+              buildButton("Football"),
+              buildButton("Agriculture"),
+              buildButton("Art"),
+              buildButton("Internships")
             ],
           ),
           SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              buildTag("Fraternity"),
-              buildTag("Sorority"),
-              buildTag("Digital Art"),
-              buildTag("Archery")
+              buildButton("Fraternity"),
+              buildButton("Sorority"),
+              buildButton("Digital Art"),
+              buildButton("Archery")
             ],
           ),
           SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              buildTag("Computer Science"),
-              buildTag("Information Technology")
+              buildButton("Computer Science"),
+              buildButton("Information Technology")
             ],
           ),
           SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              buildTag("Psychology"),
-              buildTag("Japanese"),
-              buildTag("Korean"),
-              buildTag("French")
+              buildButton("Psychology"),
+              buildButton("Japanese"),
+              buildButton("Korean"),
+              buildButton("French")
             ],
           ),
           SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              buildTag("Chinese"),
-              buildTag("German"),
-              buildTag("Biology"),
-              buildTag("Math")
+              buildButton("Chinese"),
+              buildButton("German"),
+              buildButton("Biology"),
+              buildButton("Math")
             ],
           ),
           SizedBox(height: 5),
@@ -165,7 +165,8 @@ class InterestsPage extends StatelessWidget {
 }
 
 //Widget for button
-Widget buildTag(String label) {
+@override
+Widget buildButton(String label) {
   return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
     TextButton(
       child: Text(label, style: TextStyle(fontSize: 14)),
