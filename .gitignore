@@ -1,9 +1,0 @@
-#ignore
-.dart_tool
-.vscode
-android
-build
-ios
-.flutter-plugins
-.flutter-plugins-dependencies
-
