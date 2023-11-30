@@ -33,30 +33,51 @@ class LoginPageState extends State<LoginPage> {
     prefs = await SharedPreferences.getInstance();
   }
 
-  void loginUser(BuildContext context) async {
-    if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      var regBody = {
-        "email": emailController.text,
-        "password": passwordController.text
-      };
+void loginUser(BuildContext context) async {
+  if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+    var regBody = {
+      "email": emailController.text,
+      "password": passwordController.text
+    };
 
+    try {
       var response = await http.post(Uri.parse(login),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
 
-      var jsonResponse = jsonDecode(response.body);
-      if (jsonResponse['status']) {
-        var myToken = jsonResponse['token'];
-        prefs.setString('token', myToken);
-        Navigator.push(
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['status']) {
+          var myToken = jsonResponse['token'];
+          prefs.setString('token', myToken);
+          Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => SearchPage(token: myToken)));
+              builder: (context) => SearchPage(token: myToken),
+            ),
+          );
+        } else {
+          print('Login failed: ${jsonResponse['message']}');
+          // Handle login failure
+          // You might want to show an error message to the user
+        }
       } else {
-        print('Something Went Wrong!');
+        print('HTTP request failed with status: ${response.statusCode}');
+        // Handle other HTTP status codes
+        // You might want to show an error message to the user
       }
+    } catch (e) {
+      print('Error during HTTP request: $e');
+      // Handle other exceptions
+      // You might want to show an error message to the user
     }
+  } else {
+    // Handle case where email or password is empty
+    // You might want to show an error message to the user
+    print('Email or password is empty');
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
