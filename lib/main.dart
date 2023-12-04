@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bronco_bond/src/screens/searchpage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:bronco_bond/src/screens/login.dart';
+import 'package:bronco_bond/src/screens/signin.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +30,6 @@ class MyApp extends StatelessWidget {
         ),
         home: (token != null && JwtDecoder.isExpired(token) == false)
             ? SearchPage(token: token)
-            : LoginPage());
+            : SigninPage());
   }
 }
