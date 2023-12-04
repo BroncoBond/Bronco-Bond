@@ -25,8 +25,12 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primaryColor: Colors.black,
+          primaryColor: const Color(0xff3B5F43),
           visualDensity: VisualDensity.adaptivePlatformDensity,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white, // Set the app bar color to white
+            elevation: 0.0,
+          ),
         ),
         home: (token != null && JwtDecoder.isExpired(token) == false)
             ? SearchPage(token: token)
