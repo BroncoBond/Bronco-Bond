@@ -48,6 +48,7 @@ class SearchPageState extends State<SearchPage> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+              Text(email),
               Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: buildSearchBar(" ")),
