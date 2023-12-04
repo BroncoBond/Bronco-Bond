@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:bronco_bond/src/screens/login.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SearchPage extends StatefulWidget {
   final token;
@@ -13,6 +15,24 @@ class SearchPage extends StatefulWidget {
 
 class SearchPageState extends State<SearchPage> {
   late String email;
+  TextEditingController searchController = TextEditingController();
+  List<Map<String, dynamic>> searchResults = [];
+
+  void performSearch() async {
+    // Backend functionality
+    final query = searchController.text;
+    final response = await http.get(Uri.parse('search'));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        searchResults =
+            List<Map<String, dynamic>>.from(json.decode(response.body));
+      });
+    } else {
+      print('Failed to fetch search results');
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -51,7 +71,7 @@ class SearchPageState extends State<SearchPage> {
               Text(email),
               Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: buildSearchBar(" ")),
+                  child: buildSearchBar(" ", searchController)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -78,21 +98,39 @@ class SearchPageState extends State<SearchPage> {
             ])));
   }
 
-  Widget buildSearchBar(String label) {
+  Widget buildSearchBar(String label, TextEditingController fieldController) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
         color: Colors.grey[200],
       ),
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.0),
-        child: TextField(
-          decoration: InputDecoration(
-            hintText: 'Search...',
-            border: InputBorder.none,
-            icon: Icon(Icons.search),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextField(
+              controller: fieldController,
+              keyboardType: TextInputType.text,
+              decoration: const InputDecoration(
+                hintText: 'Search...',
+                border: InputBorder.none,
+                icon: Icon(Icons.search),
+              ),
+              onSubmitted: (String value) {
+                performSearch();
+              },
+            ),
           ),
-        ),
+          Expanded(
+            child: ListView.builder(
+                itemCount: searchResults.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(searchResults[index]['email']),
+                  );
+                }),
+          ),
+        ],
       ),
     );
   }
