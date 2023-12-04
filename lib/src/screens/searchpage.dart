@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:bronco_bond/src/screens/login.dart';
 
 class SearchPage extends StatefulWidget {
   final token;
