@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:bronco_bond/src/screens/login.dart';
 
 class SearchPage extends StatefulWidget {
   final token;
@@ -25,6 +26,17 @@ class SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            color: Colors.black,
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            },
+          ),
           title: Text("BroncoBond",
               style: GoogleFonts.raleway(
                   textStyle: Theme.of(context).textTheme.displaySmall,
