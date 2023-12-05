@@ -21,8 +21,8 @@ class UserService{
 
     static async searchUserByEmail(email) {
         try {
-            const { email } = query;
-            return await UserModel.findOne({ email });
+            const user = await UserModel.findOne({ email });
+            return user;
         } catch (error) {
             throw error;
         }

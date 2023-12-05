@@ -43,11 +43,12 @@ exports.login = async(req,res,next)=>{
 }
 
 exports.searchUserByEmail = async (req, res, next) => {
-    exports.searchUserByEmail = async (req, res, next) => {
     try {
+        console.log('Search endpoint reached');
         const { email } = req.query;
+        console.log('Search email:', email);
 
-        const user = await UserService.searchUserByEmail({ email });
+        const user = await UserService.searchUserByEmail(email);
 
         if (!user) {
             return res.status(404).json({ status: false, error: 'User not found' });
@@ -55,8 +56,8 @@ exports.searchUserByEmail = async (req, res, next) => {
 
         res.status(200).json({ status: true, user });
     } catch (error) {
-        console.error(error);
+        console.error('Error in searchUserByEmail:', error);
         res.status(500).json({ status: false, error: "Internal Server Error" });
-        }
-    };
+    }
 };
+
