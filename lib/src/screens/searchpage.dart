@@ -15,7 +15,7 @@ class SearchPage extends StatefulWidget {
 
 class SearchPageState extends State<SearchPage> {
   late String email;
-  /*
+
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> searchResults = [];
 
@@ -33,7 +33,6 @@ class SearchPageState extends State<SearchPage> {
       print('Failed to fetch search results');
     }
   }
-  */
 
   @override
   void initState() {
@@ -73,7 +72,7 @@ class SearchPageState extends State<SearchPage> {
               Text(email),
               Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: buildSearchBar(" " /*, searchController*/)),
+                  child: buildSearchBar(" ", searchController)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -100,28 +99,27 @@ class SearchPageState extends State<SearchPage> {
             ])));
   }
 
-  Widget buildSearchBar(
-      String label /*, TextEditingController fieldController*/) {
+  Widget buildSearchBar(String label, TextEditingController fieldController) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
         color: Colors.grey[200],
       ),
-      child: const Column(
+      child: Column(
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
             child: TextField(
-              /* controller: fieldController, */
+              controller: fieldController,
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 hintText: 'Search...',
                 border: InputBorder.none,
                 icon: Icon(Icons.search),
               ),
-              /* onSubmitted: (String value) {
+              onSubmitted: (String value) {
                 performSearch();
-              }, */
+              },
             ),
           ),
           /*
