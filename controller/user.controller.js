@@ -43,10 +43,11 @@ exports.login = async(req,res,next)=>{
 }
 
 exports.searchUserByEmail = async (req, res, next) => {
+    exports.searchUserByEmail = async (req, res, next) => {
     try {
-        const { email } = req.body;
+        const { email } = req.query;
 
-        const user = await UserService.searchUserByEmail(email);
+        const user = await UserService.searchUserByEmail({ email });
 
         if (!user) {
             return res.status(404).json({ status: false, error: 'User not found' });
@@ -56,5 +57,6 @@ exports.searchUserByEmail = async (req, res, next) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ status: false, error: "Internal Server Error" });
-    }
+        }
+    };
 };
