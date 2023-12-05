@@ -14,7 +14,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class SearchPageState extends State<SearchPage> {
-  late String email;
+  late String username;
 
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> searchResults = [];
@@ -40,7 +40,7 @@ class SearchPageState extends State<SearchPage> {
     super.initState();
     Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
 
-    email = jwtDecodedToken['email'];
+    username = jwtDecodedToken['username'];
   }
 
   @override
@@ -69,7 +69,7 @@ class SearchPageState extends State<SearchPage> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-              Text(email),
+              Text(username),
               Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: buildSearchBar(" ", searchController)),
@@ -101,6 +101,7 @@ class SearchPageState extends State<SearchPage> {
 
   Widget buildSearchBar(String label, TextEditingController fieldController) {
     return Container(
+      height: 48,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
         color: Colors.grey[200],
@@ -122,16 +123,16 @@ class SearchPageState extends State<SearchPage> {
               },
             ),
           ),
-          /*
           Expanded(
             child: ListView.builder(
+                shrinkWrap: true,
                 itemCount: searchResults.length,
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Text(searchResults[index]['email']),
                   );
                 }),
-          ),*/
+          ),
         ],
       ),
     );
