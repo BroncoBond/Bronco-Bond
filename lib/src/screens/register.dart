@@ -17,16 +17,20 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
+  TextEditingController usernameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   bool _isNotValidate = false;
 
   void registerUser(BuildContext context) async {
-    if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+    if (emailController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty &&
+        usernameController.text.isNotEmpty) {
       if (passwordController.text == confirmPasswordController.text) {
         var regBody = {
           "email": emailController.text,
+          "username": usernameController.text,
           "password": passwordController.text
         };
 
@@ -78,6 +82,7 @@ class RegisterPageState extends State<RegisterPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            buildTextField("Username*", usernameController),
             buildTextField("Email*", emailController),
             buildTextField("Password*", passwordController),
             buildTextField(" Confirm Password*", confirmPasswordController),
