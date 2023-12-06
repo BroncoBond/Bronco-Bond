@@ -34,6 +34,7 @@ class LoginPageState extends State<LoginPage> {
   }
 
 void loginUser(BuildContext context) async {
+  print('Login Button Pressed');
   if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
     var regBody = {
       "email": emailController.text,

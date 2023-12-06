@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:bronco_bond/src/screens/login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:bronco_bond/src/config.dart';
 
 class SearchPage extends StatefulWidget {
   final token;
@@ -22,25 +23,37 @@ class SearchPageState extends State<SearchPage> {
   void performSearch() async {
     // Backend functionality
     final query = searchController.text;
-    final response = await http.get(Uri.parse('search'));
 
-    if (response.statusCode == 200) {
-      setState(() {
-        searchResults =
-            List<Map<String, dynamic>>.from(json.decode(response.body));
-      });
-    } else {
-      print('Failed to fetch search results');
+    try {
+      print(query);
+      final response = await http.get(Uri.parse('${search}?email=$query'));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          searchResults = List<Map<String, dynamic>>.from(json.decode(response.body));
+        });
+      } else {
+        print('Failed to fetch search results');
+      }
+    } catch (e) {
+      // Handle network or server errors
+      print('Error: $e');
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
+    Map<String, dynamic>? jwtDecodedToken;
 
-    username = jwtDecodedToken['username'];
+    try {
+      jwtDecodedToken = JwtDecoder.decode(widget.token);
+    } catch (e) {
+      print('Error decoding token: $e');
+    }
+
+    // Check if 'username' field exists, otherwise set a default value
+    username = jwtDecodedToken?['username'] ?? 'Guest';
   }
 
   @override
@@ -119,6 +132,7 @@ class SearchPageState extends State<SearchPage> {
                 icon: Icon(Icons.search),
               ),
               onSubmitted: (String value) {
+                print('Search submitted: $value');
                 performSearch();
               },
             ),

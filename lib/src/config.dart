@@ -1,4 +1,6 @@
-final url = 'http://192.168.1.158:3000/';
-final registration = url + 'registration';
-final login = url + 'login';
-final search = url + 'search';
+
+const String url = 'http://192.168.1.158:3000/';
+const String registration = url + 'registration';
+const String login = url + 'login';
+const String search = url + 'search';
+
