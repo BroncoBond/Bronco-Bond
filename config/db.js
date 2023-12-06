@@ -3,8 +3,8 @@ const dbUrl = "mongodb+srv://BroncoAdmin:QSkJ3RmcqwzVKlkO@bbound.aurjrgj.mongodb
 
 const connection = mongoose.createConnection(dbUrl).on('open',()=>{
     console.log("MongoDb Connected")
-}).on('error',()=>{
-    console.log("MongoDb Connection Error")
+}).on('error',(err)=>{
+    console.log("MongoDb Connection Error", err);
 });
 
 
