@@ -23,6 +23,7 @@ module.exports = app;
 /* 
     Dev Notes:
 Step 1: In terminal [npm install express body-parser mongoose bcrypt jsonwebtoken nodemon --save]
-Step 2: In terminal [npm init -y]
-Step 3: To start server [node index.js] or [npm run dev]
+Step 2: In terminal if asked do [npm fund]
+Step 3: In terminal [npm init -y]
+Step 4: To start server [node index.js] or [npm run dev]
 */
