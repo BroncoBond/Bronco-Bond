@@ -46,7 +46,7 @@ exports.login = async(req,res,next)=>{
             throw new Error('Password Invalid');
         }
 
-        let tokenData = {_id:user._id,email:user.email};
+        let tokenData = {_id:user._id,email:user.email,username:user.username};
 
         const token = await UserService.generateToken(tokenData, "secretKey", '1h')
 
@@ -58,13 +58,13 @@ exports.login = async(req,res,next)=>{
     }
 }
 
-exports.searchUserByEmail = async (req, res, next) => {
+exports.searchUserByUsernameOrEmail = async (req, res, next) => {
     try {
         console.log('Search endpoint reached');
-        const { email } = req.query;
-        console.log('Search email:', email);
+        const { identifier } = req.query;
+        console.log('Search identifier:', identifier);
 
-        const user = await UserService.searchUserByEmail(email);
+        const user = await UserService.searchUserByUsernameOrEmail(identifier);
 
         console.log('User found:', user);
 
@@ -74,7 +74,7 @@ exports.searchUserByEmail = async (req, res, next) => {
 
         res.status(200).json({ status: true, user });
     } catch (error) {
-        console.error('Error in searchUserByEmail:', error);
+        console.error('Error in searchUserByUsernameOrEmail:', error);
         res.status(500).json({ status: false, error: "Internal Server Error" });
     }
 };

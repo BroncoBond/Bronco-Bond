@@ -24,15 +24,13 @@ const userSchema = new Schema({
     }
 });
 
-userSchema.pre('save',async function(){
+userSchema.pre('save', async function(next) {
     try {
-        var user = this;
-        const salt = await(bcrypt.genSalt(10));
-        const hashpass = await bcrypt.hash(user.password,salt);
-        user.password = hashpass;
+        const salt = await bcrypt.genSalt(10);
+        const hashpass = await bcrypt.hash(this.password, salt);
+        this.password = hashpass;
         next();
-
-    }catch(error){
+    } catch (error) {
         next(error);
     }
 });
