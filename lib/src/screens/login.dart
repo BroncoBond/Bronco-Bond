@@ -1,6 +1,5 @@
 import 'package:bronco_bond/src/screens/forgotpassword.dart';
 import 'package:bronco_bond/src/screens/register.dart';
-import 'package:bronco_bond/src/screens/verification.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';

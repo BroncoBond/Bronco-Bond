@@ -36,7 +36,7 @@ class InterestsPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                Text("    How do you want to be involved?"),
+                const Text("    How do you want to be involved?"),
                 TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -66,14 +66,14 @@ class InterestsPage extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                 buildButton("Engineering"),
                 buildButton("Biology"),
                 buildButton("English"),
                 buildButton("Math"),
               ]),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -82,7 +82,7 @@ class InterestsPage extends StatelessWidget {
                   buildButton("Information Technology")
                 ],
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -91,7 +91,7 @@ class InterestsPage extends StatelessWidget {
                   buildButton("Computer Science")
                 ],
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -100,7 +100,7 @@ class InterestsPage extends StatelessWidget {
                   buildButton("Education")
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 "Sports",
                 style: GoogleFonts.raleway(
@@ -110,14 +110,14 @@ class InterestsPage extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                 buildButton("Football"),
                 buildButton("Soccer"),
                 buildButton("Swimming"),
                 buildButton("Baseball")
               ]),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -126,7 +126,7 @@ class InterestsPage extends StatelessWidget {
                   buildButton("Snow Sports")
                 ],
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -136,7 +136,7 @@ class InterestsPage extends StatelessWidget {
                   buildButton("Rowing")
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 "Hobbies",
                 style: GoogleFonts.raleway(
@@ -146,7 +146,7 @@ class InterestsPage extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -156,7 +156,7 @@ class InterestsPage extends StatelessWidget {
                   buildButton("Gym")
                 ],
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -166,7 +166,7 @@ class InterestsPage extends StatelessWidget {
                   buildButton("Archery")
                 ],
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -176,7 +176,7 @@ class InterestsPage extends StatelessWidget {
                   buildButton("Gaming")
                 ],
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -186,7 +186,7 @@ class InterestsPage extends StatelessWidget {
                   buildButton("Anime")
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 "Languages",
                 style: GoogleFonts.raleway(
@@ -196,7 +196,7 @@ class InterestsPage extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -206,7 +206,7 @@ class InterestsPage extends StatelessWidget {
                   buildButton("Korean")
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -234,17 +234,17 @@ class InterestsPage extends StatelessWidget {
 Widget buildButton(String label) {
   return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
     TextButton(
-      child: Text(label, style: TextStyle(fontSize: 15)),
       style: ButtonStyle(
-          padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(17)),
+          padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(17)),
           foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18.0),
-                  side: BorderSide(color: Colors.black)))),
+                  side: const BorderSide(color: Colors.black)))),
       onPressed: () {
-        print('${label} pressed');
+        print('$label pressed');
       },
+      child: Text(label, style: const TextStyle(fontSize: 15)),
     )
   ]);
 }

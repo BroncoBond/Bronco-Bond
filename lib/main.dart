@@ -34,6 +34,6 @@ class MyApp extends StatelessWidget {
         ),
         home: (token != null && JwtDecoder.isExpired(token) == false)
             ? SearchPage(token: token)
-            : SigninPage());
+            : const SigninPage());
   }
 }
