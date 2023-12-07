@@ -101,13 +101,12 @@ void loginUser(BuildContext context) async {
             const SizedBox(height: 30),
             buildLoginButton("Login", context),
             buildCheckBox("Stay signed in", staySignedIn),
-            const SizedBox(height: 70),
+            const SizedBox(height: 100),
             buildTextButton(
               "Can't Sign In?",
               context,
               const ForgotPasswordPage(),
             ),
-            const SizedBox(height: 8),
             buildTextButton(
               "Create Account",
               context,
