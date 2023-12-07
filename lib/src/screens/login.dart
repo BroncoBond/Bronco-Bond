@@ -107,7 +107,6 @@ class LoginPageState extends State<LoginPage> {
               context,
               const ForgotPasswordPage(),
             ),
-            //const SizedBox(height: 8),
             buildTextButton(
               "Create Account",
               context,
