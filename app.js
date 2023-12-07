@@ -18,3 +18,12 @@ app.use((err, req, res, next) => {
 
 
 module.exports = app;
+
+
+/* 
+    Dev Notes:
+Step 1: In terminal [npm install express body-parser mongoose bcrypt jsonwebtoken nodemon --save]
+Step 2: In terminal [npm init -y]
+Step 3: To start server [node index.js] or [npm run dev]
+
+*/
