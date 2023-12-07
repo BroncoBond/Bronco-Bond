@@ -1,3 +1,4 @@
+import 'package:bronco_bond/src/screens/userprofile.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -5,8 +6,7 @@ import 'package:bronco_bond/src/screens/login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bronco_bond/src/config.dart';
-
-import 'profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchPage extends StatefulWidget {
   final token;
@@ -18,6 +18,8 @@ class SearchPage extends StatefulWidget {
 
 class SearchPageState extends State<SearchPage> {
   late String username;
+  late String userID;
+  late SharedPreferences prefs;
 
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> searchResults = [];
@@ -26,25 +28,38 @@ class SearchPageState extends State<SearchPage> {
     // Backend functionality
     final query = searchController.text;
 
-  try {
-    print(query);
-    final response = await http.get(Uri.parse('${search}?identifier=$query'));
+    try {
+      print(query);
+      final response = await http.get(Uri.parse('${search}?identifier=$query'));
 
-    if (response.statusCode == 200) {
-      final user = Map<String, dynamic>.from(json.decode(response.body));
-      print(user);
-    } else {
-      print('Failed to fetch search results');
+      if (response.statusCode == 200) {
+        final user = Map<String, dynamic>.from(json.decode(response.body));
+
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['status']) {
+          var myToken = jsonResponse['token'];
+          prefs.setString('token', myToken);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserProfile(token: myToken),
+            ),
+          );
+        }
+        print(user);
+      } else {
+        print('Failed to fetch search results');
+      }
+    } catch (e) {
+      // Handle network or server errors
+      print('Error: $e');
     }
-  } catch (e) {
-    // Handle network or server errors
-    print('Error: $e');
-  }
   }
 
   @override
   void initState() {
     super.initState();
+    initSharedPref();
     Map<String, dynamic>? jwtDecodedToken;
 
     try {
@@ -56,6 +71,11 @@ class SearchPageState extends State<SearchPage> {
 
     // Check if 'username' field exists, otherwise set a default value
     username = jwtDecodedToken?['username'] ?? 'Unknown';
+    userID = jwtDecodedToken?['_id'] ?? 'Unknown';
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
   }
 
   @override
