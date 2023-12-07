@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bronco_bond/src/config.dart';
 
+import 'profile.dart';
+
 class SearchPage extends StatefulWidget {
   final token;
   const SearchPage({@required this.token, Key? key}) : super(key: key);
@@ -24,21 +26,20 @@ class SearchPageState extends State<SearchPage> {
     // Backend functionality
     final query = searchController.text;
 
-    try {
-      print(query);
-      final response = await http.get(Uri.parse('${search}?email=$query'));
+  try {
+    print(query);
+    final response = await http.get(Uri.parse('${search}?identifier=$query'));
 
-      if (response.statusCode == 200) {
-        setState(() {
-          searchResults = List<Map<String, dynamic>>.from(json.decode(response.body));
-        });
-      } else {
-        print('Failed to fetch search results');
-      }
-    } catch (e) {
-      // Handle network or server errors
-      print('Error: $e');
+    if (response.statusCode == 200) {
+      final user = Map<String, dynamic>.from(json.decode(response.body));
+      print(user);
+    } else {
+      print('Failed to fetch search results');
     }
+  } catch (e) {
+    // Handle network or server errors
+    print('Error: $e');
+  }
   }
 
   @override
@@ -48,12 +49,13 @@ class SearchPageState extends State<SearchPage> {
 
     try {
       jwtDecodedToken = JwtDecoder.decode(widget.token);
+      print('Decoded token: $jwtDecodedToken');
     } catch (e) {
       print('Error decoding token: $e');
     }
 
     // Check if 'username' field exists, otherwise set a default value
-    username = jwtDecodedToken?['username'] ?? 'Guest';
+    username = jwtDecodedToken?['username'] ?? 'Unknown';
   }
 
   @override

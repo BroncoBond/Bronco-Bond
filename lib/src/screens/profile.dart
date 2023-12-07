@@ -4,11 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 /// Displays detailed information about a SampleItem.
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final Map<String, dynamic> user;
+
+  const ProfilePage({Key? key, required this.user}) : super(key: key);
 
   @override
   ProfilePageState createState() => ProfilePageState();
-  
 }
 
 class ProfilePageState extends State<ProfilePage> {
@@ -18,10 +19,12 @@ class ProfilePageState extends State<ProfilePage> {
       body: Container(
         child: Stack(
           children: [
-            // Logo image
+            // User data
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                Text('Username: ${widget.user['username']}'),
+                Text('Email: ${widget.user['email']}'),
                 Padding(
                   padding: const EdgeInsets.only(top: 160.0),
                   child: Image.asset('assets/images/BroncoBond_logo.png'),
