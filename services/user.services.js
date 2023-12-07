@@ -37,19 +37,32 @@ class UserService{
         }
     }
 
-    static async searchUserByUsernameOrEmail(identifier) {
-        try {
-            const user = await UserModel.findOne({ 
-                $or: [
-                    { username: identifier },
-                    { email: identifier }
-                ]
-            });
-            return user;
-        } catch (error) {
-            throw error;
+    static async searchUserByUsernameOrEmail(identifier, secretKey, jwt_expre) {
+    try {
+        const user = await UserModel.findOne({ 
+            $or: [
+                { username: identifier },
+                { email: identifier }
+            ]
+        });
+
+        if (!user) {
+            throw new Error('User not found');
         }
+
+        const tokenData = {
+            _id: user._id,
+            email: user.email,
+            username: user.username
+        };
+
+        const token = jwt.sign(tokenData, secretKey, { expiresIn: jwt_expre });
+
+        return { user, token };
+    } catch (error) {
+        throw error;
     }
+}
 
     static async generateToken(user,secretKey, jwt_expre) {
         try {

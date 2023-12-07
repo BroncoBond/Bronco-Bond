@@ -64,15 +64,15 @@ exports.searchUserByUsernameOrEmail = async (req, res, next) => {
         const { identifier } = req.query;
         console.log('Search identifier:', identifier);
 
-        const user = await UserService.searchUserByUsernameOrEmail(identifier);
+        const result = await UserService.searchUserByUsernameOrEmail(identifier, 'yourSecretKey', '60s');
 
-        console.log('User found:', user);
+        console.log('User found:', result.user);
 
-        if (!user) {
+        if (!result.user) {
             return res.status(404).json({ status: false, error: 'User not found' });
         }
 
-        res.status(200).json({ status: true, user });
+        res.status(200).json({ status: true, user: result.user, token: result.token });
     } catch (error) {
         console.error('Error in searchUserByUsernameOrEmail:', error);
         res.status(500).json({ status: false, error: "Internal Server Error" });
