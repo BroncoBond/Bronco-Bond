@@ -77,7 +77,7 @@ exports.login = async(req,res,next)=>{
 // This function is used to search for a user by their username or email
 exports.searchUserByUsernameOrEmail = async (req, res) => {
     // Extract the username and email from the request query
-    const { username, email } = req.query;
+    const { username, email } = req.body;
 
     try {
         // If a username is provided, try to find a user with that username
