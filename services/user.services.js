@@ -37,14 +37,9 @@ class UserService{
         }
     }
 
-    static async searchUserByUsernameOrEmail(identifier, secretKey, jwt_expre) {
+    static async searchUserByUsername(username, secretKey, jwt_expre) {
     try {
-        const user = await UserModel.findOne({ 
-            $or: [
-                { username: identifier },
-                { email: identifier }
-            ]
-        });
+        const user = await UserModel.findOne({ username });
 
         if (!user) {
             throw new Error('User not found');

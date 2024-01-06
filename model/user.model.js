@@ -43,14 +43,16 @@ const userSchema = new Schema({
             default: false,
         },
         descriptionMajor: {
-            type: String
+            type: String,
+            default:"N/A"
         },
         descriptionMinor: {
             type: String
         },
         descriptionBio: {
             type: String,
-            max: 50
+            max: 50,
+            default:""
         }
     },
     {timestamps:true}

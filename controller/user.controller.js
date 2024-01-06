@@ -62,7 +62,7 @@ exports.login = async(req,res,next)=>{
         let tokenData = {_id:user._id,email:user.email,username:user.username};
 
         // Generate the token
-        const token = await UserService.generateToken(tokenData, "secretKey", '1m')
+        const token = await UserService.generateToken(tokenData, "secretKey", '10m')
 
         // If the token was successfully generated, return a 200 status with the token
         res.status(200).json({status:true, token:token})
@@ -75,34 +75,33 @@ exports.login = async(req,res,next)=>{
 }
 
 // This function is used to search for a user by their username or email
-exports.searchUserByUsernameOrEmail = async (req, res) => {
-    // Extract the username and email from the request query
-    const { username, email } = req.body;
+exports.searchUserByUsername = async (req, res) => {
+    // Extract the username from the request query
+    const { username } = req.query;
+    
+    // Check if a username was provided
+    if (!username) {
+        return res.status(400).json({ error: 'You must provide a username to search.' });
+    }
 
     try {
-        // If a username is provided, try to find a user with that username
-        if (username) {
-            const userByUsername = await User.findOne({ username });
-            if (userByUsername) {
-                // If a user is found, return the user data
-                return res.status(200).json(userByUsername);
-            }
+        // Create a case-insensitive regular expression to search for usernames that contain the given input
+        const regex = new RegExp(username, 'i');
+
+        // Try to find users whose username matches the regular expression
+        const users = await User.find({ username: { $regex: regex } }).select('-password');
+
+        // If users are found, return the users data
+        if (users.length > 0) {
+            return res.status(200).json(users);
         }
 
-        // If an email is provided, try to find a user with that email
-        if (email) {
-            const userByEmail = await User.findOne({ email });
-            if (userByEmail) {
-                // If a user is found, return the user data
-                return res.status(200).json(userByEmail);
-            }
-        }
-
-        // If no user is found, return a 404 status with an error message
-        return res.status(404).json({ error: 'User not found' });
+        // If no users are found, return a 404 status with an error message
+        return res.status(404).json({ error: 'No users found' });
     } catch (err) {
-        // If there's an error searching for the user, return a 500 status with the error
-        return res.status(500).json(err);
+        // If there's an error searching for the users, return a 500 status with the error
+        console.error('Error searching for users:', err);
+        return res.status(500).json({ error: 'An error occurred while searching for users.' });
     }
 };
 
