@@ -93,11 +93,11 @@ class LoginPageState extends State<LoginPage> {
             const SizedBox(height: 70),
             buildTitle("BroncoBond", 50.0, FontWeight.w800),
             const SizedBox(height: 8),
-            buildTextFieldWithIcon(
-                "Email", Icons.email, "example@cpp.edu", emailController),
+            buildTextFieldWithIcon("Email", Icons.email_rounded,
+                "example@cpp.edu", emailController),
             const SizedBox(height: 30),
             buildTextFieldWithIcon(
-                "Password", Icons.lock, "Password", passwordController),
+                "Password", Icons.lock_rounded, "Password", passwordController),
             const SizedBox(height: 30),
             buildLoginButton("Login", context),
             buildCheckBox("Stay signed in", staySignedIn),

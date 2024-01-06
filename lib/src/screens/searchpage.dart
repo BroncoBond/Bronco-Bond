@@ -111,24 +111,24 @@ class SearchPageState extends State<SearchPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  buildIcon("Organization", "orgIcon.png"),
-                  buildIcon("Professors", "profIcon.png"),
+                  buildIcon("Organization", Icons.groups_rounded),
+                  buildIcon("Professors", Icons.local_library_rounded),
                 ],
               ),
               SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  buildIcon("People", "peopleIcon.png"),
-                  buildIcon("Messages", "messagesIcon.png"),
+                  buildIcon("People", Icons.language_rounded),
+                  buildIcon("Messages", Icons.forum_rounded),
                 ],
               ),
               SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  buildIcon("Events", "eventsIcon.png"),
-                  buildIcon("Forums", "messagesIcon.png"),
+                  buildIcon("Events", Icons.calendar_today_rounded),
+                  buildIcon("Forums", Icons.newspaper_rounded),
                 ],
               )
             ])));
@@ -174,7 +174,7 @@ class SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget buildIcon(String title, String imagePath) {
+  Widget buildIcon(String title, IconData iconData) {
     return Column(
       children: [
         Center(
@@ -182,21 +182,20 @@ class SearchPageState extends State<SearchPage> {
           width: 175,
           height: 175,
           child: Card(
-              clipBehavior: Clip.hardEdge,
-              child: InkWell(
-                splashColor: Colors.blue.withAlpha(30),
-                onTap: () {
-                  debugPrint('${title} tapped.');
-                },
+            clipBehavior: Clip.hardEdge,
+            child: InkWell(
+              splashColor: Colors.blue.withAlpha(30),
+              onTap: () {
+                debugPrint('${title} tapped.');
+              },
 
-                child: imagePath.isNotEmpty
-                    ? Image(
-                        image: AssetImage('assets/images/$imagePath'),
-                        fit: BoxFit.cover)
-                    : Center(
-                        child:
-                            Text(title)), // Display text if imagePath is empty
-              )),
+              child: Icon(
+                iconData,
+                size: 110,
+                color: Color(0xff3B5F43),
+              ), // Display text if imagePath is empty
+            ),
+          ),
         )),
         SizedBox(height: 5),
         Center(
