@@ -64,6 +64,11 @@ class UserProfileState extends State<UserProfile>
           buildProfileHeader(),
           buildInfoBar(),
           TabBar(
+            labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            labelColor: Color(0xFF3B5F43),
+            indicatorColor: Color(0xFF3B5F43),
+            unselectedLabelColor: Colors.grey,
+            indicatorWeight: 3,
             controller: _tabController,
             tabs: [
               Tab(text: 'About'),

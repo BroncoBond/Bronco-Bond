@@ -1,5 +1,4 @@
 import 'package:bronco_bond/src/screens/login.dart';
-import 'package:bronco_bond/src/screens/searchpage.dart';
 import 'package:bronco_bond/src/screens/userInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -213,7 +212,7 @@ class InterestsPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SearchPage(),
+                        builder: (context) => const LoginPage(),
                       ),
                     );
                   },

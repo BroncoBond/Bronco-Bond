@@ -23,7 +23,12 @@ class HomePageState extends State<HomePage> {
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF3B5F43)),
           ),
-          bottom: TabBar(
+          bottom: const TabBar(
+            labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            labelColor: Color(0xFF3B5F43),
+            indicatorColor: Color(0xFF3B5F43),
+            unselectedLabelColor: Colors.grey,
+            indicatorWeight: 3,
             tabs: [
               Tab(text: 'Communities'),
               Tab(text: 'My Bonds'),
