@@ -3,7 +3,7 @@ import 'package:bronco_bond/src/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
-import 'package:bronco_bond/src/screens/searchpage.dart';
+import 'package:bronco_bond/src/screens/navbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/config.dart';
@@ -54,7 +54,7 @@ class LoginPageState extends State<LoginPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => SearchPage(token: myToken),
+                builder: (context) => BottomNavBar(token: myToken),
               ),
             );
           } else {
