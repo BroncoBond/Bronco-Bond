@@ -3,25 +3,27 @@ const bcrypt = require("bcrypt");
 const User = require("../model/user.model");
 
 
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
     try {
-        // Register the user with the data provided in the request body
-        await UserService.registerUser(req.body);
+        const { email, username, password } = req.body;
 
-        // If the user was successfully registered, return a success message
+        const successRes = await UserService.registerUser(email, username, password);
+
+        // Log the success response
+        console.log('User registered successfully:', successRes);
+
         res.json({ status: true, success: 'User Registered Successfully' });
     } catch (error) {
-        // If there's an error during registration
+        // Log specific errors
         if (error.message === 'Email already exists' || error.message === 'Username already exists') {
-            // If the error is that the email or username already exists, log the error and return a 400 status with the error message
             console.error('Registration error:', error.message);
             return res.status(400).json({ status: false, error: error.message });
         }
 
-        // If it's any other error, log the error
+        // Log any other errors
         console.error('Error during registration:', error);
 
-        // And return a 500 status with a generic error message
+        // Send a generic error response
         res.status(500).json({ status: false, error: 'Internal Server Error' });
     }
 };
