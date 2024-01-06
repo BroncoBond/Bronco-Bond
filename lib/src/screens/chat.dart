@@ -29,7 +29,6 @@ class ChatPageState extends State<ChatPage> {
             color: const Color(0xFF3B5F43),
           ),
         ),
-        centerTitle: true,
       ),
       body: const Center(
         child: Text(
