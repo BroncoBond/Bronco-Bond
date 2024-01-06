@@ -140,7 +140,7 @@ class SearchPageState extends State<SearchPage> {
               decoration: InputDecoration(
                 hintText: 'Search...',
                 border: InputBorder.none,
-                icon: Icon(Icons.search),
+                icon: Icon(Icons.search_rounded),
               ),
               onSubmitted: (String value) {
                 print('Search submitted: $value');
