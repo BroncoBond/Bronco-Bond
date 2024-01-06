@@ -3,8 +3,8 @@ const jwt = require(`jsonwebtoken`);
 
 class UserService{
     static async registerUser(email, username, password) {
+        const createUser = new UserModel({ email, username, password });
         try {
-            const createUser = new UserModel({ email, username, password });
             const newUser = await createUser.save();
 
             // Log the newly created user
@@ -16,15 +16,15 @@ class UserService{
                 // Duplicate key error
                 if (error.keyPattern && error.keyPattern.email) {
                     // Duplicate email error
-                    throw new Error('Email already exists');
+                    throw new DuplicateKeyError('Email');
                 } else if (error.keyPattern && error.keyPattern.username) {
                     // Duplicate username error
-                    throw new Error('Username already exists');
+                    throw new DuplicateKeyError('Username');
                 }
             }
             // For other errors, log and rethrow
             console.error('Error during user registration:', error);
-            throw error;
+            throw new CustomError(error.message, 500);
         }
     }
 
@@ -75,6 +75,20 @@ class UserService{
         } catch (error) {
             throw error;
         }
+    }
+}
+
+class CustomError extends Error {
+    constructor(message, statusCode) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+}
+
+class DuplicateKeyError extends CustomError {
+    constructor(field) {
+        super(`${field} already exists`, 400);
+        this.field = field;
     }
 }
 
