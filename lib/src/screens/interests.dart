@@ -1,3 +1,4 @@
+import 'package:bronco_bond/src/screens/login.dart';
 import 'package:bronco_bond/src/screens/searchpage.dart';
 import 'package:bronco_bond/src/screens/userInfo.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,7 @@ class InterestsPage extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const SearchPage(),
+                            builder: (context) => const LoginPage(),
                           ));
                     },
                     child: Text(
@@ -235,7 +236,8 @@ Widget buildButton(String label) {
   return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
     TextButton(
       style: ButtonStyle(
-          padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(17)),
+          padding:
+              MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(17)),
           foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(

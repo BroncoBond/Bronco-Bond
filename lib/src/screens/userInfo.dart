@@ -20,8 +20,15 @@ class UserInfoPageState extends State<UserInfoPage> {
     "Biology"
   ]; // List of majors (implement later)
 
-  void registerUser() async {
+  void registerUser(BuildContext context) async {
     // add backend functionality here
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const InterestsPage(),
+      ),
+    );
   }
 
   @override
@@ -50,10 +57,7 @@ class UserInfoPageState extends State<UserInfoPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            buildTextField("Email*"),
-            buildTextField("Password*"),
-            const SizedBox(height: 10),
-            buildTextField("Username*"),
+            buildTextField("Full Name"),
             buildTextField("Preferred Name"),
             buildCheckBox("Display Name on Profile", displayNameOnProfile),
             buildProfileIcon(),
@@ -63,7 +67,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             buildDropDown("Minor", majors),
             const SizedBox(height: 10),
             buildTextArea(),
-            buildButton("Next", const InterestsPage()),
+            buildButton("Next", context),
           ],
         ),
       ),
@@ -295,7 +299,7 @@ class UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-  Widget buildButton(String label, Widget destination) {
+  Widget buildButton(String label, BuildContext context) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
@@ -308,12 +312,7 @@ class UserInfoPageState extends State<UserInfoPage> {
           ),
           child: TextButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => destination,
-                ),
-              );
+              registerUser(context);
             },
             child: Text(
               label,
