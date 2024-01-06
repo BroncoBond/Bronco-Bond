@@ -3,7 +3,7 @@ import 'package:bronco_bond/src/screens/searchpage.dart';
 import 'package:bronco_bond/src/screens/home.dart';
 import 'package:bronco_bond/src/screens/chat.dart';
 import 'package:bronco_bond/src/screens/events.dart';
-import 'package:bronco_bond/src/screens/profile.dart';
+import 'package:bronco_bond/src/screens/userprofile.dart';
 
 class BottomNavBar extends StatefulWidget {
   final String token;
@@ -27,7 +27,7 @@ class BottomNavBarState extends State<BottomNavBar> {
           ChatPage(),
           SearchPage(token: widget.token),
           EventsPage(),
-          ProfilePage()
+          UserProfile(token: widget.token)
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
