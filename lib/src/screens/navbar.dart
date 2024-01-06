@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bronco_bond/src/screens/searchpage.dart';
-import 'package:bronco_bond/src/screens/home.dart';
+import 'package:bronco_bond/src/screens/homepage.dart';
 import 'package:bronco_bond/src/screens/chat.dart';
 import 'package:bronco_bond/src/screens/events.dart';
 import 'package:bronco_bond/src/screens/userprofile.dart';
