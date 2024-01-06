@@ -1,4 +1,4 @@
-import 'package:bronco_bond/src/screens/login.dart';
+import 'package:bronco_bond/src/screens/userInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
@@ -40,8 +40,8 @@ class RegisterPageState extends State<RegisterPage> {
         print(jsonResponse['status']);
 
         if (jsonResponse['status']) {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => const LoginPage()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const UserInfoPage()));
         } else {
           print("SomeThing Went Wrong");
         }
