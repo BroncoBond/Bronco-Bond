@@ -7,22 +7,54 @@ const { Schema } = mongoose;
 
 
 const userSchema = new Schema({
-    email:{
-        type:String,
-        lowercase:true,
-        required: true,
-        unique: true
+        email:{
+            type:String,
+            lowercase:true,
+            required: true,
+            max: 50,
+            unique: true
+        },
+        username:{
+            type:String,
+            required: true,
+            min: 3,
+            max: 20,
+            unique: true
+        },
+        password:{
+            type:String,
+            min: 6,
+            required: true
+        },
+        profilePicture: {
+            type: String,
+            default:""
+        },
+        followers: {
+            type:Array,
+            default:[]
+        },
+        following: {
+            type:Array,
+            default:[]
+        },
+        isAdmin: {
+            type: Boolean,
+            default: false,
+        },
+        descriptionMajor: {
+            type: String
+        },
+        descriptionMinor: {
+            type: String
+        },
+        descriptionBio: {
+            type: String,
+            max: 50
+        }
     },
-    username:{
-        type:String,
-        required: true,
-        unique: true
-    },
-    password:{
-        type:String,
-        required: true
-    }
-});
+    {timestamps:true}
+);
 
 userSchema.pre('save', async function(next) {
     try {
