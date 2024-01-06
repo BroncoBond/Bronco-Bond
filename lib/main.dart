@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:bronco_bond/src/screens/searchpage.dart';
+import 'package:bronco_bond/src/screens/home.dart';
+import 'package:bronco_bond/src/screens/chat.dart';
+import 'package:bronco_bond/src/screens/events.dart';
+import 'package:bronco_bond/src/screens/profile.dart';
+import 'package:bronco_bond/src/screens/signin.dart';
+import 'package:bronco_bond/src/screens/navbar.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:bronco_bond/src/screens/signin.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,8 +37,20 @@ class MyApp extends StatelessWidget {
             elevation: 0.0,
           ),
         ),
-        home: (token != null && JwtDecoder.isExpired(token) == false)
-            ? SearchPage(token: token)
-            : const SigninPage());
+        initialRoute: '/', // Initial route
+        routes: {
+          /* add this into '/' route later, commented out for testing
+          (context) =>
+              (token != null && JwtDecoder.isExpired(token) == false)
+                  ? BottomNavBar(token: token)
+                  : const SigninPage(),
+          */
+          '/': (context) => BottomNavBar(token: token),
+          '/home': (context) => const HomePage(),
+          '/chat': (context) => const ChatPage(),
+          '/search': (context) => SearchPage(token: token),
+          '/events': (context) => const EventsPage(),
+          '/profile': (context) => const ProfilePage(),
+        });
   }
 }
