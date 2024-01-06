@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bronco_bond/src/screens/searchpage.dart';
-import 'package:bronco_bond/src/screens/home.dart';
+import 'package:bronco_bond/src/screens/homepage.dart';
 import 'package:bronco_bond/src/screens/chat.dart';
 import 'package:bronco_bond/src/screens/events.dart';
 import 'package:bronco_bond/src/screens/profile.dart';
@@ -46,11 +46,6 @@ class MyApp extends StatelessWidget {
                   : const SigninPage(),
           */
           '/': (context) => BottomNavBar(token: token),
-          '/home': (context) => const HomePage(),
-          '/chat': (context) => const ChatPage(),
-          '/search': (context) => SearchPage(token: token),
-          '/events': (context) => const EventsPage(),
-          '/profile': (context) => const ProfilePage(),
         });
   }
 }
