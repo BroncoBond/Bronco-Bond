@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:bronco_bond/src/screens/searchpage.dart';
-import 'package:bronco_bond/src/screens/homepage.dart';
-import 'package:bronco_bond/src/screens/chat.dart';
-import 'package:bronco_bond/src/screens/events.dart';
-import 'package:bronco_bond/src/screens/profile.dart';
 import 'package:bronco_bond/src/screens/signin.dart';
 import 'package:bronco_bond/src/screens/navbar.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
