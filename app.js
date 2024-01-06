@@ -1,11 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const userRouter = require('./routers/user.router');
+const helmet = require("helmet");
+const morgan = require("morgan");
 
 const app = express();
 
 // Middileware
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(helmet());
+app.use(morgan("common"));
 
 // Routes
 app.use('/',userRouter);
