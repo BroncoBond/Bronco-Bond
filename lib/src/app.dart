@@ -47,9 +47,6 @@ class MyApp extends StatelessWidget {
           bodyMedium: GoogleFonts.raleway(),
           displaySmall: GoogleFonts.raleway(),
         ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-        ),
       ),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,

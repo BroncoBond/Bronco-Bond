@@ -1,12 +1,7 @@
-import 'package:bronco_bond/src/screens/interests.dart';
-import 'package:bronco_bond/src/screens/searchpage.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
-/// Displays detailed information about a SampleItem.
 class UserProfile extends StatefulWidget {
   final token;
 
@@ -16,23 +11,30 @@ class UserProfile extends StatefulWidget {
   UserProfileState createState() => UserProfileState();
 }
 
-class UserProfileState extends State<UserProfile> {
+class UserProfileState extends State<UserProfile>
+    with SingleTickerProviderStateMixin {
   late String username;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     Map<String, dynamic>? jwtDecodedToken;
-
     try {
       jwtDecodedToken = JwtDecoder.decode(widget.token);
       print('Decoded token: $jwtDecodedToken');
     } catch (e) {
       print('Error decoding token: $e');
     }
-
     // Check if 'username' field exists, otherwise set a default value
     username = jwtDecodedToken?['username'] ?? 'Unknown';
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -48,14 +50,61 @@ class UserProfileState extends State<UserProfile> {
             color: const Color(0xFF3B5F43),
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              print('tab bar pressed');
+            },
+            icon: Icon(Icons.table_rows),
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
+      body: Column(
+        children: [
+          buildProfileHeader(),
+          buildInfoBar(),
+          TabBar(
+            controller: _tabController,
+            tabs: [
+              Tab(text: 'About'),
+              Tab(text: 'Posts'),
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                // Content for About tab
+                buildAboutContent(),
+                // Content for Posts tab
+                buildPosts(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildAboutContent() {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            buildProfileHeader(),
-            buildAboutBar(),
-            buildPosts(),
+            Text(
+              "Experience",
+              style: GoogleFonts.raleway(
+                color: const Color(0xFF3B5F43),
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 10),
+            buildButton("            Add Experience            "),
+            SizedBox(height: 10),
+            Text('Showcase professional experiences'),
           ],
         ),
       ),
@@ -66,12 +115,16 @@ class UserProfileState extends State<UserProfile> {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
+          SizedBox(width: 30),
           Column(
             children: [
-              Image.asset('assets/images/user_profile_icon.png',
-                  width: 75.0, height: 75.0),
+              Image.asset(
+                'assets/images/user_profile_icon.png',
+                width: 75.0,
+                height: 75.0,
+              ),
               SizedBox(height: 5),
               Text(
                 username,
@@ -82,15 +135,15 @@ class UserProfileState extends State<UserProfile> {
               ),
             ],
           ),
-          SizedBox(width: 30),
+          SizedBox(width: 60),
           SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               buildStatColumn('Posts', '0'),
-              SizedBox(width: 10),
+              SizedBox(width: 20),
               buildStatColumn('Bonds', '0'),
-              SizedBox(width: 10),
+              SizedBox(width: 20),
               buildStatColumn('Interests', '0'),
             ],
           ),
@@ -114,39 +167,60 @@ class UserProfileState extends State<UserProfile> {
     );
   }
 
-  Widget buildAboutBar() {
+  @override
+  Widget buildButton(String label) {
     return Container(
-        margin: EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-                padding: EdgeInsets.only(left: 16.0),
-                child: Text("About",
-                    style: GoogleFonts.raleway(
-                      textStyle: Theme.of(context).textTheme.displaySmall,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF3B5F43),
-                    ))),
-            Padding(
-                padding: EdgeInsets.all(12.0),
-                child: Row(children: [
-                  Image.asset('assets/images/bookicon.png',
-                      width: 20, height: 20),
-                  Text("  B.A. Visual Communication Design"),
-                ])),
-            Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Row(
-                  children: [
-                    Image.asset('assets/images/gradcapicon.png',
-                        width: 30, height: 30),
-                    Text("  Class of 2027 (Spring)"),
-                  ],
-                ))
-          ],
-        ));
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(horizontal: 5.0),
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          TextButton(
+            child: Text(label, style: TextStyle(fontSize: 15)),
+            style: ButtonStyle(
+                padding:
+                    MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(12)),
+                foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                        side: BorderSide(color: Colors.black)))),
+            onPressed: () {
+              print('${label} pressed');
+            },
+          )
+        ]));
+  }
+
+  Widget buildInfoBar() {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 10.0),
+            child: Row(
+              children: [
+                SizedBox(width: 10),
+                Icon(Icons.auto_stories_outlined),
+                SizedBox(width: 10),
+                Text("B.A. Visual Communication Design"),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Row(
+              children: [
+                SizedBox(width: 10),
+                Icon(Icons.school_rounded),
+                SizedBox(width: 10),
+                Text("Class of 2027 (Spring)"),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget buildPosts() {
