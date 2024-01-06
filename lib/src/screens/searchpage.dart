@@ -25,17 +25,27 @@ class SearchPageState extends State<SearchPage> {
   List<Map<String, dynamic>> searchResults = [];
 
   void performSearch() async {
-    // Backend functionality
     final query = searchController.text;
 
     try {
       print(query);
-      final response = await http.get(Uri.parse('${search}?identifier=$query'));
+      final response = await http.get(Uri.parse('${search}?username=$query'));
 
       if (response.statusCode == 200) {
-        final user = Map<String, dynamic>.from(json.decode(response.body));
+        final users =
+            List<Map<String, dynamic>>.from(json.decode(response.body));
+
+        setState(() {
+          searchResults = users;
+        });
+
+        // Print the usernames of the search results
+        for (var user in users) {
+          print(user['username']);
+        }
 
         var jsonResponse = jsonDecode(response.body);
+        /*
         if (jsonResponse['status']) {
           var myToken = jsonResponse['token'];
           prefs.setString('token', myToken);
@@ -46,12 +56,11 @@ class SearchPageState extends State<SearchPage> {
             ),
           );
         }
-        print(user);
+        */
       } else {
         print('Failed to fetch search results');
       }
     } catch (e) {
-      // Handle network or server errors
       print('Error: $e');
     }
   }
@@ -154,7 +163,7 @@ class SearchPageState extends State<SearchPage> {
                 itemCount: searchResults.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(searchResults[index]['email']),
+                    title: Text(searchResults[index]['username']),
                   );
                 }),
           ),
