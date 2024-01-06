@@ -12,7 +12,7 @@ app.use(helmet());
 app.use(morgan("common"));
 
 // Routes
-app.use('/',userRouter);
+app.use('/user',userRouter);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
