@@ -39,8 +39,13 @@ class MyApp extends StatelessWidget {
               (token != null && JwtDecoder.isExpired(token) == false)
                   ? BottomNavBar(token: token)
                   : const SigninPage(),
+
+          (context) => BottomNavBar(token: token)
           */
-          '/': (context) => BottomNavBar(token: token),
+          '/': (context) =>
+              (token != null && JwtDecoder.isExpired(token) == false)
+                  ? BottomNavBar(token: token)
+                  : const SigninPage(),
         });
   }
 }

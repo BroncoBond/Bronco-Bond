@@ -31,7 +31,7 @@ class RegisterPageState extends State<RegisterPage> {
           "password": passwordController.text
         };
 
-        var response = await http.post(Uri.parse(registration),
+        var response = await http.post(Uri.parse(register),
             headers: {"Content-Type": "application/json"},
             body: jsonEncode(regBody));
 
