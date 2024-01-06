@@ -25,7 +25,7 @@ class HomePageState extends State<HomePage> {
           ),
           bottom: TabBar(
             tabs: [
-              Tab(text: 'Communties'),
+              Tab(text: 'Communities'),
               Tab(text: 'My Bonds'),
             ],
           ),
