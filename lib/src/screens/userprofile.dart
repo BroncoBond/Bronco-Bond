@@ -55,7 +55,8 @@ class UserProfileState extends State<UserProfile>
             onPressed: () {
               print('tab bar pressed');
             },
-            icon: Icon(Icons.table_rows),
+            icon: Icon(Icons.settings_rounded),
+            color: const Color(0xFF3B5F43),
           ),
         ],
       ),
@@ -95,31 +96,151 @@ class UserProfileState extends State<UserProfile>
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
+          padding: const EdgeInsets.all(16.0),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(
               "Experience",
               style: GoogleFonts.raleway(
                 color: const Color(0xFF3B5F43),
-                fontSize: 15,
+                fontSize: 17,
                 fontWeight: FontWeight.w600,
               ),
             ),
             SizedBox(height: 10),
-            buildButton("            Add Experience            "),
+            SizedBox(
+              width: 400,
+              height: 40,
+              child: ElevatedButton(
+                  onPressed: () {
+                    //add function to add experience
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: const BorderSide(
+                        color: Color(0xFF3B5F43),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    "Add Experience",
+                    style: GoogleFonts.raleway(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
+                  )),
+            ),
+            SizedBox(height: 7),
+            Text(
+              "Showcase professional experiences...",
+              style: GoogleFonts.raleway(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 20),
+            //clubs
+            Text(
+              "Clubs",
+              style: GoogleFonts.raleway(
+                color: const Color(0xFF3B5F43),
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             SizedBox(height: 10),
-            Text('Showcase professional experiences'),
-          ],
-        ),
-      ),
+            SizedBox(
+              width: 400,
+              height: 40,
+              child: ElevatedButton(
+                  onPressed: () {
+                    //add function to add experience
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: const BorderSide(
+                        color: Color(0xFF3B5F43),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    "Add Clubs",
+                    style: GoogleFonts.raleway(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
+                  )),
+            ),
+            SizedBox(height: 7),
+            Text(
+              "Showcase clubs you participate in...",
+              style: GoogleFonts.raleway(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.black,
+              ),
+            ),
+
+            //Interests
+            SizedBox(height: 20),
+            Text(
+              "Interests",
+              style: GoogleFonts.raleway(
+                color: const Color(0xFF3B5F43),
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 10),
+            SizedBox(
+              width: 400,
+              height: 40,
+              child: ElevatedButton(
+                  onPressed: () {
+                    //add function to add experience
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: const BorderSide(
+                        color: Color(0xFF3B5F43),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    "Add Interests",
+                    style: GoogleFonts.raleway(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
+                  )),
+            ),
+            SizedBox(height: 7),
+            Text(
+              "Share your interests",
+              style: GoogleFonts.raleway(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+                color: Colors.black,
+              ),
+            ),
+          ])),
     );
   }
 
   Widget buildProfileHeader() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Row(
+      child: Row(RRR
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(width: 30),
@@ -132,7 +253,7 @@ class UserProfileState extends State<UserProfile>
               ),
               SizedBox(height: 5),
               Text(
-                username,
+                'Username',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
