@@ -20,9 +20,12 @@ class SearchPageState extends State<SearchPage> {
   late String username;
   late String userID;
   late SharedPreferences prefs;
+  // ignore: prefer_typing_uninitialized_variables
+  var myToken;
 
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> searchResults = [];
+  int selectedResultIndex = -1;
 
   void performSearch() async {
     final query = searchController.text;
@@ -45,18 +48,8 @@ class SearchPageState extends State<SearchPage> {
         }
 
         var jsonResponse = jsonDecode(response.body);
-        /*
-        if (jsonResponse['status']) {
-          var myToken = jsonResponse['token'];
-          prefs.setString('token', myToken);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => UserProfile(token: myToken),
-            ),
-          );
-        }
-        */
+        myToken = jsonResponse['token'];
+        prefs.setString('token', myToken);
       } else {
         print('Failed to fetch search results');
       }
@@ -90,22 +83,27 @@ class SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("BroncoBond",
-              style: GoogleFonts.raleway(
-                  textStyle: Theme.of(context).textTheme.displaySmall,
-                  fontSize: 25,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF3B5F43))),
-        ),
-        body: SingleChildScrollView(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+      appBar: AppBar(
+        title: Text("BroncoBond",
+            style: GoogleFonts.raleway(
+                textStyle: Theme.of(context).textTheme.displaySmall,
+                fontSize: 25,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF3B5F43))),
+      ),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
               Text(username),
               Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: buildSearchBar(" ", searchController)),
+              buildSearchResultsList(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -128,8 +126,12 @@ class SearchPageState extends State<SearchPage> {
                   buildIcon("Events", Icons.calendar_today_rounded),
                   buildIcon("Forums", Icons.newspaper_rounded),
                 ],
-              )
-            ])));
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget buildSearchBar(String label, TextEditingController fieldController) {
@@ -156,16 +158,6 @@ class SearchPageState extends State<SearchPage> {
                 performSearch();
               },
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: searchResults.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(searchResults[index]['username']),
-                  );
-                }),
           ),
         ],
       ),
@@ -202,6 +194,38 @@ class SearchPageState extends State<SearchPage> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ))
       ],
+    );
+  }
+
+  Widget buildSearchResultsList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: searchResults.length,
+      itemBuilder: (context, index) {
+        return MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                // var selectedUserId = searchResults[index]['_id'];
+                selectedResultIndex = index;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserProfile(token: myToken),
+                  ),
+                );
+              });
+              // Handle nav to profile page here
+            },
+            child: Container(
+                color: selectedResultIndex == index
+                    ? Colors.grey.withOpacity(0.5) // Grey when tapped
+                    : null, // Default background color when not tapped
+                child: ListTile(title: Text(searchResults[index]['username']))),
+          ),
+        );
+      },
     );
   }
 }

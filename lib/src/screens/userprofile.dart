@@ -240,7 +240,7 @@ class UserProfileState extends State<UserProfile>
   Widget buildProfileHeader() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Row(RRR
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(width: 30),
@@ -253,7 +253,7 @@ class UserProfileState extends State<UserProfile>
               ),
               SizedBox(height: 5),
               Text(
-                'Username',
+                username,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
