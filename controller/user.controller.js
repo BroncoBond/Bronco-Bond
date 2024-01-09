@@ -89,7 +89,7 @@ exports.searchUserByUsername = async (req, res) => {
         const regex = new RegExp(username, 'i');
 
         // Try to find users whose username matches the regular expression
-        const users = await User.find({ username: { $regex: regex } }).select('-password');
+        const users = await User.find({ username: { $regex: regex } }).select('-password -email');
 
         // If users are found, return the users data
         if (users.length > 0) {
@@ -104,6 +104,8 @@ exports.searchUserByUsername = async (req, res) => {
         return res.status(500).json({ error: 'An error occurred while searching for users.' });
     }
 };
+
+
 
 // This function is used to update a user's information
 exports.updateUserInfo = async (req, res) => {
@@ -178,4 +180,7 @@ exports.deleteAccount = async (req, res) => {
         return res.status(403).json("You can delete only your account!");
     }
 };
+
+// This function is used to follow another user's account
+
 

@@ -44,7 +44,7 @@ const userSchema = new Schema({
         },
         descriptionMajor: {
             type: String,
-            default:"N/A"
+            default:"Undeclared"
         },
         descriptionMinor: {
             type: String
@@ -52,7 +52,7 @@ const userSchema = new Schema({
         descriptionBio: {
             type: String,
             max: 50,
-            default:""
+            default:"Im new BroncoBond!"
         }
     },
     {timestamps:true}
