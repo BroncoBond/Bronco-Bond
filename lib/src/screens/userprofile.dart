@@ -76,6 +76,7 @@ class UserProfileState extends State<UserProfile>
 
   @override
   Widget build(BuildContext context) {
+    //bool isCurrentUserProfile = widget.userID == prefs?.getString('userID');
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -96,13 +97,21 @@ class UserProfileState extends State<UserProfile>
             color: const Color(0xFF3B5F43),
           ),
         ],
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.black,
+          ),
+        ),
       ),
       body: FutureBuilder(
         future: prefsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            SharedPreferences prefs = snapshot.data as SharedPreferences;
+            prefs = snapshot.data as SharedPreferences;
             return buildUserProfile(prefs);
           } else {
             return Center(child: CircularProgressIndicator());
@@ -290,7 +299,6 @@ class UserProfileState extends State<UserProfile>
   }
 
   Widget buildProfileHeader() {
-    bool isCurrentUserProfile = widget.userID == prefs.getString('userID');
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(

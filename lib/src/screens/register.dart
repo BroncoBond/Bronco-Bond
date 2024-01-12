@@ -58,7 +58,7 @@ class RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Icon(Icons.arrow_back_ios_rounded),
           color: Colors.black,
           onPressed: () {
             Navigator.of(context).pop();
