@@ -122,10 +122,13 @@ class UserProfileState extends State<UserProfile>
   }
 
   Widget buildUserProfile(SharedPreferences prefs) {
+    bool isCurrentUserProfile = widget.userID == prefs.getString('userID');
     return Column(
       children: [
         buildProfileHeader(),
         buildInfoBar(),
+        // Check if this is the current user, if not then show a follow button
+        if (!isCurrentUserProfile) buildFollowButton(),
         TabBar(
           labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           labelColor: Color(0xFF3B5F43),
@@ -427,6 +430,32 @@ class UserProfileState extends State<UserProfile>
           fit: BoxFit.cover,
         );
       },
+    );
+  }
+
+  Widget buildFollowButton() {
+    return SizedBox(
+      width: 400,
+      height: 40,
+      child: ElevatedButton(
+        onPressed: () {
+          // Add your follow button logic here
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Color(0xFF3B5F43),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        child: Text(
+          "Bond",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
     );
   }
 }
