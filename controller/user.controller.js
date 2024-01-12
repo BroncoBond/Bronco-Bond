@@ -105,7 +105,30 @@ exports.searchUserByUsername = async (req, res) => {
     }
 };
 
+exports.getById = async (req, res) => {
+    const _id = req.params.id; // changed from const { _id } = req.params.id;
+    let user;
+    try {
+        user = await User.findById(_id); // changed from findById({_id});
+    } catch (error) {
+        return res.status(500).json({message: error.message});
+    }
+    if (!user) {
+        return res.status(404).json({message: "No User Found"});
+    }
+    return res.status(200).json({user});
+}
 
+exports.getAllUserIds = async (req, res) => {
+    try {
+        const users = await User.find({}, '_id'); // fetch only the _id field for all users
+        const userIds = users.map(user => user._id); // extract the _id from each user
+        return res.status(200).json(userIds); // return the array of user IDs
+    } catch (error) {
+        console.error('Error fetching user IDs:', error);
+        return res.status(500).json({message: error.message});
+    }
+}
 
 // This function is used to update a user's information
 exports.updateUserInfo = async (req, res) => {
@@ -182,5 +205,27 @@ exports.deleteAccount = async (req, res) => {
 };
 
 // This function is used to follow another user's account
-
+exports.followUser = async (req,res) => {
+    if (req.body.userId !== req.params.id) {
+        try {
+            const user = await User.findById(req.params.id);
+            const currentUser = await User.findById(req.body.userId);
+            if (!user.followers.includes(req.body.userId)) {
+                await user.updateOne({ $push: { followers: req.body.userId} });
+                await currentUser.updateOne({ $push: { following: req.params.id} });
+                // If the user is trying to follow user, return 200 status with the error
+                return res.status(200).json("User has been followed")
+            } else {
+                // If the user is trying to follow a already followed user, return a 403 status with an error message
+                return res.status(403).json("You already follow this user")
+            }
+        } catch (error) {
+            // If there is a error trying to follow user, return a 500 status with an error message
+            return res.status(500).json(error)
+        }
+    } else {
+        // If the user is trying to follow themselves, return a 403 status with an error message
+        return res.status(403).json("You can't follow yourself")
+    }
+}
 

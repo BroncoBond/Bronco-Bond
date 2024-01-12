@@ -37,7 +37,7 @@ class UserService{
         }
     }
 
-    static async searchUserByUsername(username, secretKey, jwt_expre) {
+/*     static async searchUserByUsername(username, secretKey, jwt_expre) {
     try {
         const user = await UserModel.findOne({ username });
 
@@ -57,7 +57,7 @@ class UserService{
     } catch (error) {
         throw error;
     }
-}
+} */
 
     static async generateToken(user,secretKey, jwt_expre) {
         try {
