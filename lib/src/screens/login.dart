@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:bronco_bond/src/screens/navbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:bronco_bond/src/config.dart';
 
 /// Displays detailed information about a SampleItem.
@@ -50,11 +51,17 @@ class LoginPageState extends State<LoginPage> {
           var jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status']) {
             var myToken = jsonResponse['token'];
+            var myUserID = getUserIDFromToken(myToken);
+
             prefs.setString('token', myToken);
+            prefs.setString('userID', myUserID);
+
+            print('This is the current user\'s ID: $myUserID');
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => BottomNavBar(token: myToken),
+                builder: (context) =>
+                    BottomNavBar(token: myToken, userID: myUserID),
               ),
             );
           } else {
@@ -76,6 +83,16 @@ class LoginPageState extends State<LoginPage> {
       // Handle case where email or password is empty
       // You might want to show an error message to the user
       print('Email or password is empty');
+    }
+  }
+
+  String getUserIDFromToken(String token) {
+    try {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      return decodedToken['_id'];
+    } catch (e) {
+      print('Error decoding token: $e');
+      return '';
     }
   }
 
