@@ -109,7 +109,7 @@ exports.getById = async (req, res) => {
     const _id = req.params.id; // changed from const { _id } = req.params.id;
     let user;
     try {
-        user = await User.findById(_id); // changed from findById({_id});
+        user = await User.findById(_id).select('-email -password'); // changed from findById({_id});
     } catch (error) {
         return res.status(500).json({message: error.message});
     }
