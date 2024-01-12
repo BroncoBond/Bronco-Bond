@@ -20,8 +20,6 @@ class SearchPageState extends State<SearchPage> {
   late String username;
   late String userID;
   late SharedPreferences prefs;
-  // ignore: prefer_typing_uninitialized_variables
-  var myToken;
 
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> searchResults = [];
@@ -48,8 +46,10 @@ class SearchPageState extends State<SearchPage> {
         }
 
         var jsonResponse = jsonDecode(response.body);
-        myToken = jsonResponse['token'];
-        prefs.setString('token', myToken);
+        var myToken = jsonResponse['token'];
+        prefs.setString('token', myToken); // Handle null values
+
+        print('Search Results: $searchResults');
       } else {
         print('Failed to fetch search results');
       }
@@ -201,31 +201,31 @@ class SearchPageState extends State<SearchPage> {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: searchResults.length,
-      itemBuilder: (context, index) {
+      itemBuilder: (context, user) {
         return MouseRegion(
           cursor: SystemMouseCursors.click,
           child: InkWell(
             onTap: () {
               setState(() {
-                // var selectedUserId = searchResults[index]['_id'];
-                selectedResultIndex = index;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UserProfile(token: myToken),
-                  ),
-                );
+                selectedResultIndex = user;
               });
-              // Handle nav to profile page here
+              navigateToUserProfile(searchResults[user]);
             },
             child: Container(
-                color: selectedResultIndex == index
+                color: selectedResultIndex == user
                     ? Colors.grey.withOpacity(0.5) // Grey when tapped
                     : null, // Default background color when not tapped
-                child: ListTile(title: Text(searchResults[index]['username']))),
+                child: ListTile(title: Text(searchResults[user]['username']))),
           ),
         );
       },
+    );
+  }
+
+  void navigateToUserProfile(Map<String, dynamic> user) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => UserProfile(userID: user['_id'])),
     );
   }
 }
