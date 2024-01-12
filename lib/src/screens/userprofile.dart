@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:http/http.dart' as http;
+import 'package:bronco_bond/src/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:bronco_bond/src/config.dart';
 
 class UserProfile extends StatefulWidget {
-  final token;
+  final userID;
 
-  const UserProfile({@required this.token, Key? key}) : super(key: key);
+  const UserProfile({Key? key, required this.userID}) : super(key: key);
 
   @override
   UserProfileState createState() => UserProfileState();
@@ -13,28 +18,60 @@ class UserProfile extends StatefulWidget {
 
 class UserProfileState extends State<UserProfile>
     with SingleTickerProviderStateMixin {
-  late String username;
+  late String username = '';
   late TabController _tabController;
+  late Future<SharedPreferences> prefsFuture;
+  late SharedPreferences prefs;
 
   @override
   void initState() {
     super.initState();
+    prefsFuture = initSharedPref();
     _tabController = TabController(length: 2, vsync: this);
-    Map<String, dynamic>? jwtDecodedToken;
-    try {
-      jwtDecodedToken = JwtDecoder.decode(widget.token);
-      print('Decoded token: $jwtDecodedToken');
-    } catch (e) {
-      print('Error decoding token: $e');
-    }
-    // Check if 'username' field exists, otherwise set a default value
-    username = jwtDecodedToken?['username'] ?? 'Unknown';
+
+    prefsFuture.then((value) {
+      prefs = value;
+      // Get user data using the userID
+      fetchDataUsingUserID(widget.userID, prefs);
+    });
+    print('UserID: ${widget.userID}');
+  }
+
+  Future<SharedPreferences> initSharedPref() async {
+    return await SharedPreferences.getInstance();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> fetchDataUsingUserID(
+      String userID, SharedPreferences prefs) async {
+    try {
+      final response = await http.get(Uri.parse('${getUserByID}/$userID'));
+
+      if (response.statusCode == 200) {
+        final userData = json.decode(response.body);
+
+        setState(() {
+          username = userData['user']['username'] ?? 'Unknown';
+        });
+
+        // Check if this is the current user or not
+        if (userID == prefs.getString('userID')) {
+          print('This is the current user\'s profile');
+        } else {
+          print('This is someone else\'s profile');
+        }
+      } else {
+        print('Failed to fetch user data. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
 
   @override
@@ -60,35 +97,49 @@ class UserProfileState extends State<UserProfile>
           ),
         ],
       ),
-      body: Column(
-        children: [
-          buildProfileHeader(),
-          buildInfoBar(),
-          TabBar(
-            labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            labelColor: Color(0xFF3B5F43),
-            indicatorColor: Color(0xFF3B5F43),
-            unselectedLabelColor: Colors.grey,
-            indicatorWeight: 3,
+      body: FutureBuilder(
+        future: prefsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            SharedPreferences prefs = snapshot.data as SharedPreferences;
+            return buildUserProfile(prefs);
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+    );
+  }
+
+  Widget buildUserProfile(SharedPreferences prefs) {
+    return Column(
+      children: [
+        buildProfileHeader(),
+        buildInfoBar(),
+        TabBar(
+          labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          labelColor: Color(0xFF3B5F43),
+          indicatorColor: Color(0xFF3B5F43),
+          unselectedLabelColor: Colors.grey,
+          indicatorWeight: 3,
+          controller: _tabController,
+          tabs: [
+            Tab(text: 'About'),
+            Tab(text: 'Posts'),
+          ],
+        ),
+        Expanded(
+          child: TabBarView(
             controller: _tabController,
-            tabs: [
-              Tab(text: 'About'),
-              Tab(text: 'Posts'),
+            children: [
+              // Content for About tab
+              buildAboutContent(),
+              // Content for Posts tab
+              buildPosts(),
             ],
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                // Content for About tab
-                buildAboutContent(),
-                // Content for Posts tab
-                buildPosts(),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -238,6 +289,7 @@ class UserProfileState extends State<UserProfile>
   }
 
   Widget buildProfileHeader() {
+    bool isCurrentUserProfile = widget.userID == prefs.getString('userID');
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
