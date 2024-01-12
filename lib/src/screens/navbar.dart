@@ -7,8 +7,9 @@ import 'package:bronco_bond/src/screens/userprofile.dart';
 
 class BottomNavBar extends StatefulWidget {
   final String token;
+  final String userID;
 
-  const BottomNavBar({super.key, required this.token});
+  const BottomNavBar({super.key, required this.token, required this.userID});
 
   @override
   BottomNavBarState createState() => BottomNavBarState();
@@ -27,7 +28,7 @@ class BottomNavBarState extends State<BottomNavBar> {
           ChatPage(),
           SearchPage(token: widget.token),
           EventsPage(),
-          UserProfile(token: widget.token)
+          UserProfile(userID: widget.userID)
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
