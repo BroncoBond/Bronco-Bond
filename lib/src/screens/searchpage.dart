@@ -90,6 +90,7 @@ class SearchPageState extends State<SearchPage> {
                 fontSize: 25,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF3B5F43))),
+        automaticallyImplyLeading: false,
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,

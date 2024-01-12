@@ -34,6 +34,7 @@ class HomePageState extends State<HomePage> {
               Tab(text: 'My Bonds'),
             ],
           ),
+          automaticallyImplyLeading: false,
         ),
         body: TabBarView(
           children: [

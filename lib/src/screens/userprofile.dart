@@ -96,6 +96,7 @@ class UserProfileState extends State<UserProfile>
             color: const Color(0xFF3B5F43),
           ),
         ],
+        automaticallyImplyLeading: false,
       ),
       body: FutureBuilder(
         future: prefsFuture,
