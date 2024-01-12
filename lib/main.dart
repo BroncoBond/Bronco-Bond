@@ -8,14 +8,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   runApp(MyApp(
-    token: prefs.getString('token'),
-  ));
+      token: prefs.getString('token'), userID: prefs.getString('userID')));
 }
 
 class MyApp extends StatelessWidget {
   final token;
+  final userID;
   const MyApp({
     @required this.token,
+    @required this.userID,
     Key? key,
   }) : super(key: key);
 
@@ -44,7 +45,10 @@ class MyApp extends StatelessWidget {
           */
           '/': (context) =>
               (token != null && JwtDecoder.isExpired(token) == false)
-                  ? BottomNavBar(token: token)
+                  ? BottomNavBar(
+                      token: token,
+                      userID: userID,
+                    )
                   : const SigninPage(),
         });
   }
