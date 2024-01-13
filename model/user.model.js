@@ -30,11 +30,7 @@ const userSchema = new Schema({
             type: String,
             default:""
         },
-        followers: {
-            type:Array,
-            default:[]
-        },
-        following: {
+        bonds: {
             type:Array,
             default:[]
         },

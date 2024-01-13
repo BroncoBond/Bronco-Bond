@@ -130,6 +130,16 @@ exports.getAllUserIds = async (req, res) => {
     }
 }
 
+exports.getAllUserData = async (req, res) => {
+    try {
+        const users = await User.find({}).select('-password -email'); // fetch the user data for all users
+        return res.status(200).json(users); // return the array of user data
+    } catch (error) {
+        console.error('Error fetching user IDs:', error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
 // This function is used to update a user's information
 exports.updateUserInfo = async (req, res) => {
     // Check if the user is authorized to update the account
@@ -205,14 +215,14 @@ exports.deleteAccount = async (req, res) => {
 };
 
 // This function is used to follow another user's account
-exports.followUser = async (req,res) => {
+exports.bondUser = async (req,res) => {
     if (req.body.userId !== req.params.id) {
         try {
             const user = await User.findById(req.params.id);
             const currentUser = await User.findById(req.body.userId);
             if (!user.followers.includes(req.body.userId)) {
-                await user.updateOne({ $push: { followers: req.body.userId} });
-                await currentUser.updateOne({ $push: { following: req.params.id} });
+                await user.updateOne({ $push: { bonds: req.body.userId} });
+                await currentUser.updateOne({ $push: { bonds: req.params.id} });
                 // If the user is trying to follow user, return 200 status with the error
                 return res.status(200).json("User has been followed")
             } else {

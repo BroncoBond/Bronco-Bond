@@ -13,6 +13,12 @@ router.get('/search', userController.searchUserByUsername);
 //Update User Info
 router.put("/userUpdate/:id", userController.updateUserInfo);
 
+//Get all User ID
+router.get('/ids', userController.getAllUserIds);
+
+//Get all User Data
+router.get("/data",userController.getAllUserData);
+
 //Get User by Id
 router.get("/:id", userController.getById);
 
@@ -20,9 +26,6 @@ router.get("/:id", userController.getById);
 router.delete("/:id", userController.deleteAccount);
 
 //follow User
-router.get("/:id/follow", userController.followUser);
-
-//Get all User ID
-router.get('/ids', userController.getAllUserIds);
+router.get("/bond/:id", userController.bondUser);
 
 module.exports = router;
