@@ -34,6 +34,10 @@ const userSchema = new Schema({
             type:Array,
             default:[]
         },
+        numOfBonds: {
+            type: Number,
+            default:0
+        },
         isAdmin: {
             type: Boolean,
             default: false,

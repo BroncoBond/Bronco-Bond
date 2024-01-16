@@ -214,28 +214,28 @@ exports.deleteAccount = async (req, res) => {
     }
 };
 
-// This function is used to follow another user's account
+// This function is used to friend another user's account
 exports.bondUser = async (req,res) => {
     if (req.body.userId !== req.params.id) {
         try {
             const user = await User.findById(req.params.id);
             const currentUser = await User.findById(req.body.userId);
-            if (!user.followers.includes(req.body.userId)) {
-                await user.updateOne({ $push: { bonds: req.body.userId} });
-                await currentUser.updateOne({ $push: { bonds: req.params.id} });
-                // If the user is trying to follow user, return 200 status with the error
-                return res.status(200).json("User has been followed")
+            if (!user.bonds.includes(req.body.userId)) {
+                await user.updateOne({ $push: { bonds: req.body.userId}, $inc: { numOfBonds: 1} });
+                await currentUser.updateOne({ $push: { bonds: req.params.id}, $inc: { numOfBonds: 1} });
+                // If the user is trying to friend user, return 200 status with the error
+                return res.status(200).json("User has been friended")
             } else {
-                // If the user is trying to follow a already followed user, return a 403 status with an error message
-                return res.status(403).json("You already follow this user")
+                // If the user is trying to friend a already friended user, return a 403 status with an error message
+                return res.status(403).json("You already friend this user")
             }
         } catch (error) {
-            // If there is a error trying to follow user, return a 500 status with an error message
+            // If there is a error trying to friend user, return a 500 status with an error message
             return res.status(500).json(error)
         }
     } else {
-        // If the user is trying to follow themselves, return a 403 status with an error message
-        return res.status(403).json("You can't follow yourself")
+        // If the user is trying to friend themselves, return a 403 status with an error message
+        return res.status(403).json("You can't friend yourself")
     }
 }
 
