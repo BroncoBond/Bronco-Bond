@@ -239,3 +239,27 @@ exports.bondUser = async (req,res) => {
     }
 }
 
+// This function is used to unfriend another user's account
+exports.unfriendUser = async (req, res) => {
+    if (req.body.userId !== req.params.id) {
+        try {
+            const user = await User.findById(req.params.id);
+            const currentUser = await User.findById(req.body.userId);
+            if (user.bonds.includes(req.body.userId)) {
+                await user.updateOne({ $pull: { bonds: req.body.userId }, $inc: { numOfBonds: -1 } });
+                await currentUser.updateOne({ $pull: { bonds: req.params.id }, $inc: { numOfBonds: -1 } });
+                // If the user is successfully unfriended, return a 200 status with a success message
+                return res.status(200).json("User has been unfriended");
+            } else {
+                // If the user is trying to unfriend a user who is not in their friends list, return a 403 status with an error message
+                return res.status(403).json("You are not friends with this user");
+            }
+        } catch (error) {
+            // If there is an error trying to unfriend the user, return a 500 status with an error message
+            return res.status(500).json(error);
+        }
+    } else {
+        // If the user is trying to unfriend themselves, return a 403 status with an error message
+        return res.status(403).json("You can't unfriend yourself");
+    }
+}
