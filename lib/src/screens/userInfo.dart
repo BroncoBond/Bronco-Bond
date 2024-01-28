@@ -11,6 +11,10 @@ class UserInfoPage extends StatefulWidget {
 }
 
 class UserInfoPageState extends State<UserInfoPage> {
+  TextEditingController fullNameController = TextEditingController();
+  TextEditingController prefNameController = TextEditingController();
+  TextEditingController bioController = TextEditingController();
+
   bool displayNameOnProfile = false;
   bool changingMajor = false;
   // String? selectedValue;
@@ -19,6 +23,12 @@ class UserInfoPageState extends State<UserInfoPage> {
     "Computer Science",
     "Biology"
   ]; // List of majors (implement later)
+
+  List<String> minors = [
+    "Psychology",
+    "Computer Science",
+    "Biology"
+  ]; // List of minors (implement later)
 
   void registerUser(BuildContext context) async {
     // add backend functionality here
@@ -57,14 +67,24 @@ class UserInfoPageState extends State<UserInfoPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            buildTextField("Full Name"),
-            buildTextField("Preferred Name"),
-            buildCheckBox("Display Name on Profile", displayNameOnProfile),
+            buildTextField("Full Name", fullNameController),
+            buildTextField("Preferred Name", prefNameController),
+            buildCheckBox("Display Name on Profile", displayNameOnProfile,
+                (value) {
+              setState(() {
+                displayNameOnProfile = value ?? false;
+              });
+            }),
             buildProfileIcon(),
             const SizedBox(height: 10),
             buildDropDown("Major*", majors),
-            buildCheckBox("Planning on Changing Majors", changingMajor),
-            buildDropDown("Minor", majors),
+            buildCheckBox("Planning on Changing Majors", changingMajor,
+                (value) {
+              setState(() {
+                changingMajor = value ?? false;
+              });
+            }),
+            buildDropDown("Minor", minors),
             const SizedBox(height: 10),
             buildTextArea(),
             buildButton("Next", context),
@@ -75,7 +95,7 @@ class UserInfoPageState extends State<UserInfoPage> {
   }
 
   // Widget for TextFields
-  Widget buildTextField(String label) {
+  Widget buildTextField(String label, TextEditingController fieldController) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -94,6 +114,7 @@ class UserInfoPageState extends State<UserInfoPage> {
           width: 327,
           height: 43,
           child: TextField(
+            controller: fieldController,
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
               border: OutlineInputBorder(
@@ -110,7 +131,8 @@ class UserInfoPageState extends State<UserInfoPage> {
   }
 
   // Widget for Display Name on Profile checkbox
-  Widget buildCheckBox(String label, bool currentVal) {
+  Widget buildCheckBox(
+      String label, bool currentVal, Function(bool?) onChanged) {
     return Column(
       children: [
         Padding(
@@ -125,12 +147,9 @@ class UserInfoPageState extends State<UserInfoPage> {
               ),
             ),
             value: currentVal, // Set default value of checkbox to false
-            onChanged: (bool? newVal) {
-              setState(() {
-                /* Add checkbox functionality here */
-              });
-            },
+            onChanged: onChanged,
             controlAffinity: ListTileControlAffinity.leading,
+            activeColor: Color(0xFF3B5F43),
           ),
         ),
         const SizedBox(height: 20),
