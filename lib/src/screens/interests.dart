@@ -14,10 +14,7 @@ class InterestsPage extends StatelessWidget {
             icon: const Icon(Icons.arrow_back_ios_rounded),
             color: Colors.black,
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const UserInfoPage()));
+              Navigator.of(context).pop();
             },
           ),
           title: Text(

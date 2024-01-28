@@ -2,6 +2,151 @@ import 'package:bronco_bond/src/screens/interests.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+const List<String> majors = [
+  "Aerospace Engineering",
+  "Agribusiness and Food Industry Management",
+  "Agricultural Science",
+  "Animal Health Science",
+  "Animal Science",
+  "Anthropology",
+  "Apparel Merchandising and Management",
+  "Architecture",
+  "Art History",
+  "Biology",
+  "Biotechnology",
+  "Business Administration",
+  "Chemical Engineering",
+  "Chemistry",
+  "Civil Engineering",
+  "Communication",
+  "Computer Engineering",
+  "Computer Science",
+  "Construction Engineering and Management",
+  "Criminology",
+  "Early Childhood Studies",
+  "Economics",
+  "Electrical Engineering",
+  "Electromechanical Systems Engineering Technology",
+  "Electronic Systems Engineering Technology",
+  "English",
+  "Environmental Biology",
+  "Food Science and Technology",
+  "Gender, Ethnicity, and Multicultural Studies",
+  "Geography",
+  "Geology",
+  "History",
+  "Hospitality Management",
+  "Industrial Engineering",
+  "Kinesiology",
+  "Landscape Architecture",
+  "Liberal Studies",
+  "Manufacturing Engineering",
+  "Mathematics",
+  "Mechanical Engineering",
+  "Music",
+  "Nutrition",
+  "Philosophy",
+  "Physics",
+  "Plant Science",
+  "Political Science",
+  "Psychology",
+  "Science, Technology, and Society",
+  "Sociology",
+  "Spanish",
+  "Theatre",
+  "Urban and Regional Planning",
+  "Visual Communication Design",
+]; // List of majors (implement later)
+
+const List<String> minors = [
+  "Accounting",
+  "African American Studies",
+  "Agribusiness and Food Industry Management",
+  "Agronomy",
+  "Animal and Veterinary Science",
+  "Anthropology",
+  "Art History",
+  "Asian/Pacific Islander American Studies",
+  "Astronomy",
+  "Biophysics",
+  "Botany",
+  "Business Law",
+  "Business",
+  "Chemistry",
+  "Chicana/o and Latina/o Studies",
+  "Chinese",
+  "Communication Studies",
+  "Computer Information Systems",
+  "Computer Science",
+  "Contract Management",
+  "Criminology",
+  "Culinology®",
+  "Dance",
+  "Data Science",
+  "Economics",
+  "Energy Engineering",
+  "English",
+  "Entrepreneurship",
+  "Environmental Health Specialist",
+  "Equine Studies",
+  "Fashion Merchandising",
+  "Finance",
+  "Food Safety",
+  "Food Science and Technology",
+  "Footwear Design and Merchandising",
+  "French",
+  "Gender and Sexuality Studies",
+  "Geographic Information Systems",
+  "Geography",
+  "Geology",
+  "History",
+  "Horticulture",
+  "Hospitality Management",
+  "Human Resources",
+  "International Agricultural Business Management",
+  "International Business",
+  "Landscape Architecture",
+  "Management and Leadership",
+  "Management of Not-for-Profit Organization",
+  "Marketing Management",
+  "Materials Engineering",
+  "Mathematics",
+  "Microbiology",
+  "Multicultural Leadership Studies",
+  "Multimedia Journalism",
+  "Music",
+  "Native American Studies",
+  "Nonviolence Studies",
+  "Nutrition",
+  "Operations Management",
+  "Pest and Disease Management",
+  "Philosophy",
+  "Physics",
+  "Physiology",
+  "Plant Based Food and Nutrition",
+  "Political Science",
+  "Psychology",
+  "Public Relations",
+  "Real Estate",
+  "Regenerative Studies",
+  "Science Education",
+  "Science, Technology, and Society",
+  "Social Work",
+  "Sociology",
+  "Soil Science",
+  "Spanish",
+  "Statistics",
+  "Studio Arts",
+  "Supply Chain/Logistics",
+  "Teaching English to Speakers of Other Languages",
+  "Theatre",
+  "Urban and Community Agriculture",
+  "Urban and Regional Planning",
+  "Water Resources and Irrigation Design",
+  "Writing Studies",
+  "Zoology",
+]; // List of minors (implement later)
+
 /// Displays detailed information about a SampleItem.
 class UserInfoPage extends StatefulWidget {
   const UserInfoPage({super.key});
@@ -17,20 +162,10 @@ class UserInfoPageState extends State<UserInfoPage> {
 
   bool displayNameOnProfile = false;
   bool changingMajor = false;
-  // String? selectedValue;
-  List<String> majors = [
-    "Psychology",
-    "Computer Science",
-    "Biology"
-  ]; // List of majors (implement later)
+  String? _selectedMajor;
+  String? _selectedMinor;
 
-  List<String> minors = [
-    "Psychology",
-    "Computer Science",
-    "Biology"
-  ]; // List of minors (implement later)
-
-  void registerUser(BuildContext context) async {
+  void addInfoToUser(BuildContext context) async {
     // add backend functionality here
 
     Navigator.push(
@@ -67,6 +202,7 @@ class UserInfoPageState extends State<UserInfoPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: 8.0),
             buildTextField("Full Name", fullNameController),
             buildTextField("Preferred Name", prefNameController),
             buildCheckBox("Display Name on Profile", displayNameOnProfile,
@@ -77,14 +213,22 @@ class UserInfoPageState extends State<UserInfoPage> {
             }),
             buildProfileIcon(),
             const SizedBox(height: 10),
-            buildDropDown("Major*", majors),
+            buildDropDown("Major*", majors, _selectedMajor, (newValue) {
+              setState(() {
+                _selectedMajor = newValue;
+              });
+            }),
             buildCheckBox("Planning on Changing Majors", changingMajor,
                 (value) {
               setState(() {
                 changingMajor = value ?? false;
               });
             }),
-            buildDropDown("Minor", minors),
+            buildDropDown("Minor", minors, _selectedMinor, (newValue) {
+              setState(() {
+                _selectedMinor = newValue;
+              });
+            }),
             const SizedBox(height: 10),
             buildTextArea(),
             buildButton("Next", context),
@@ -223,7 +367,8 @@ class UserInfoPageState extends State<UserInfoPage> {
   }
 
   // Widget for Dropdown Buttons
-  Widget buildDropDown(String label, List<String> items) {
+  Widget buildDropDown(String label, List<String> items, String? selectedValue,
+      Function(String?) onChanged) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -241,7 +386,7 @@ class UserInfoPageState extends State<UserInfoPage> {
           height: 43,
           child: DropdownButton<String>(
             isExpanded: true,
-            // value: , // Set default value
+            value: selectedValue, // Set default value
             underline: Container(
               // height: 1, uncomment to get rid of underline in dropdown
               decoration: BoxDecoration(
@@ -256,9 +401,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             items: items.map((String value) {
               return buildDropDownItem(value);
             }).toList(),
-            onChanged: (String? newValue) {
-              /* Handle change in value */
-            },
+            onChanged: onChanged,
           ),
         ),
       ],
@@ -303,6 +446,7 @@ class UserInfoPageState extends State<UserInfoPage> {
           width: 327,
           height: 101,
           child: TextField(
+            controller: bioController,
             maxLines: 5,
             decoration: InputDecoration(
               border: OutlineInputBorder(
@@ -331,7 +475,7 @@ class UserInfoPageState extends State<UserInfoPage> {
           ),
           child: TextButton(
             onPressed: () {
-              registerUser(context);
+              addInfoToUser(context);
             },
             child: Text(
               label,
