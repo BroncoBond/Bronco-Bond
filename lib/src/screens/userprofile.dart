@@ -128,7 +128,7 @@ class UserProfileState extends State<UserProfile>
         buildProfileHeader(),
         buildInfoBar(),
         // Check if this is the current user, if not then show a follow button
-        if (!isCurrentUserProfile) buildFollowButton(),
+        if (!isCurrentUserProfile) buildOtherProfileButtons(),
         TabBar(
           labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           labelColor: Color(0xFF3B5F43),
@@ -433,29 +433,63 @@ class UserProfileState extends State<UserProfile>
     );
   }
 
-  Widget buildFollowButton() {
-    return SizedBox(
-      width: 400,
-      height: 40,
-      child: ElevatedButton(
-        onPressed: () {
-          // Add your follow button logic here
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF3B5F43),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
+  Widget buildOtherProfileButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: SizedBox(
+            width: 180,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: () {
+                // Add your follow button logic here
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF3B5F43),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: Text(
+                "Bond",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ),
         ),
-        child: Text(
-          "Bond",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: SizedBox(
+            width: 180,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: () {
+                // Add your follow button logic here
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFABABAB),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: Text(
+                "Message",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
