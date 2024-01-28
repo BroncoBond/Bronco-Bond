@@ -19,6 +19,9 @@ class UserProfile extends StatefulWidget {
 class UserProfileState extends State<UserProfile>
     with SingleTickerProviderStateMixin {
   late String username = '';
+  late int numOfBonds = 0;
+  late String descriptionMajor = '';
+  late String descriptionBio = '';
   late TabController _tabController;
   late Future<SharedPreferences> prefsFuture;
   late SharedPreferences prefs;
@@ -57,6 +60,9 @@ class UserProfileState extends State<UserProfile>
 
         setState(() {
           username = userData['user']['username'] ?? 'Unknown';
+          numOfBonds = userData['user']['numOfBonds'] ?? 0;
+          descriptionMajor = userData['user']['descriptionMajor'] ?? 'Unknown';
+          descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
         });
 
         // Check if this is the current user or not
@@ -326,15 +332,15 @@ class UserProfileState extends State<UserProfile>
             ],
           ),
           SizedBox(width: 60),
-          SizedBox(height: 8),
+          // SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              buildStatColumn('Posts', '0'),
+              buildStatColumn('Posts', 0),
               SizedBox(width: 20),
-              buildStatColumn('Bonds', '0'),
+              buildStatColumn('Bonds', numOfBonds),
               SizedBox(width: 20),
-              buildStatColumn('Interests', '0'),
+              buildStatColumn('Interests', 0),
             ],
           ),
         ],
@@ -342,11 +348,11 @@ class UserProfileState extends State<UserProfile>
     );
   }
 
-  Widget buildStatColumn(String label, String value) {
+  Widget buildStatColumn(String label, int value) {
     return Column(
       children: [
         Text(
-          value,
+          value.toString(),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -387,13 +393,18 @@ class UserProfileState extends State<UserProfile>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
+            padding: EdgeInsets.only(left: 20.0),
+            child: Text(descriptionBio),
+          ),
+          SizedBox(height: 10.0),
+          Padding(
             padding: EdgeInsets.only(left: 10.0),
             child: Row(
               children: [
                 SizedBox(width: 10),
                 Icon(Icons.auto_stories_outlined),
                 SizedBox(width: 10),
-                Text("B.A. Visual Communication Design"),
+                Text(descriptionMajor),
               ],
             ),
           ),
