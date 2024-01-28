@@ -1,7 +1,7 @@
 const UserService = require("../services/user.services");
 const bcrypt = require("bcrypt");
 const User = require("../model/user.model");
-
+require('dotenv').config();
 
 exports.register = async (req, res, next) => {
     try {
@@ -62,7 +62,7 @@ exports.login = async(req,res,next)=>{
         let tokenData = {_id:user._id,email:user.email,username:user.username};
 
         // Generate the token
-        const token = await UserService.generateToken(tokenData, "secretKey", '10m')
+        const token = await UserService.generateToken(tokenData, process.env.SECRET_KEY, '10m')
 
         // If the token was successfully generated, return a 200 status with the token
         res.status(200).json({status:true, token:token})
