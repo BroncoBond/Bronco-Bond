@@ -111,10 +111,10 @@ class LoginPageState extends State<LoginPage> {
             buildTitle("BroncoBond", 50.0, FontWeight.w800),
             const SizedBox(height: 8),
             buildTextFieldWithIcon("Email", Icons.email_rounded,
-                "example@cpp.edu", emailController),
+                "example@cpp.edu", emailController, false),
             const SizedBox(height: 30),
-            buildTextFieldWithIcon(
-                "Password", Icons.lock_rounded, "Password", passwordController),
+            buildTextFieldWithIcon("Password", Icons.lock_rounded, "Password",
+                passwordController, true),
             const SizedBox(height: 30),
             buildLoginButton("Login", context),
             buildCheckBox("Stay signed in", staySignedIn),
@@ -243,7 +243,7 @@ class LoginPageState extends State<LoginPage> {
 
   // Widget for TextFields
   Widget buildTextFieldWithIcon(String label, IconData icon, String hint,
-      TextEditingController fieldController) {
+      TextEditingController fieldController, bool obscureText) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -264,6 +264,7 @@ class LoginPageState extends State<LoginPage> {
           child: TextField(
             controller: fieldController,
             keyboardType: TextInputType.text,
+            obscureText: obscureText,
             decoration: InputDecoration(
               suffixIcon: Icon(
                 icon,
