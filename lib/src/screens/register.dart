@@ -19,6 +19,8 @@ class RegisterPageState extends State<RegisterPage> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   bool _isNotValidate = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   void registerUser(BuildContext context) async {
     if (emailController.text.isNotEmpty &&
@@ -81,8 +83,18 @@ class RegisterPageState extends State<RegisterPage> {
           children: [
             buildTextField("Username*", usernameController),
             buildTextField("Email*", emailController),
-            buildTextField("Password*", passwordController),
-            buildTextField(" Confirm Password*", confirmPasswordController),
+            buildTextFieldWithToggle(
+                "Password*", passwordController, _obscurePassword, () {
+              setState(() {
+                _obscurePassword = !_obscurePassword;
+              });
+            }),
+            buildTextFieldWithToggle(" Confirm Password*",
+                confirmPasswordController, _obscureConfirmPassword, () {
+              setState(() {
+                _obscureConfirmPassword = !_obscureConfirmPassword;
+              });
+            }),
             const SizedBox(height: 10),
             buildButton("Register", context),
           ],
@@ -92,6 +104,57 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   // Widget for TextFields
+  Widget buildTextFieldWithToggle(
+      String label,
+      TextEditingController fieldController,
+      bool obscureText,
+      VoidCallback toggleVisibility) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Text label
+        Text(
+          label,
+          style: GoogleFonts.raleway(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: Colors.black,
+          ),
+          textAlign: TextAlign.start,
+        ),
+        // Text field
+        SizedBox(
+          width: 327,
+          height: 43,
+          child: Stack(
+            alignment: Alignment.centerRight,
+            children: [
+              TextField(
+                controller: fieldController,
+                keyboardType: TextInputType.text,
+                obscureText: obscureText,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color(0xFFABABAB)),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+                textAlign: TextAlign.start,
+              ),
+              IconButton(
+                  onPressed: toggleVisibility,
+                  icon: Icon(
+                    obscureText ? Icons.visibility : Icons.visibility_off,
+                    color: Colors.grey,
+                  ))
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget buildTextField(String label, TextEditingController fieldController) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
