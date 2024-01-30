@@ -26,6 +26,14 @@ const userSchema = new Schema({
             min: 6,
             required: true
         },
+        fullName:{
+            type:String,
+            lowercase:true,
+            required: true
+        },
+        prefName:{
+            type:String
+        },
         profilePicture: {
             type: String,
             default:""
