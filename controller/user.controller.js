@@ -171,7 +171,7 @@ exports.updateUserInfo = async (req, res) => {
                     return res.status(400).json({ error: 'Username already exists' });
                 }
             }
-            const { username, password, profilePicture, descriptionMajor, descriptionBio } = req.body;
+            const { username, password, profilePicture, descriptionMajor, descriptionBio, fullName, prefName} = req.body;
 
             
             // Log the data that will be used to update the user
@@ -179,7 +179,7 @@ exports.updateUserInfo = async (req, res) => {
             
             // Try to update the user with the given ID and data
             const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-                $set: { username, password, profilePicture, descriptionMajor, descriptionBio },
+                $set: { username, password, profilePicture, descriptionMajor, descriptionBio, fullName, prefName},
             }, { new: true }); // Add { new: true } to return the updated user
 
             if (!updatedUser) {
