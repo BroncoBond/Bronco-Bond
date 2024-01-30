@@ -28,8 +28,7 @@ const userSchema = new Schema({
         },
         fullName:{
             type:String,
-            lowercase:true,
-            required: true
+            lowercase:true
         },
         prefName:{
             type:String
