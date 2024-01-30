@@ -171,13 +171,17 @@ exports.updateUserInfo = async (req, res) => {
                     return res.status(400).json({ error: 'Username already exists' });
                 }
             }
+            const { username, password, profilePicture, descriptionMajor, descriptionBio } = req.body;
 
+            
             // Log the data that will be used to update the user
             console.log('Updating user with data:', req.body);
+            
             // Try to update the user with the given ID and data
             const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-                $set: req.body,
+                $set: { username, password, profilePicture, descriptionMajor, descriptionBio },
             }, { new: true }); // Add { new: true } to return the updated user
+
             if (!updatedUser) {
                 // If no user was updated, return a 404 status with an error message
                 return res.status(404).json({ error: 'Error updating user, user not found' });
@@ -263,3 +267,11 @@ exports.unfriendUser = async (req, res) => {
         return res.status(403).json("You can't unfriend yourself");
     }
 }
+
+exports.makeAdmin = async (req, res) => {
+    const { userId } = req.body;
+    // Only allow this API to be called by admins
+    if (req.user.isAdmin) {
+        UserModel.findByIdAndUpdate(userId, { isAdmin: true });
+    }
+};
