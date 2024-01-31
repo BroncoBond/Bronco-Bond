@@ -1,3 +1,4 @@
+import 'package:bronco_bond/src/screens/settingspage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -98,7 +99,10 @@ class UserProfileState extends State<UserProfile>
           IconButton(
             onPressed: () {
               print('tab bar pressed');
-              Navigator.of(context).pop();
+              Navigator.push( 
+                context, 
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
             },
             icon: Icon(Icons.settings_rounded),
             color: const Color(0xFF3B5F43),

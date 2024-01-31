@@ -5,8 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/config.dart';
 
 class SettingsPage extends StatefulWidget {
-  final token;
-  const SettingsPage({@required this.token, Key? key}) : super(key:key);
+  const SettingsPage({super.key});
 
   @override
   State<SettingsPage> createState() => SettingsPageState();
