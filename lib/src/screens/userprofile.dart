@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:bronco_bond/src/config.dart';
+
 
 class UserProfile extends StatefulWidget {
   final userID;
@@ -98,6 +98,7 @@ class UserProfileState extends State<UserProfile>
           IconButton(
             onPressed: () {
               print('tab bar pressed');
+              Navigator.of(context).pop();
             },
             icon: Icon(Icons.settings_rounded),
             color: const Color(0xFF3B5F43),
@@ -163,8 +164,8 @@ class UserProfileState extends State<UserProfile>
   }
 
   Widget buildAboutContent() {
-    return Align(
-      alignment: Alignment.centerLeft,
+    return SingleChildScrollView(
+      //alignment: Alignment.centerLeft,
       child: Padding(
           padding: const EdgeInsets.all(16.0),
           child:
