@@ -1,3 +1,4 @@
+import 'package:bronco_bond/src/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
@@ -18,16 +19,32 @@ class SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.black
+          )
+        ),
+        title: Text('Settings',
+        style: GoogleFonts.raleway(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.black
+        ),
+        ),
       ),
       body: ListView(
         children: <Widget>[
           ListTile(
+            leading: Icon(Icons.account_circle),
             title: Text(
               'Account',
               style: GoogleFonts.raleway(
                 fontSize: 16.0, 
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w500,
               ),
             ),
             onTap: () {
@@ -35,11 +52,12 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
+            leading: Icon(Icons.notifications),
             title: Text(
               'Notifications',
               style: GoogleFonts.raleway(
                 fontSize: 16.0,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             onTap: () {
@@ -51,7 +69,7 @@ class SettingsPageState extends State<SettingsPage> {
               'Privacy',
               style: GoogleFonts.raleway(
                 fontSize: 16.0,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             onTap: () {
@@ -63,7 +81,7 @@ class SettingsPageState extends State<SettingsPage> {
               'Appearance',
               style: GoogleFonts.raleway(
                 fontSize: 16.0,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             onTap: () {
@@ -75,7 +93,7 @@ class SettingsPageState extends State<SettingsPage> {
               'About',
               style: GoogleFonts.raleway(
                 fontSize: 16.0,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             onTap: () {
@@ -88,13 +106,21 @@ class SettingsPageState extends State<SettingsPage> {
       bottomNavigationBar: BottomAppBar(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: ElevatedButton(
+          child: TextButton(
             onPressed: () {
-              // TODO: Perform logout actions
+              //create dump for all user info
               // Navigate to the login screen or clear user session
               print('User logged out');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage())
+              );
             },
-            child: Text('Log Out'),
+            child: Text('Log Out',
+              style: GoogleFonts.raleway(
+                color: Colors.red,
+                fontSize: 15,
+                fontWeight: FontWeight.bold)),
           ),
         ),
       ),
