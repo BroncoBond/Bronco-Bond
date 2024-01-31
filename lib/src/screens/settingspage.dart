@@ -65,8 +65,9 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
+            leading: Icon(Icons.bookmark),
             title: Text(
-              'Privacy',
+              'Bookmarks',
               style: GoogleFonts.raleway(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w500,
@@ -77,8 +78,9 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
+            leading: Icon(Icons.block),
             title: Text(
-              'Appearance',
+              'Blocked Accounts',
               style: GoogleFonts.raleway(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w500,
@@ -89,6 +91,46 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
+            leading: Icon(Icons.smartphone),
+            title: Text(
+              'Device Permissions',
+              style: GoogleFonts.raleway(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            onTap: () {
+              // TODO: Navigate to appearance settings page
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.accessibility),
+            title: Text(
+              'Accessibility',
+              style: GoogleFonts.raleway(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            onTap: () {
+              // TODO: Navigate to appearance settings page
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.translate),
+            title: Text(
+              'Language',
+              style: GoogleFonts.raleway(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            onTap: () {
+              // TODO: Navigate to appearance settings page
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.info),
             title: Text(
               'About',
               style: GoogleFonts.raleway(
@@ -98,6 +140,32 @@ class SettingsPageState extends State<SettingsPage> {
             ),
             onTap: () {
               // TODO: Navigate to about page
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.account_box),
+            title: Text(
+              'Account Status',
+              style: GoogleFonts.raleway(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            onTap: () {
+              // TODO: Navigate to appearance settings page
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.help),
+            title: Text(
+              'Help',
+              style: GoogleFonts.raleway(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            onTap: () {
+              // TODO: Navigate to appearance settings page
             },
           ),
           // Add more settings as needed
