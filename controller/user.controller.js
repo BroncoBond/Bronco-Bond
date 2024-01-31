@@ -12,7 +12,7 @@ exports.register = async (req, res, next) => {
         // Log the success response
         console.log('User registered successfully:', successRes);
 
-        res.json({ status: true, success: 'User Registered Successfully' });
+        res.json({ status: true, success: 'User Registered Successfully' , userId: successRes._id});
     } catch (error) {
         // Log specific errors
         if (error.message === 'Email already exists' || error.message === 'Username already exists') {
