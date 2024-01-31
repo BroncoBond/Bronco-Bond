@@ -1,5 +1,5 @@
 //when running, change to your ip
-const String url = 'http://10.110.208.37:3000';
+const String url = 'http://your-ip:3000';
 const String register = '${url}/user/register';
 const String login = '${url}/user/login';
 const String search = '${url}/user/search';
