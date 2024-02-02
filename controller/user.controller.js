@@ -178,7 +178,7 @@ exports.updateUserInfo = async (req, res) => {
             
             // Try to update the user with the given ID and data
             const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-                $set: { username, password, profilePicture, descriptionMajor, descriptionBio, fullName, prefName},
+                $set: { username, password, profilePicture, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName},
             }, { new: true }); // Add { new: true } to return the updated user
 
             if (!updatedUser) {
