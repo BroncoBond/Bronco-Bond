@@ -43,7 +43,7 @@ class RegisterPageState extends State<RegisterPage> {
         print('Response body: ${response.body}');
 
         if (jsonResponse['status']) {
-          var userID = jsonResponse['userId'];
+          var userID = jsonResponse['_id'];
           print('User ID: $userID');
           Navigator.push(
               context,
