@@ -185,16 +185,13 @@ exports.updateUserInfo = async (req, res) => {
                 // If no user was updated, return a 404 status with an error message
                 return res.status(404).json({ error: 'Error updating user, user not found' });
             }
-            else {
-                res.json({ status: true, success: 'User Update Successfully'});
-            }
         } catch (err) {
             // If there's an error updating the user, log the error and return a 500 status with a detailed error message
             console.error('Error updating user:', err);
             return res.status(500).json({ error: 'Error updating user', details: err });
         }
         // If the user was successfully updated, return a 200 status with a success message
-        res.status(200).json("Account has been updated");
+        res.status(200).json({ status: true, success: 'User Update Successfully'});
     } else {
         // If the user is not authorized to update the account, return a 403 status with an error message
         return res.status(403).json("You can update only your account!");
