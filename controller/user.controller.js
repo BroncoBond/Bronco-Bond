@@ -12,7 +12,7 @@ exports.register = async (req, res, next) => {
         // Log the success response
         console.log('User registered successfully:', successRes);
 
-        res.json({ status: true, success: 'User Registered Successfully' , userId: successRes._id});
+        res.json({ status: true, success: 'User Registered Successfully' , _id: successRes._id});
     } catch (error) {
         // Log specific errors
         if (error.message === 'Email already exists' || error.message === 'Username already exists') {
@@ -122,8 +122,8 @@ exports.getById = async (req, res) => {
 exports.getAllUserIds = async (req, res) => {
     try {
         const users = await User.find({}, '_id'); // fetch only the _id field for all users
-        const userIds = users.map(user => user._id); // extract the _id from each user
-        return res.status(200).json(userIds); // return the array of user IDs
+        const _id = users.map(user => user._id); // extract the _id from each user
+        return res.status(200).json(_id); // return the array of user IDs
     } catch (error) {
         console.error('Error fetching user IDs:', error);
         return res.status(500).json({message: error.message});
@@ -201,7 +201,7 @@ exports.updateUserInfo = async (req, res) => {
 // This function is used to delete a user's account
 exports.deleteAccount = async (req, res) => {
     // Check if the user is authorized to delete the account
-    if (req.body.userId === req.params.id || req.body.isAdmin) {
+    if (req.body._id === req.params.id || req.body.isAdmin) {
         try {
             // Try to delete the user with the given ID
             await User.findByIdAndDelete(req.params.id);
@@ -219,12 +219,12 @@ exports.deleteAccount = async (req, res) => {
 
 // This function is used to friend another user's account
 exports.bondUser = async (req,res) => {
-    if (req.body.userId !== req.params.id) {
+    if (req.body._id !== req.params.id) {
         try {
             const user = await User.findById(req.params.id);
-            const currentUser = await User.findById(req.body.userId);
-            if (!user.bonds.includes(req.body.userId)) {
-                await user.updateOne({ $push: { bonds: req.body.userId}, $inc: { numOfBonds: 1} });
+            const currentUser = await User.findById(req.body._id);
+            if (!user.bonds.includes(req.body._id)) {
+                await user.updateOne({ $push: { bonds: req.body._id}, $inc: { numOfBonds: 1} });
                 await currentUser.updateOne({ $push: { bonds: req.params.id}, $inc: { numOfBonds: 1} });
                 // If the user is trying to friend user, return 200 status with the error
                 return res.status(200).json("User has been friended")
@@ -244,12 +244,12 @@ exports.bondUser = async (req,res) => {
 
 // This function is used to unfriend another user's account
 exports.unfriendUser = async (req, res) => {
-    if (req.body.userId !== req.params.id) {
+    if (req.body._id !== req.params.id) {
         try {
             const user = await User.findById(req.params.id);
-            const currentUser = await User.findById(req.body.userId);
-            if (user.bonds.includes(req.body.userId)) {
-                await user.updateOne({ $pull: { bonds: req.body.userId }, $inc: { numOfBonds: -1 } });
+            const currentUser = await User.findById(req.body._id);
+            if (user.bonds.includes(req.body._id)) {
+                await user.updateOne({ $pull: { bonds: req.body._id }, $inc: { numOfBonds: -1 } });
                 await currentUser.updateOne({ $pull: { bonds: req.params.id }, $inc: { numOfBonds: -1 } });
                 // If the user is successfully unfriended, return a 200 status with a success message
                 return res.status(200).json("User has been unfriended");
@@ -268,9 +268,9 @@ exports.unfriendUser = async (req, res) => {
 }
 
 exports.makeAdmin = async (req, res) => {
-    const { userId } = req.body;
+    const { _id } = req.body;
     // Only allow this API to be called by admins
     if (req.user.isAdmin) {
-        UserModel.findByIdAndUpdate(userId, { isAdmin: true });
+        UserModel.findByIdAndUpdate(_id, { isAdmin: true });
     }
 };
