@@ -51,7 +51,7 @@ const userSchema = new Schema({
         },
         descriptionMajor: {
             type: String,
-            required:true
+            default: "Undeclared"
         },
         descriptionMinor: {
             type: String
@@ -63,7 +63,7 @@ const userSchema = new Schema({
         },
         graduationDate: {
             type: Number,
-            required: true
+            default: new Date().getFullYear()
         }
     },
     {timestamps:true}
