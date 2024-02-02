@@ -171,7 +171,7 @@ exports.updateUserInfo = async (req, res) => {
                     return res.status(400).json({ error: 'Username already exists' });
                 }
             }
-            const { username, password, profilePicture, descriptionMajor, descriptionBio, fullName, prefName} = req.body;
+            const { username, password, profilePicture, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName} = req.body;
 
             // Log the data that will be used to update the user
             console.log('Updating user with data:', req.body);
