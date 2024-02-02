@@ -26,9 +26,9 @@ router.get("/:id", userController.getById);
 router.delete("/:id", userController.deleteAccount);
 
 //friend User
-router.get("/bond/:id", userController.bondUser);
+router.put("/bond/:id", userController.bondUser);
 
 //unfriend User
-router.get("/unBond/:id", userController.unfriendUser);
+router.delete("/unBond/:id", userController.unfriendUser);
 
 module.exports = router;
