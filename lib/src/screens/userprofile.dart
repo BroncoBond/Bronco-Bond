@@ -1,3 +1,4 @@
+import 'package:bronco_bond/src/screens/settingspage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -5,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:bronco_bond/src/config.dart';
 
 class UserProfile extends StatefulWidget {
   final userID;
@@ -98,14 +100,11 @@ class UserProfileState extends State<UserProfile>
         actions: [
           IconButton(
             onPressed: () {
-              /*
+              print('tab bar pressed');
               Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => 
-                    // Settings page
-              ),
-              ); */
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
             },
             icon: Icon(Icons.settings_rounded),
             color: const Color(0xFF3B5F43),
@@ -171,8 +170,8 @@ class UserProfileState extends State<UserProfile>
   }
 
   Widget buildAboutContent() {
-    return Align(
-      alignment: Alignment.centerLeft,
+    return SingleChildScrollView(
+      //alignment: Alignment.centerLeft,
       child: Padding(
           padding: const EdgeInsets.all(16.0),
           child:
