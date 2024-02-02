@@ -40,10 +40,15 @@ class RegisterPageState extends State<RegisterPage> {
         var jsonResponse = jsonDecode(response.body);
 
         print(jsonResponse['status']);
+        print('Response body: ${response.body}');
 
         if (jsonResponse['status']) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const UserInfoPage()));
+          var userID = jsonResponse['userId'];
+          print('User ID: $userID');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UserInfoPage(userID: userID)));
         } else {
           print("SomeThing Went Wrong");
         }
