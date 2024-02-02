@@ -21,6 +21,7 @@ class UserProfileState extends State<UserProfile>
   late int numOfBonds = 0;
   late String descriptionMajor = '';
   late String descriptionBio = '';
+  late String graduationDate = '';
   late TabController _tabController;
   late Future<SharedPreferences> prefsFuture;
   late SharedPreferences prefs;
@@ -62,6 +63,7 @@ class UserProfileState extends State<UserProfile>
           numOfBonds = userData['user']['numOfBonds'] ?? 0;
           descriptionMajor = userData['user']['descriptionMajor'] ?? 'Unknown';
           descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
+          graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
         });
 
         // Check if this is the current user or not
@@ -421,7 +423,7 @@ class UserProfileState extends State<UserProfile>
                 SizedBox(width: 10),
                 Icon(Icons.school_rounded),
                 SizedBox(width: 10),
-                Text("Class of 2027 (Spring)"),
+                Text('Class of $graduationDate'),
               ],
             ),
           ),

@@ -151,6 +151,64 @@ const List<String> minors = [
   "Zoology",
 ]; // List of minors (implement later)
 
+const List<String> years = [
+  "2034",
+  "2033",
+  "2032",
+  "2031",
+  "2030",
+  "2029",
+  "2028",
+  "2027",
+  "2026",
+  "2025",
+  "2024",
+  "2023",
+  "2022",
+  "2021",
+  "2020",
+  "2019",
+  "2018",
+  "2017",
+  "2016",
+  "2015",
+  "2014",
+  "2013",
+  "2012",
+  "2011",
+  "2010",
+  "2009",
+  "2008",
+  "2007",
+  "2006",
+  "2005",
+  "2004",
+  "2003",
+  "2002",
+  "2001",
+  "2000",
+  "1999",
+  "1998",
+  "1997",
+  "1996",
+  "1995",
+  "1994",
+  "1993",
+  "1992",
+  "1991",
+  "1990",
+  "1989",
+  "1988",
+  "1987",
+  "1986",
+  "1985",
+  "1984",
+  "1983",
+  "1982",
+  "1981",
+  "1980"
+];
+
 /// Displays detailed information about a SampleItem.
 class UserInfoPage extends StatefulWidget {
   final String userID;
@@ -166,21 +224,25 @@ class UserInfoPageState extends State<UserInfoPage> {
   TextEditingController bioController = TextEditingController();
 
   bool displayNameOnProfile = false;
-  bool changingMajor = false;
   String? _selectedMajor;
   String? _selectedMinor;
+  String? _selectedGradDate;
 
   void addInfoToUser(BuildContext context, String userID) async {
     print('User ID: $userID');
     // check if major is empty or null since it is required
-    if (_selectedMajor != null && _selectedMajor!.isNotEmpty) {
+    if (_selectedMajor != null &&
+        _selectedMajor!.isNotEmpty &&
+        _selectedGradDate != null &&
+        _selectedGradDate!.isNotEmpty) {
       var regBody = {
         "_id": userID,
         "fullName": fullNameController.text,
         "prefName": prefNameController.text,
         "descriptionBio": bioController.text,
         "descriptionMajor": _selectedMajor,
-        "descriptionMinor": _selectedMinor
+        "descriptionMinor": _selectedMinor,
+        "graduationDate": _selectedGradDate
       };
       print("major selected and body created");
       print(regBody);
@@ -206,7 +268,7 @@ class UserInfoPageState extends State<UserInfoPage> {
         print('Error during HTTP request: $e');
       }
     } else {
-      print('Major is empty');
+      print('Major or Grad date is empty');
     }
   }
 
@@ -238,6 +300,7 @@ class UserInfoPageState extends State<UserInfoPage> {
           children: [
             SizedBox(height: 8.0),
             buildTextField("Full Name", fullNameController),
+            SizedBox(height: 8.0),
             buildTextField("Preferred Name", prefNameController),
             buildCheckBox("Display Name on Profile", displayNameOnProfile,
                 (value) {
@@ -252,15 +315,17 @@ class UserInfoPageState extends State<UserInfoPage> {
                 _selectedMajor = newValue;
               });
             }),
-            buildCheckBox("Planning on Changing Majors", changingMajor,
-                (value) {
-              setState(() {
-                changingMajor = value ?? false;
-              });
-            }),
+            SizedBox(height: 8.0),
             buildDropDown("Minor", minors, _selectedMinor, (newValue) {
               setState(() {
                 _selectedMinor = newValue;
+              });
+            }),
+            SizedBox(height: 8.0),
+            buildDropDown("Expected Graduation Year*", years, _selectedGradDate,
+                (newValue) {
+              setState(() {
+                _selectedGradDate = newValue;
               });
             }),
             const SizedBox(height: 10),
