@@ -62,7 +62,7 @@ const userSchema = new Schema({
             default:"Im new BroncoBond!"
         },
         graduationDate: {
-            type: Number,
+            type: String,
             default: new Date().getFullYear()
         }
     },
