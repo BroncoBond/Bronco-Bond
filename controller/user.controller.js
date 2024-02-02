@@ -173,7 +173,6 @@ exports.updateUserInfo = async (req, res) => {
             }
             const { username, password, profilePicture, descriptionMajor, descriptionBio, fullName, prefName} = req.body;
 
-            
             // Log the data that will be used to update the user
             console.log('Updating user with data:', req.body);
             
@@ -185,6 +184,9 @@ exports.updateUserInfo = async (req, res) => {
             if (!updatedUser) {
                 // If no user was updated, return a 404 status with an error message
                 return res.status(404).json({ error: 'Error updating user, user not found' });
+            }
+            else {
+                res.json({ status: true, success: 'User Update Successfully'});
             }
         } catch (err) {
             // If there's an error updating the user, log the error and return a 500 status with a detailed error message
