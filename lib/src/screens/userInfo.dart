@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'package:bronco_bond/src/config.dart';
+import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/screens/interests.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 const List<String> majors = [
   "Aerospace Engineering",
@@ -149,7 +153,8 @@ const List<String> minors = [
 
 /// Displays detailed information about a SampleItem.
 class UserInfoPage extends StatefulWidget {
-  const UserInfoPage({super.key});
+  final String userID;
+  const UserInfoPage({Key? key, required this.userID}) : super(key: key);
 
   @override
   UserInfoPageState createState() => UserInfoPageState();
@@ -165,15 +170,44 @@ class UserInfoPageState extends State<UserInfoPage> {
   String? _selectedMajor;
   String? _selectedMinor;
 
-  void addInfoToUser(BuildContext context) async {
-    // add backend functionality here
+  void addInfoToUser(BuildContext context, String userID) async {
+    print('User ID: $userID');
+    // check if major is empty or null since it is required
+    if (_selectedMajor != null && _selectedMajor!.isNotEmpty) {
+      var regBody = {
+        "_id": userID,
+        "fullName": fullNameController.text,
+        "prefName": prefNameController.text,
+        "descriptionBio": bioController.text,
+        "descriptionMajor": _selectedMajor,
+        "descriptionMinor": _selectedMinor
+      };
+      print("major selected and body created");
+      print(regBody);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const InterestsPage(),
-      ),
-    );
+      try {
+        var response = await http.put(Uri.parse('$updateUser/$userID'),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode(regBody));
+
+        print('Response body: ${response.body}');
+        var jsonResponse = jsonDecode(response.body);
+
+        print("http request made");
+        print(jsonResponse['status']);
+
+        if (jsonResponse['status']) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const InterestsPage()));
+        } else {
+          print("Something went wrong");
+        }
+      } catch (e) {
+        print('Error during HTTP request: $e');
+      }
+    } else {
+      print('Major is empty');
+    }
   }
 
   @override
@@ -475,7 +509,7 @@ class UserInfoPageState extends State<UserInfoPage> {
           ),
           child: TextButton(
             onPressed: () {
-              addInfoToUser(context);
+              addInfoToUser(context, widget.userID);
             },
             child: Text(
               label,

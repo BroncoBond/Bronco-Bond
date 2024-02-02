@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:bronco_bond/src/config.dart';
 
 class UserProfile extends StatefulWidget {
   final userID;
@@ -97,7 +96,14 @@ class UserProfileState extends State<UserProfile>
         actions: [
           IconButton(
             onPressed: () {
-              print('tab bar pressed');
+              /*
+              Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => 
+                    // Settings page
+              ),
+              ); */
             },
             icon: Icon(Icons.settings_rounded),
             color: const Color(0xFF3B5F43),
