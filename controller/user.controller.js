@@ -143,7 +143,7 @@ exports.getAllUserData = async (req, res) => {
 // This function is used to update a user's information
 exports.updateUserInfo = async (req, res) => {
     // Check if the user is authorized to update the account
-    if (req.body.userId === req.params.id || req.body.isAdmin) {
+    if (req.body._id === req.params.id || req.body.isAdmin) {
         // If a new password is provided, hash it before storing it
         if (req.body.password) {
             try {
@@ -156,7 +156,7 @@ exports.updateUserInfo = async (req, res) => {
         }
         try {
             // Try to find the user with the given ID
-            const user = await User.findById(req.params.id);
+            const user = await User.findById(req.body._id);
             if (!user) {
                 // If no user is found, return a 404 status with an error message
                 return res.status(404).json({ error: 'User not found' });
