@@ -24,9 +24,11 @@ class UserProfileState extends State<UserProfile>
   late String descriptionMajor = '';
   late String descriptionBio = '';
   late String graduationDate = '';
+  late List<dynamic> bonds = [];
   late TabController _tabController;
   late Future<SharedPreferences> prefsFuture;
   late SharedPreferences prefs;
+  bool isBonded = false;
 
   @override
   void initState() {
@@ -36,8 +38,9 @@ class UserProfileState extends State<UserProfile>
 
     prefsFuture.then((value) {
       prefs = value;
+      String? currentUserID = prefs.getString('userID');
       // Get user data using the userID
-      fetchDataUsingUserID(widget.userID, prefs);
+      fetchDataUsingUserID(widget.userID, currentUserID);
     });
     print('UserID: ${widget.userID}');
   }
@@ -53,7 +56,7 @@ class UserProfileState extends State<UserProfile>
   }
 
   Future<void> fetchDataUsingUserID(
-      String userID, SharedPreferences prefs) async {
+      String userID, String? currentUserID) async {
     try {
       final response = await http.get(Uri.parse('${getUserByID}/$userID'));
 
@@ -66,18 +69,61 @@ class UserProfileState extends State<UserProfile>
           descriptionMajor = userData['user']['descriptionMajor'] ?? 'Unknown';
           descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
           graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
+          bonds = userData['user']['bonds'] ?? [];
+          isBonded = bonds.contains(currentUserID);
         });
-
-        // Check if this is the current user or not
-        if (userID == prefs.getString('userID')) {
-          print('This is the current user\'s profile');
-        } else {
-          print('This is someone else\'s profile');
-        }
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
       }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
+
+  void bond(String userID, String? currentUserID) async {
+    // User id of the person you want to follow in the body
+    var regBody = {"_id": userID};
+
+    try {
+      // Current user id is in route
+      print('Current User: $currentUserID');
+      print('User you want to follow: $userID');
+
+      var response = await http.put(Uri.parse('$bondUser/$currentUserID'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(regBody));
+
+      print('${response.body}');
+
+      print('Now following user: $userID');
+      setState(() {
+        isBonded = true;
+      });
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
+
+  void unbond(String userID, String? currentUserID) async {
+    // User id of the person you want to follow in the body
+    var regBody = {"_id": userID};
+
+    try {
+      // Current user id is in route
+      print('Current User: $currentUserID');
+      print('User you want to follow: $userID');
+
+      var response = await http.delete(Uri.parse('$unbondUser/$currentUserID'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(regBody));
+
+      print('${response.body}');
+
+      print('Unfollowed user: $userID');
+      setState(() {
+        isBonded = false;
+      });
     } catch (e) {
       print('Error fetching user data: $e');
     }
@@ -135,13 +181,15 @@ class UserProfileState extends State<UserProfile>
   }
 
   Widget buildUserProfile(SharedPreferences prefs) {
-    bool isCurrentUserProfile = widget.userID == prefs.getString('userID');
+    String? currentUserID = prefs.getString('userID');
+    bool isCurrentUserProfile = widget.userID == currentUserID;
     return Column(
       children: [
         buildProfileHeader(),
         buildInfoBar(),
         // Check if this is the current user, if not then show a follow button
-        if (!isCurrentUserProfile) buildOtherProfileButtons(),
+        if (!isCurrentUserProfile)
+          buildOtherProfileButtons(widget.userID, currentUserID),
         TabBar(
           labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           labelColor: Color(0xFF3B5F43),
@@ -451,7 +499,7 @@ class UserProfileState extends State<UserProfile>
     );
   }
 
-  Widget buildOtherProfileButtons() {
+  Widget buildOtherProfileButtons(String userID, String? currentUserID) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -462,20 +510,22 @@ class UserProfileState extends State<UserProfile>
             height: 40,
             child: ElevatedButton(
               onPressed: () {
-                // Add your follow button logic here
+                isBonded
+                    ? unbond(userID, currentUserID)
+                    : bond(userID, currentUserID);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF3B5F43),
+                backgroundColor: isBonded ? Colors.grey : Color(0xFF3B5F43),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
               child: Text(
-                "Bond",
+                isBonded ? "Unbond" : "Bond",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: isBonded ? Colors.black : Colors.white,
                 ),
               ),
             ),

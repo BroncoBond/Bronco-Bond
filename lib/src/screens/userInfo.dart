@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/screens/interests.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:velocity_x/velocity_x.dart';
 
 const List<String> majors = [
   "Aerospace Engineering",
