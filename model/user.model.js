@@ -26,6 +26,10 @@ const userSchema = new Schema({
             min: 6,
             required: true
         },
+        is_online:{
+            type:String,
+            default: '0'
+        },
         fullName:{
             type:String,
             lowercase:true
@@ -99,6 +103,6 @@ userSchema.statics.searchUserByEmail = async function (email) {
 };
 
 
-const UserModel = db.model('user',userSchema);
+const userModel = db.model('user',userSchema);
 
-module.exports = UserModel;
+module.exports = userModel;
