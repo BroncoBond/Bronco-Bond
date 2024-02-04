@@ -32,7 +32,12 @@
     "nodemon": "^3.0.3",
     "socket.io": "^4.7.4"
   },
+<<<<<<< HEAD
   "description": "BroncoBond",
   "devDependencies": {},
   "keywords": []
+=======
+  "keywords": [],
+  "description": ""
+>>>>>>> 485a4bbf7590dbe13542d1c2a883b5ff9faef539
 }
