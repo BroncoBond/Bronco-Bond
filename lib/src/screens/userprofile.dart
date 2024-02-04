@@ -7,6 +7,7 @@ import 'package:bronco_bond/src/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:bronco_bond/src/config.dart';
+import 'dart:async';
 
 class UserProfile extends StatefulWidget {
   final userID;
@@ -28,6 +29,7 @@ class UserProfileState extends State<UserProfile>
   late TabController _tabController;
   late Future<SharedPreferences> prefsFuture;
   late SharedPreferences prefs;
+  late Timer timer;
   bool isBonded = false;
 
   @override
@@ -41,6 +43,10 @@ class UserProfileState extends State<UserProfile>
       String? currentUserID = prefs.getString('userID');
       // Get user data using the userID
       fetchDataUsingUserID(widget.userID, currentUserID);
+      // Timer to fetch data periodically
+      timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+        fetchDataUsingUserID(widget.userID, currentUserID);
+      });
     });
     print('UserID: ${widget.userID}');
   }
@@ -51,6 +57,7 @@ class UserProfileState extends State<UserProfile>
 
   @override
   void dispose() {
+    timer.cancel();
     _tabController.dispose();
     super.dispose();
   }
