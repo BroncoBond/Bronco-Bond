@@ -59,13 +59,20 @@ exports.login = async(req,res,next)=>{
         }
 
         // If the passwords match, create a token for the user
-        let tokenData = {_id:user._id,email:user.email,username:user.username};
+        let tokenData = {_id:user._id};
+
+        // If the passwords match, create userInfo to save data to be send
+        const userInfo = {
+            email: user.email,
+            username: user.username,
+            profilePicture: user.profilePicture
+        };
 
         // Generate the token
         const token = await UserService.generateToken(tokenData, process.env.SECRET_KEY, '10m')
 
         // If the token was successfully generated, return a 200 status with the token
-        res.status(200).json({status:true, token:token})
+        res.status(200).json({status:true, user: userInfo, token:token})
 
     } catch (error) {
         // If there's an error during login, log the error and pass it to the next middleware

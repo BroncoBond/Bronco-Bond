@@ -59,14 +59,12 @@ class UserService{
     }
 } */
 
-    static async generateToken(user,secretKey, jwt_expre) {
+    static async generateToken(data,secretKey, jwt_expre) {
         try {
             const tokenData = {
-                _id: user._id,
-                email: user.email,
-                username: user.username
+                data
             };
-            return jwt.sign(tokenData, secretKey, {expiresIn:jwt_expre});
+            return jwt.sign(data, secretKey, {expiresIn:jwt_expre});
         } catch (error) {
             throw error;
         }
