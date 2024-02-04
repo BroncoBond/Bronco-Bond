@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const userController = require("../controller/user.controller");
+const auth = require('../middleware/auth');
 
 //register User
 router.post('/register', userController.register);
@@ -30,5 +31,7 @@ router.put("/bond/:id", userController.bondUser);
 
 //unfriend User
 router.delete("/unBond/:id", userController.unfriendUser);
+
+router.post("/logout", auth.isAuth, userController.logout);
 
 module.exports = router;

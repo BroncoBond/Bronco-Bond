@@ -68,7 +68,8 @@ const userSchema = new Schema({
         graduationDate: {
             type: String,
             default: new Date().getFullYear()
-        }
+        },
+        tokens: [{ type: Object }]
     },
     {timestamps:true}
 );

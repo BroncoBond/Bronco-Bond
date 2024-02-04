@@ -1,6 +1,7 @@
 const UserService = require("../services/user.services");
 const bcrypt = require("bcrypt");
 const User = require("../model/user.model");
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 exports.register = async (req, res, next) => {
@@ -61,15 +62,18 @@ exports.login = async(req,res,next)=>{
         // If the passwords match, create a token for the user
         let tokenData = {_id:user._id};
 
+        // Generate the token
+        const token = await UserService.generateToken(tokenData, process.env.JWT_KEY, '1d')
+
+        // Replace the user's existing tokens with new token
+        await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
+
         // If the passwords match, create userInfo to save data to be send
         const userInfo = {
             email: user.email,
             username: user.username,
             profilePicture: user.profilePicture
         };
-
-        // Generate the token
-        const token = await UserService.generateToken(tokenData, process.env.SECRET_KEY, '10m')
 
         // If the token was successfully generated, return a 200 status with the token
         res.status(200).json({status:true, user: userInfo, token:token})
@@ -281,3 +285,23 @@ exports.makeAdmin = async (req, res) => {
         UserModel.findByIdAndUpdate(_id, { isAdmin: true });
     }
 };
+
+exports.logout = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization.split(' ')[1];
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: 'Authorization fail!' });
+    }
+
+    const tokens = req.user.tokens;
+
+    const newTokens = tokens.filter(t => t.token !== token);
+
+    await User.findByIdAndUpdate(req.user._id, { tokens: newTokens });
+    res.json({ success: true, message: 'Sign out successfully!' });
+  }
+};
+
+
