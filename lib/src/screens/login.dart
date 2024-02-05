@@ -49,7 +49,7 @@ class LoginPageState extends State<LoginPage> {
         print('${response.statusCode}');
         print('${response.body}');
         if (response.statusCode == 200) {
-          var jsonResponse = jsonDecode(response.body);
+          Map<String, dynamic> jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status']) {
             var myToken = jsonResponse['token'];
             var myUserID = getUserIDFromToken(myToken);
