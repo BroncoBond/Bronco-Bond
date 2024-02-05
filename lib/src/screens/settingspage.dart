@@ -4,36 +4,75 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
   @override
   State<SettingsPage> createState() => SettingsPageState();
-
 }
 
 class SettingsPageState extends State<SettingsPage> {
-  
-@override
+  void logoutUser(BuildContext context) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        print('Token not in SharedPreferences');
+        return;
+      }
+
+      var response = await http.post(
+        Uri.parse(logout),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      print('${response.statusCode}');
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+        if (jsonResponse['status']) {
+          print('Logging out.');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LoginPage(),
+            ),
+          );
+        } else {
+          print('Logout failed: ${jsonResponse['message']}');
+          // Handle login failure
+          // You might want to show an error message to the user
+        }
+      } else {
+        print('HTTP request failed with status: ${response.statusCode}');
+        // Handle other HTTP status codes
+        // You might want to show an error message to the user
+      }
+    } catch (e) {
+      print('Error during HTTP request: $e');
+      // Handle other exceptions
+      // You might want to show an error message to the user
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.black
-          )
-        ),
-        title: Text('Settings',
-        style: GoogleFonts.raleway(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.black
-        ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black)),
+        title: Text(
+          'Settings',
+          style: GoogleFonts.raleway(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
         ),
       ),
       body: ListView(
@@ -43,7 +82,7 @@ class SettingsPageState extends State<SettingsPage> {
             title: Text(
               'Account',
               style: GoogleFonts.raleway(
-                fontSize: 16.0, 
+                fontSize: 16.0,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -178,21 +217,16 @@ class SettingsPageState extends State<SettingsPage> {
             onPressed: () {
               //create dump for all user info
               // Navigate to the login screen or clear user session
-              print('User logged out');
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage())
-              );
+              logoutUser(context);
             },
             child: Text('Log Out',
-              style: GoogleFonts.raleway(
-                color: Colors.red,
-                fontSize: 15,
-                fontWeight: FontWeight.bold)),
+                style: GoogleFonts.raleway(
+                    color: Colors.red,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold)),
           ),
         ),
       ),
     );
   }
 }
- 

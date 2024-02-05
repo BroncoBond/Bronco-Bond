@@ -43,10 +43,10 @@ class UserProfileState extends State<UserProfile>
       String? currentUserID = prefs.getString('userID');
       // Get user data using the userID
       fetchDataUsingUserID(widget.userID, currentUserID);
-      // Timer to fetch data periodically
-      timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      // Timer to fetch data periodically (commented out so backend isn't constantly running during testing)
+      /*timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
         fetchDataUsingUserID(widget.userID, currentUserID);
-      });
+      });*/
     });
     print('UserID: ${widget.userID}');
   }
