@@ -47,6 +47,7 @@ class LoginPageState extends State<LoginPage> {
             body: jsonEncode(regBody));
 
         print('${response.statusCode}');
+        print('${response.body}');
         if (response.statusCode == 200) {
           var jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status']) {
@@ -71,8 +72,24 @@ class LoginPageState extends State<LoginPage> {
           }
         } else {
           print('HTTP request failed with status: ${response.statusCode}');
-          // Handle other HTTP status codes
-          // You might want to show an error message to the user
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Login Failed'),
+                content:
+                    Text('Please check your email and password and try again.'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
         }
       } catch (e) {
         print('Error during HTTP request: $e');
@@ -83,6 +100,23 @@ class LoginPageState extends State<LoginPage> {
       // Handle case where email or password is empty
       // You might want to show an error message to the user
       print('Email or password is empty');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Login Failed'),
+            content: Text('Email or password is empty. Please try again.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
