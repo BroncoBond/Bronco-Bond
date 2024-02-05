@@ -68,15 +68,8 @@ exports.login = async(req,res,next)=>{
         // Replace the user's existing tokens with new token
         await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
 
-        // If the passwords match, create userInfo to save data to be send
-        const userInfo = {
-            email: user.email,
-            username: user.username,
-            profilePicture: user.profilePicture
-        };
-
         // If the token was successfully generated, return a 200 status with the token
-        res.status(200).json({status:true, user: userInfo, token:token})
+        res.status(200).json({status:true, token:token})
 
     } catch (error) {
         // If there's an error during login, log the error and pass it to the next middleware
