@@ -285,7 +285,7 @@ exports.logout = async (req, res) => {
     if (!token) {
       return res
         .status(401)
-        .json({ success: false, message: 'Authorization fail!' });
+        .json({ status: false, message: 'Authorization fail!' });
     }
 
     const tokens = req.user.tokens;
@@ -293,7 +293,7 @@ exports.logout = async (req, res) => {
     const newTokens = tokens.filter(t => t.token !== token);
 
     await User.findByIdAndUpdate(req.user._id, { tokens: newTokens });
-    res.json({ success: true, message: 'Sign out successfully!' });
+    res.json({ status: true, message: 'Sign out successfully!' });
   }
 };
 

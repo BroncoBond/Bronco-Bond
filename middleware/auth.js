@@ -14,25 +14,25 @@ exports.isAuth = async (req, res, next) => {
       console.log('User:', user);
 
       if (!user) {
-        return res.json({ success: false, message: 'unauthorized access!' });
+        return res.json({ status: false, message: 'unauthorized access!' });
       }
 
       req.user = user;
       next();
     } catch (error) {
       if (error.name === 'JsonWebTokenError') {
-        return res.json({ success: false, message: 'unauthorized access!' });
+        return res.json({ status: false, message: 'unauthorized access!' });
       }
       if (error.name === 'TokenExpiredError') {
         return res.json({
-          success: false,
+          status: false,
           message: 'sesson expired try sign in!',
         });
       }
 
-      res.res.json({ success: false, message: 'Internal server error!' });
+      res.res.json({ status: false, message: 'Internal server error!' });
     }
   } else {
-    res.json({ success: false, message: 'unauthorized access!' });
+    res.json({ status: false, message: 'unauthorized access!' });
   }
 };
