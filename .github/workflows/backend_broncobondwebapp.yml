@@ -59,4 +59,4 @@ jobs:
           app-name: 'BroncoBondWebApp'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_58A679EAB45F46F98698192F50DBD6FD }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DD1340DC2C394FC3B118360754E7860B }}
