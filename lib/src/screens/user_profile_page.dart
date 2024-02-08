@@ -57,7 +57,7 @@ class UserProfileState extends State<UserProfile>
 
   @override
   void dispose() {
-    timer.cancel();
+    //timer.cancel();
     _tabController.dispose();
     super.dispose();
   }
@@ -140,37 +140,71 @@ class UserProfileState extends State<UserProfile>
   Widget build(BuildContext context) {
     //bool isCurrentUserProfile = widget.userID == prefs?.getString('userID');
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'BroncoBond',
-          style: GoogleFonts.raleway(
-            textStyle: Theme.of(context).textTheme.displaySmall,
-            fontSize: 25,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF3B5F43),
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              print('tab bar pressed');
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsPage()),
-              );
-            },
-            icon: Icon(Icons.settings_rounded),
-            color: const Color(0xFF3B5F43),
-          ),
-        ],
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: FutureBuilder(
+          future: prefsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              prefs = snapshot.data as SharedPreferences;
+              String? currentUserID = prefs.getString('userID');
+              bool isCurrentUserProfile = widget.userID == currentUserID;
+              if (isCurrentUserProfile) {
+                return AppBar(
+                  title: Text(
+                    'BroncoBond',
+                    textAlign: TextAlign.left,
+                    style: GoogleFonts.raleway(
+                      textStyle: Theme.of(context).textTheme.displaySmall,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF3B5F43),
+                    ),
+                  ),
+                  leadingWidth: 0.0,
+                  actions: [
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsPage(),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.settings_rounded),
+                      color: const Color(0xFF3B5F43),
+                    ),
+                  ],
+                );
+              } else {
+                return AppBar(
+                  title: Text(
+                    'BroncoBond',
+                    textAlign: TextAlign.left,
+                    style: GoogleFonts.raleway(
+                      textStyle: Theme.of(context).textTheme.displaySmall,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF3B5F43),
+                    ),
+                  ),
+                  leadingWidth: 40.0,
+                  leading: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.black,
+                    ),
+                  ),
+                );
+              }
+            } else {
+              return SizedBox(); // Return empty box while loading
+            }
           },
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.black,
-          ),
         ),
       ),
       body: FutureBuilder(
@@ -397,7 +431,7 @@ class UserProfileState extends State<UserProfile>
               ],
             ),
           ),
-          SizedBox(width: 40),
+          SizedBox(width: 50),
           // SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
