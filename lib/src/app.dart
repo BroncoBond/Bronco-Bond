@@ -3,9 +3,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'screens/login.dart';
-import 'screens/signin.dart';
-import 'screens/interests.dart';
+import 'screens/login_page.dart';
+import 'screens/welcome_page.dart';
+import 'screens/interests_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

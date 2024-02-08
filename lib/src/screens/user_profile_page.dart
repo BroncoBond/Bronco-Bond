@@ -415,24 +415,38 @@ class UserProfileState extends State<UserProfile>
     if (label == 'Bonds') {
       return Column(
         children: [
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FriendsListPage(),
-                ),
-              );
-            },
-            child: Text(
-              value.toString(),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+          ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FriendsListPage(),
+                  ),
+                );
+              },
+              style: ButtonStyle(
+                padding:
+                    MaterialStateProperty.all(EdgeInsets.zero), // No padding
+                backgroundColor: MaterialStateProperty.all(Colors.white),
+                shadowColor: MaterialStateProperty.all(Colors.transparent),
+                elevation: MaterialStateProperty.all(0),
               ),
-            ),
-          ),
-          Text(label),
+              child: Column(
+                children: [
+                  Text(
+                    value.toString(),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                  Text(
+                    label,
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w400),
+                  ),
+                ],
+              )),
         ],
       );
     } else {
@@ -445,7 +459,10 @@ class UserProfileState extends State<UserProfile>
               fontWeight: FontWeight.bold,
             ),
           ),
-          Text(label),
+          Text(
+            label,
+            style: TextStyle(fontWeight: FontWeight.w400),
+          ),
         ],
       );
     }

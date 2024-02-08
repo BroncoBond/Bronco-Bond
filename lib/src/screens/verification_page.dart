@@ -1,4 +1,4 @@
-import 'package:bronco_bond/src/screens/sign_in_page.dart';
+import 'package:bronco_bond/src/screens/welcome_page.dart';
 import 'package:flutter/material.dart';
 
 /// Displays detailed information about a SampleItem.

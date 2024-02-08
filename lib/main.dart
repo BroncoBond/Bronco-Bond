@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:bronco_bond/src/screens/signin.dart';
-import 'package:bronco_bond/src/screens/navbar.dart';
+import 'package:bronco_bond/src/screens/welcome_page.dart';
+import 'package:bronco_bond/src/screens/nav_bar.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
