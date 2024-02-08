@@ -34,6 +34,15 @@ jobs:
         with:
           name: node-app
           path: release.zip
+          
+      - name: Use the MONG_URL
+        run: echo "My MONG_URL is ${{ secrets.MONG_URL }}"
+
+      - name: Use the SECRET_KEY
+        run: echo "My SECRET_KEY is ${{ secrets.SECRET_KEY }}"
+
+      - name: Use the JWT_KEY
+        run: echo "My JWT_KEY is ${{ secrets.JWT_KEY }}"
 
   deploy:
     runs-on: ubuntu-latest
@@ -59,12 +68,3 @@ jobs:
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FCA87D5F7B5A4FF0BA9C85DF6D552F24 }}
-          
-      - name: Use the MONG_URL
-        run: echo "My MONG_URL is ${{ secrets.MONG_URL }}"
-
-      - name: Use the SECRET_KEY
-        run: echo "My SECRET_KEY is ${{ secrets.SECRET_KEY }}"
-
-      - name: Use the JWT_KEY
-        run: echo "My JWT_KEY is ${{ secrets.JWT_KEY }}"
