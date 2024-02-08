@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bronco_bond/src/screens/welcome_page.dart';
 import 'package:bronco_bond/src/screens/user_profile_page.dart';
 import 'package:flutter/material.dart';
@@ -49,29 +51,22 @@ class FriendsListPageState extends State<FriendsListPage> {
     }
   }
 
-  Future<List<String>> fetchUsernames(List<dynamic> userIDs) async {
-    List<String> usernames = [];
-    for (var userID in userIDs) {
-      try {
-        final response = await http.get(Uri.parse('${getUserByID}/$userID'));
+  Future<Map<String, dynamic>> fetchUsernames(String userID) async {
+    try {
+      final response = await http.get(Uri.parse('${getUserByID}/$userID'));
 
-        if (response.statusCode == 200) {
-          final userData = json.decode(response.body);
-          final username = userData['user']['username'] ?? 'Unknown';
-          usernames.add(username);
-        } else {
-          print(
-              'Failed to fetch user data. Status code: ${response.statusCode}');
-          print('Response body: ${response.body}');
-          usernames.add('Unknown');
-        }
-      } catch (e) {
-        print('Error fetching user data: $e');
-        usernames.add('Unknown');
+      if (response.statusCode == 200) {
+        final userData = json.decode(response.body);
+        return userData;
+      } else {
+        print('Failed to fetch user data. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        return {};
       }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      return {};
     }
-
-    return usernames;
   }
 
   @override
@@ -167,24 +162,31 @@ class FriendsListPageState extends State<FriendsListPage> {
   }
 
   Widget buildFriendsTab(List<dynamic> bonds) {
+    if (bonds.isEmpty) {
+      return const Center(
+        child: Text('No friends found'),
+      );
+    }
     return FutureBuilder(
-      future: fetchUsernames(bonds),
-      builder: (context, snapshot) {
+      future: Future.wait(bonds.map((bond) => fetchUsernames(bond))),
+      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return Container(
+            child: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
+              ),
+            ),
+          );
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
-        } else if (snapshot.hasData) {
-          List<String>? usernames = snapshot.data as List<String>;
-
-          if (usernames.isEmpty) {
-            return Center(child: Text('No friends found'));
-          }
+        } else {
           return ListView.builder(
-            //shrinkWrap: true,
-            itemCount: usernames.length,
+            itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              final friendUsername = usernames[index];
+              final userData = snapshot.data![index];
+              final profilePicture = userData['user']['profilePicture'];
+              final username = userData['user']['username'];
               return MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: InkWell(
@@ -199,17 +201,22 @@ class FriendsListPageState extends State<FriendsListPage> {
                         ? Colors.grey.withOpacity(0.5) // Grey when tapped
                         : null, // Default background color when not tapped
                     child: ListTile(
-                      title: Text(friendUsername,
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w400)),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        backgroundImage: profilePicture != null &&
+                                profilePicture != ''
+                            ? MemoryImage(decodeProfilePicture(profilePicture))
+                            : const AssetImage(
+                                    'assets/images/user_profile_icon.png')
+                                as ImageProvider,
+                      ),
+                      title: Text(username ?? 'Unknown'),
                     ),
                   ),
                 ),
               );
             },
           );
-        } else {
-          return SizedBox();
         }
       },
     );
@@ -221,7 +228,17 @@ class FriendsListPageState extends State<FriendsListPage> {
       MaterialPageRoute(builder: (context) => UserProfile(userID: userID)),
     );
   }
+
+  Uint8List decodeProfilePicture(dynamic profilePicture) {
+    List<int> profilePictureData =
+        List<int>.from(profilePicture['data']['data']);
+    List<int> decodedImageBytes =
+        base64Decode(String.fromCharCodes(profilePictureData));
+    return Uint8List.fromList(decodedImageBytes);
+  }
 }
+
+
 
 
 /*return ListView.builder(
