@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:bronco_bond/src/screens/search_page.dart';
 import 'package:bronco_bond/src/screens/home_page.dart';
-import 'package:bronco_bond/src/screens/chat.dart';
-import 'package:bronco_bond/src/screens/events.dart';
+import 'package:bronco_bond/src/screens/chat_page.dart';
+import 'package:bronco_bond/src/screens/events_page.dart';
 import 'package:bronco_bond/src/screens/user_profile_page.dart';
 
 class BottomNavBar extends StatefulWidget {
