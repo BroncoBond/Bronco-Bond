@@ -373,27 +373,31 @@ class UserProfileState extends State<UserProfile>
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(width: 30),
-          Column(
-            children: [
-              Image.asset(
-                'assets/images/user_profile_icon.png',
-                width: 75.0,
-                height: 75.0,
-              ),
-              SizedBox(height: 5),
-              Text(
-                username,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+          SizedBox(
+            width: 100,
+            child: Column(
+              children: [
+                Image.asset(
+                  'assets/images/user_profile_icon.png',
+                  width: 75.0,
+                  height: 75.0,
                 ),
-              ),
-            ],
+                SizedBox(height: 5),
+                // Apply maximum width constraint and handle overflow
+                Text(
+                  username,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
-          SizedBox(width: 60),
+          SizedBox(width: 40),
           // SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

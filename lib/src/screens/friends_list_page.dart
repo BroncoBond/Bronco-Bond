@@ -151,12 +151,11 @@ class FriendsListPageState extends State<FriendsListPage> {
             Expanded(
               child: TabBarView(
                 children: [
-                  // Tab View for "All"
                   buildFriendsTab(bonds),
                   // Tab View for "Friends"
                   Container(
                     alignment: Alignment.center,
-                    child: const Text("Friends Tab Content"),
+                    child: const Text("No Friend Requests"),
                   ),
                 ],
               ),
