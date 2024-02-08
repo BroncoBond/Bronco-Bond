@@ -87,20 +87,25 @@ class UserProfileState extends State<UserProfile>
           bonds = userData['user']['bonds'] ?? [];
           isBonded = bonds.contains(currentUserID);
 
-          final dynamic profilePicture = userData['user']['profilePicture'];
-          print('${profilePicture['contentType'].runtimeType}');
-          print('${profilePicture['contentType']}');
-          print('${profilePicture['data']['data'].runtimeType}');
-          print('${profilePicture['data']['data']}');
+          late dynamic profilePicture =
+              userData['user']['profilePicture'] ?? '';
+          if (profilePicture != null && profilePicture != '') {
+            print('${profilePicture['contentType'].runtimeType}');
+            print('${profilePicture['contentType']}');
+            print('${profilePicture['data']['data'].runtimeType}');
+            print('${profilePicture['data']['data']}');
 
-          profilePictureData = List<int>.from(profilePicture['data']['data']);
-          profilePictureContentType = profilePicture['contentType'];
-          print('${profilePictureData}');
-          List<int> decodedImageBytes =
-              base64Decode(String.fromCharCodes(profilePictureData));
-          //print('${decodedImageBytes}');
-          pfp = Uint8List.fromList(decodedImageBytes);
-          print('pfp: ${pfp}');
+            profilePictureData = List<int>.from(profilePicture['data']['data']);
+            profilePictureContentType = profilePicture['contentType'];
+            print('${profilePictureData}');
+            List<int> decodedImageBytes =
+                base64Decode(String.fromCharCodes(profilePictureData));
+            //print('${decodedImageBytes}');
+            pfp = Uint8List.fromList(decodedImageBytes);
+            print('pfp: ${pfp}');
+          } else {
+            pfp = Uint8List(0);
+          }
         });
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
@@ -437,12 +442,12 @@ class UserProfileState extends State<UserProfile>
             child: Column(
               children: [
                 CircleAvatar(
-                  radius: 42,
+                  radius: 37.5,
                   backgroundColor: Colors.white,
                   backgroundImage: profilePictureData.isNotEmpty
                       ? MemoryImage(pfp)
                       : const AssetImage('assets/images/user_profile_icon.png')
-                          as ImageProvider<Object>,
+                          as ImageProvider,
                 ),
                 SizedBox(height: 12),
                 // Apply maximum width constraint and handle overflow
