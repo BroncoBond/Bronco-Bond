@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bronco_bond/src/screens/settings_page.dart';
 import 'package:bronco_bond/src/screens/friends_list_page.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,9 @@ class UserProfileState extends State<UserProfile>
   late String descriptionBio = '';
   late String graduationDate = '';
   late List<dynamic> bonds = [];
+  late List<int> profilePictureData;
+  late String profilePictureContentType;
+  late Uint8List pfp;
   late TabController _tabController;
   late Future<SharedPreferences> prefsFuture;
   late SharedPreferences prefs;
@@ -37,6 +42,9 @@ class UserProfileState extends State<UserProfile>
     super.initState();
     prefsFuture = initSharedPref();
     _tabController = TabController(length: 2, vsync: this);
+
+    pfp = Uint8List(0);
+    profilePictureData = [];
 
     prefsFuture.then((value) {
       prefs = value;
@@ -78,6 +86,21 @@ class UserProfileState extends State<UserProfile>
           graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
           bonds = userData['user']['bonds'] ?? [];
           isBonded = bonds.contains(currentUserID);
+
+          final dynamic profilePicture = userData['user']['profilePicture'];
+          print('${profilePicture['contentType'].runtimeType}');
+          print('${profilePicture['contentType']}');
+          print('${profilePicture['data']['data'].runtimeType}');
+          print('${profilePicture['data']['data']}');
+
+          profilePictureData = List<int>.from(profilePicture['data']['data']);
+          profilePictureContentType = profilePicture['contentType'];
+          print('${profilePictureData}');
+          List<int> decodedImageBytes =
+              base64Decode(String.fromCharCodes(profilePictureData));
+          //print('${decodedImageBytes}');
+          pfp = Uint8List.fromList(decodedImageBytes);
+          print('pfp: ${pfp}');
         });
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
@@ -413,12 +436,15 @@ class UserProfileState extends State<UserProfile>
             width: 100,
             child: Column(
               children: [
-                Image.asset(
-                  'assets/images/user_profile_icon.png',
-                  width: 75.0,
-                  height: 75.0,
+                CircleAvatar(
+                  radius: 42,
+                  backgroundColor: Colors.white,
+                  backgroundImage: profilePictureData.isNotEmpty
+                      ? MemoryImage(pfp)
+                      : const AssetImage('assets/images/user_profile_icon.png')
+                          as ImageProvider<Object>,
                 ),
-                SizedBox(height: 5),
+                SizedBox(height: 12),
                 // Apply maximum width constraint and handle overflow
                 Text(
                   username,
@@ -431,6 +457,7 @@ class UserProfileState extends State<UserProfile>
               ],
             ),
           ),
+
           SizedBox(width: 50),
           // SizedBox(height: 8),
           Row(

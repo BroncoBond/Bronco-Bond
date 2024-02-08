@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:bronco_bond/src/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/screens/interests_page.dart';
@@ -226,6 +228,7 @@ class UserInfoPageState extends State<UserInfoPage> {
   String? _selectedMajor;
   String? _selectedMinor;
   String? _selectedGradDate;
+  File? _imageFile;
 
   void addInfoToUser(BuildContext context, String userID) async {
     print('User ID: $userID');
@@ -234,6 +237,9 @@ class UserInfoPageState extends State<UserInfoPage> {
         _selectedMajor!.isNotEmpty &&
         _selectedGradDate != null &&
         _selectedGradDate!.isNotEmpty) {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
+
       var regBody = {
         "_id": userID,
         "fullName": fullNameController.text,
@@ -241,7 +247,8 @@ class UserInfoPageState extends State<UserInfoPage> {
         "descriptionBio": bioController.text,
         "descriptionMajor": _selectedMajor,
         "descriptionMinor": _selectedMinor,
-        "graduationDate": _selectedGradDate
+        "graduationDate": _selectedGradDate,
+        "profilePicture": {"data": base64Image, "contentType": "image/jpeg"}
       };
       print("major selected and body created");
       print(regBody);
@@ -268,6 +275,17 @@ class UserInfoPageState extends State<UserInfoPage> {
       }
     } else {
       print('Major or Grad date is empty');
+    }
+  }
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
     }
   }
 
@@ -405,12 +423,17 @@ class UserInfoPageState extends State<UserInfoPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Profile Icon
-          Image.asset(
-            'assets/images/user_profile_icon.png',
-            width: 75.0,
-            height: 75.0,
-          ),
+          // Profile Icon. Check if image is uploaded or not
+          _imageFile != null
+              ? CircleAvatar(
+                  backgroundImage: FileImage(_imageFile!),
+                  radius: 37.5,
+                )
+              : Image.asset(
+                  'assets/images/user_profile_icon.png',
+                  width: 75.0,
+                  height: 75.0,
+                ),
           // Padding in between image and column
           const SizedBox(width: 15),
           // Column that contains text and upload button
@@ -435,7 +458,7 @@ class UserInfoPageState extends State<UserInfoPage> {
                 height: 43,
                 child: ElevatedButton(
                   onPressed: () {
-                    /*Add upload profile image functionality here*/
+                    pickImage();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -545,7 +568,7 @@ class UserInfoPageState extends State<UserInfoPage> {
           height: 101,
           child: TextField(
             controller: bioController,
-            maxLines: 5,
+            maxLines: 4,
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderSide: const BorderSide(color: Color(0xFFABABAB)),

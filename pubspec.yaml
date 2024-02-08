@@ -20,6 +20,7 @@ dependencies:
   shared_preferences:
   jwt_decoder:
   flutter_slidable:
+  image_picker: ^1.0.7
 
 dev_dependencies:
   flutter_test:
