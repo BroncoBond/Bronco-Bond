@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bronco_bond/src/screens/user_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -216,7 +218,20 @@ class SearchPageState extends State<SearchPage> {
                 color: selectedResultIndex == user
                     ? Colors.grey.withOpacity(0.5) // Grey when tapped
                     : null, // Default background color when not tapped
-                child: ListTile(title: Text(searchResults[user]['username']))),
+                child: ListTile(
+                    leading: CircleAvatar(
+                      //radius: 30,
+                      backgroundColor: Colors.white,
+                      backgroundImage:
+                          searchResults[user]['profilePicture'] != null &&
+                                  searchResults[user]['profilePicture'] != ''
+                              ? MemoryImage(decodeProfilePicture(
+                                  searchResults[user]['profilePicture']))
+                              : const AssetImage(
+                                  'assets/images/user_profile_icon.png',
+                                ) as ImageProvider,
+                    ),
+                    title: Text(searchResults[user]['username']))),
           ),
         );
       },
@@ -228,5 +243,13 @@ class SearchPageState extends State<SearchPage> {
       context,
       MaterialPageRoute(builder: (context) => UserProfile(userID: user['_id'])),
     );
+  }
+
+  Uint8List decodeProfilePicture(dynamic profilePicture) {
+    List<int> profilePictureData =
+        List<int>.from(profilePicture['data']['data']);
+    List<int> decodedImageBytes =
+        base64Decode(String.fromCharCodes(profilePictureData));
+    return Uint8List.fromList(decodedImageBytes);
   }
 }
