@@ -1,1 +1,0 @@
- C:\\Users\\jayde\\source\\repos\\Bronco-Bond\\.dart_tool\\flutter_gen\\gen_l10n\\app_localizations_en.dart C:\\Users\\jayde\\source\\repos\\Bronco-Bond\\.dart_tool\\flutter_gen\\gen_l10n\\app_localizations.dart:  C:\\Users\\jayde\\source\\repos\\Bronco-Bond\\l10n.yaml C:\\Users\\jayde\\source\\repos\\Bronco-Bond\\lib/src/localization\\app_en.arb
