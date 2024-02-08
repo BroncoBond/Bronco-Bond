@@ -2,7 +2,7 @@ const app = require('./app');
 const db = require('./config/db');
 const UserModel = require('./model/user.model');
 
-const port = 3000 || process.env.WEBSITE_PORT;
+const port = 3000 || process.env.WEBSITES_PORT;
 
 
 const server = app.listen(port, () => {
