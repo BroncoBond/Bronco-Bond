@@ -21,14 +21,12 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Use the MONGO_URL
-        run: echo "My MONGO_URL is ${{ secrets.MONGO_URL }}"
+      - name: Set environment variables
+        run: |
+          echo "MONGO_URL=${{ secrets.MONGO_URL }}" >> $GITHUB_ENV
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
+          echo "JWT_KEY=${{ secrets.JWT_KEY }}" >> $GITHUB_ENV
 
-      - name: Use the SECRET_KEY
-        run: echo "My SECRET_KEY is ${{ secrets.SECRET_KEY }}"
-
-      - name: Use the JWT_KEY
-        run: echo "My JWT_KEY is ${{ secrets.JWT_KEY }}"
         
       - name: npm install, build, and test
         run: |
