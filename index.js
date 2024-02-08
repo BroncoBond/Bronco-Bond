@@ -22,10 +22,6 @@ process.on('SIGINT', () => {
     });
 });
 
-
-// Start trying to listen on the specified port
-tryListen();
-
 app.get('/', (req, res) => {
     res.send("Hello World!!");
 });
