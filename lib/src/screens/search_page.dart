@@ -1,8 +1,8 @@
-import 'package:bronco_bond/src/screens/userprofile.dart';
+import 'package:bronco_bond/src/screens/user_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:bronco_bond/src/screens/login.dart';
+import 'package:bronco_bond/src/screens/login_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bronco_bond/src/config.dart';

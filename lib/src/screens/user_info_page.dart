@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:bronco_bond/src/config.dart';
 import 'package:http/http.dart' as http;
-import 'package:bronco_bond/src/screens/interests.dart';
+import 'package:bronco_bond/src/screens/interests_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

@@ -1,4 +1,5 @@
-import 'package:bronco_bond/src/screens/settingspage.dart';
+import 'package:bronco_bond/src/screens/settings_page.dart';
+import 'package:bronco_bond/src/screens/friends_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -411,18 +412,43 @@ class UserProfileState extends State<UserProfile>
   }
 
   Widget buildStatColumn(String label, int value) {
-    return Column(
-      children: [
-        Text(
-          value.toString(),
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+    if (label == 'Bonds') {
+      return Column(
+        children: [
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FriendsListPage(),
+                ),
+              );
+            },
+            child: Text(
+              value.toString(),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
-        Text(label),
-      ],
-    );
+          Text(label),
+        ],
+      );
+    } else {
+      return Column(
+        children: [
+          Text(
+            value.toString(),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(label),
+        ],
+      );
+    }
   }
 
   @override

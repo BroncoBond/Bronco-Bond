@@ -1,9 +1,9 @@
-import 'package:bronco_bond/src/screens/forgotpassword.dart';
-import 'package:bronco_bond/src/screens/register.dart';
+import 'package:bronco_bond/src/screens/forgot_password.dart';
+import 'package:bronco_bond/src/screens/registration_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
-import 'package:bronco_bond/src/screens/navbar.dart';
+import 'package:bronco_bond/src/screens/nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';

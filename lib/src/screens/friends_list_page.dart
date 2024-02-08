@@ -1,9 +1,9 @@
-import 'package:bronco_bond/src/screens/signin.dart';
+import 'package:bronco_bond/src/screens/sign_in_page.dart';
 import 'package:flutter/material.dart';
 
 /// Displays detailed information about a SampleItem.
-class VerificationPage extends StatelessWidget {
-  const VerificationPage({super.key});
+class FriendsListPage extends StatelessWidget {
+  const FriendsListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
