@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:bronco_bond/src/config.dart';
 import 'dart:async';
 
 class UserProfile extends StatefulWidget {
@@ -401,7 +400,7 @@ class UserProfileState extends State<UserProfile>
             children: [
               buildStatColumn('Posts', 0),
               SizedBox(width: 20),
-              buildStatColumn('Bonds', numOfBonds),
+              buildBondsStat('Bonds', numOfBonds, widget.userID),
               SizedBox(width: 20),
               buildStatColumn('Interests', 0),
             ],
@@ -412,60 +411,59 @@ class UserProfileState extends State<UserProfile>
   }
 
   Widget buildStatColumn(String label, int value) {
-    if (label == 'Bonds') {
-      return Column(
-        children: [
-          ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FriendsListPage(),
-                  ),
-                );
-              },
-              style: ButtonStyle(
-                padding:
-                    MaterialStateProperty.all(EdgeInsets.zero), // No padding
-                backgroundColor: MaterialStateProperty.all(Colors.white),
-                shadowColor: MaterialStateProperty.all(Colors.transparent),
-                elevation: MaterialStateProperty.all(0),
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    value.toString(),
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  Text(
-                    label,
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w400),
-                  ),
-                ],
-              )),
-        ],
-      );
-    } else {
-      return Column(
-        children: [
-          Text(
-            value.toString(),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+    return Column(
+      children: [
+        Text(
+          value.toString(),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(fontWeight: FontWeight.w400),
+        ),
+      ],
+    );
+  }
+
+  Widget buildBondsStat(String label, int value, String userID) {
+    return Column(
+      children: [
+        ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FriendsListPage(userID: userID),
+                ),
+              );
+            },
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all(EdgeInsets.zero), // No padding
+              backgroundColor: MaterialStateProperty.all(Colors.white),
+              shadowColor: MaterialStateProperty.all(Colors.transparent),
+              elevation: MaterialStateProperty.all(0),
             ),
-          ),
-          Text(
-            label,
-            style: TextStyle(fontWeight: FontWeight.w400),
-          ),
-        ],
-      );
-    }
+            child: Column(
+              children: [
+                Text(
+                  value.toString(),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
+                ),
+                Text(
+                  label,
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w400),
+                ),
+              ],
+            )),
+      ],
+    );
   }
 
   @override
