@@ -38,8 +38,8 @@ const userSchema = new Schema({
             type:String
         },
         profilePicture: {
-            type: String,
-            default:""
+            data: Buffer,
+            contentType: String
         },
         bonds: {
             type:Array,
