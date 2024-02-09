@@ -1,5 +1,5 @@
 const UserService = require("../services/user.services");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const User = require("../model/user.model");
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -63,7 +63,7 @@ exports.login = async(req,res,next)=>{
         let tokenData = {_id:user._id};
 
         // Generate the token
-        const token = await UserService.generateToken(tokenData, process.env.JWT_KEY, '1d')
+        const token = await UserService.generateToken(tokenData, process.env.jwtKey, '1d')
 
         // Replace the user's existing tokens with new token
         await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});

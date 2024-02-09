@@ -7,7 +7,7 @@ exports.isAuth = async (req, res, next) => {
     console.log('Token:', token);
     
     try {
-      const decode = jwt.verify(token, process.env.JWT_KEY);
+      const decode = jwt.verify(token, process.env.jwtKey);
       console.log('Decoded:', decode);
 
       const user = await User.findById(decode._id);

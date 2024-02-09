@@ -2,7 +2,7 @@ const app = require('./app');
 const db = require('./config/db');
 const UserModel = require('./model/user.model');
 
-const port = process.env.WEBSITES_PORT || process.env.PORT;
+const port = process.env.websitePort || process.env.PORT;
 
 
 const server = app.listen(port, () => {
@@ -23,5 +23,5 @@ process.on('SIGINT', () => {
 });
 
 app.get('/', (req, res) => {
-    res.send("Hello World!!");
+    res.json("Hello World!!");
 });
