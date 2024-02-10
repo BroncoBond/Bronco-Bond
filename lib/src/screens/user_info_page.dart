@@ -315,9 +315,9 @@ class UserInfoPageState extends State<UserInfoPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             buildTextField("Full Name", fullNameController),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             buildTextField("Preferred Name", prefNameController),
             buildCheckBox("Display Name on Profile", displayNameOnProfile,
                 (value) {
@@ -332,13 +332,13 @@ class UserInfoPageState extends State<UserInfoPage> {
                 _selectedMajor = newValue;
               });
             }),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             buildDropDown("Minor", minors, _selectedMinor, (newValue) {
               setState(() {
                 _selectedMinor = newValue;
               });
             }),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             buildDropDown("Expected Graduation Year*", years, _selectedGradDate,
                 (newValue) {
               setState(() {
@@ -409,7 +409,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             value: currentVal, // Set default value of checkbox to false
             onChanged: onChanged,
             controlAffinity: ListTileControlAffinity.leading,
-            activeColor: Color(0xFF3B5F43),
+            activeColor: const Color(0xFF3B5F43),
           ),
         ),
         const SizedBox(height: 20),
