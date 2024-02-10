@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express');
 const bodyParser = require('body-parser');
 const userRouter = require('./routers/user.router');
@@ -6,7 +7,7 @@ const morgan = require("morgan");
 
 const app = express();
 
-// Middileware
+// Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(helmet());
 app.use(morgan("common"));

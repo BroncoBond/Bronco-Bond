@@ -2,7 +2,7 @@
 FROM node:21-slim
 
 # Set the working directory in the container to 
-WORKDIR /user/src/app
+WORKDIR /usr/src/app
 
 # Install app dependencies
 COPY package*.json ./
@@ -14,6 +14,5 @@ COPY . .
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
-
 
 CMD [ "npm", "start" ]
