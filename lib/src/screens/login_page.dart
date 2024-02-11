@@ -47,7 +47,7 @@ class LoginPageState extends State<LoginPage> {
             body: jsonEncode(regBody));
 
         print('${response.statusCode}');
-        print('${response.body}');
+        print(response.body);
         if (response.statusCode == 200) {
           Map<String, dynamic> jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status']) {
@@ -76,15 +76,15 @@ class LoginPageState extends State<LoginPage> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Login Failed'),
+                title: const Text('Login Failed'),
                 content:
-                    Text('Please check your email and password and try again.'),
+                    const Text('Please check your email and password and try again.'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('OK'),
+                    child: const Text('OK'),
                   ),
                 ],
               );
@@ -104,14 +104,14 @@ class LoginPageState extends State<LoginPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Login Failed'),
-            content: Text('Email or password is empty. Please try again.'),
+            title: const Text('Login Failed'),
+            content: const Text('Email or password is empty. Please try again.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
