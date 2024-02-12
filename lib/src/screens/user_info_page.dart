@@ -1,4 +1,9 @@
-import 'package:bronco_bond/src/screens/interests.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:bronco_bond/src/config.dart';
+import 'package:http/http.dart' as http;
+import 'package:bronco_bond/src/screens/interests_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -147,9 +152,68 @@ const List<String> minors = [
   "Zoology",
 ]; // List of minors (implement later)
 
+const List<String> years = [
+  "2034",
+  "2033",
+  "2032",
+  "2031",
+  "2030",
+  "2029",
+  "2028",
+  "2027",
+  "2026",
+  "2025",
+  "2024",
+  "2023",
+  "2022",
+  "2021",
+  "2020",
+  "2019",
+  "2018",
+  "2017",
+  "2016",
+  "2015",
+  "2014",
+  "2013",
+  "2012",
+  "2011",
+  "2010",
+  "2009",
+  "2008",
+  "2007",
+  "2006",
+  "2005",
+  "2004",
+  "2003",
+  "2002",
+  "2001",
+  "2000",
+  "1999",
+  "1998",
+  "1997",
+  "1996",
+  "1995",
+  "1994",
+  "1993",
+  "1992",
+  "1991",
+  "1990",
+  "1989",
+  "1988",
+  "1987",
+  "1986",
+  "1985",
+  "1984",
+  "1983",
+  "1982",
+  "1981",
+  "1980"
+];
+
 /// Displays detailed information about a SampleItem.
 class UserInfoPage extends StatefulWidget {
-  const UserInfoPage({super.key});
+  final String userID;
+  const UserInfoPage({Key? key, required this.userID}) : super(key: key);
 
   @override
   UserInfoPageState createState() => UserInfoPageState();
@@ -161,19 +225,68 @@ class UserInfoPageState extends State<UserInfoPage> {
   TextEditingController bioController = TextEditingController();
 
   bool displayNameOnProfile = false;
-  bool changingMajor = false;
   String? _selectedMajor;
   String? _selectedMinor;
+  String? _selectedGradDate;
+  File? _imageFile;
 
-  void addInfoToUser(BuildContext context) async {
-    // add backend functionality here
+  void addInfoToUser(BuildContext context, String userID) async {
+    print('User ID: $userID');
+    // check if major is empty or null since it is required
+    if (_selectedMajor != null &&
+        _selectedMajor!.isNotEmpty &&
+        _selectedGradDate != null &&
+        _selectedGradDate!.isNotEmpty) {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const InterestsPage(),
-      ),
-    );
+      var regBody = {
+        "_id": userID,
+        "fullName": fullNameController.text,
+        "prefName": prefNameController.text,
+        "descriptionBio": bioController.text,
+        "descriptionMajor": _selectedMajor,
+        "descriptionMinor": _selectedMinor,
+        "graduationDate": _selectedGradDate,
+        "profilePicture": {"data": base64Image, "contentType": "image/jpeg"}
+      };
+      print("major selected and body created");
+      print(regBody);
+
+      try {
+        var response = await http.put(Uri.parse('$updateUser/$userID'),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode(regBody));
+
+        print('Response body: ${response.body}');
+        var jsonResponse = jsonDecode(response.body);
+
+        print("http request made");
+        print(jsonResponse['status']);
+
+        if (jsonResponse['status']) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const InterestsPage()));
+        } else {
+          print("Something went wrong");
+        }
+      } catch (e) {
+        print('Error during HTTP request: $e');
+      }
+    } else {
+      print('Major or Grad date is empty');
+    }
+  }
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
   }
 
   @override
@@ -202,8 +315,9 @@ class UserInfoPageState extends State<UserInfoPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             buildTextField("Full Name", fullNameController),
+            const SizedBox(height: 8.0),
             buildTextField("Preferred Name", prefNameController),
             buildCheckBox("Display Name on Profile", displayNameOnProfile,
                 (value) {
@@ -218,15 +332,17 @@ class UserInfoPageState extends State<UserInfoPage> {
                 _selectedMajor = newValue;
               });
             }),
-            buildCheckBox("Planning on Changing Majors", changingMajor,
-                (value) {
-              setState(() {
-                changingMajor = value ?? false;
-              });
-            }),
+            const SizedBox(height: 8.0),
             buildDropDown("Minor", minors, _selectedMinor, (newValue) {
               setState(() {
                 _selectedMinor = newValue;
+              });
+            }),
+            const SizedBox(height: 8.0),
+            buildDropDown("Expected Graduation Year*", years, _selectedGradDate,
+                (newValue) {
+              setState(() {
+                _selectedGradDate = newValue;
               });
             }),
             const SizedBox(height: 10),
@@ -293,7 +409,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             value: currentVal, // Set default value of checkbox to false
             onChanged: onChanged,
             controlAffinity: ListTileControlAffinity.leading,
-            activeColor: Color(0xFF3B5F43),
+            activeColor: const Color(0xFF3B5F43),
           ),
         ),
         const SizedBox(height: 20),
@@ -307,12 +423,17 @@ class UserInfoPageState extends State<UserInfoPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Profile Icon
-          Image.asset(
-            'assets/images/user_profile_icon.png',
-            width: 75.0,
-            height: 75.0,
-          ),
+          // Profile Icon. Check if image is uploaded or not
+          _imageFile != null
+              ? CircleAvatar(
+                  backgroundImage: FileImage(_imageFile!),
+                  radius: 37.5,
+                )
+              : Image.asset(
+                  'assets/images/user_profile_icon.png',
+                  width: 75.0,
+                  height: 75.0,
+                ),
           // Padding in between image and column
           const SizedBox(width: 15),
           // Column that contains text and upload button
@@ -337,7 +458,7 @@ class UserInfoPageState extends State<UserInfoPage> {
                 height: 43,
                 child: ElevatedButton(
                   onPressed: () {
-                    /*Add upload profile image functionality here*/
+                    pickImage();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -447,7 +568,7 @@ class UserInfoPageState extends State<UserInfoPage> {
           height: 101,
           child: TextField(
             controller: bioController,
-            maxLines: 5,
+            maxLines: 4,
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderSide: const BorderSide(color: Color(0xFFABABAB)),
@@ -475,7 +596,7 @@ class UserInfoPageState extends State<UserInfoPage> {
           ),
           child: TextButton(
             onPressed: () {
-              addInfoToUser(context);
+              addInfoToUser(context, widget.userID);
             },
             child: Text(
               label,

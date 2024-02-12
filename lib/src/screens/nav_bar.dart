@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:bronco_bond/src/screens/searchpage.dart';
-import 'package:bronco_bond/src/screens/homepage.dart';
-import 'package:bronco_bond/src/screens/chat.dart';
-import 'package:bronco_bond/src/screens/events.dart';
-import 'package:bronco_bond/src/screens/userprofile.dart';
+import 'package:bronco_bond/src/screens/search_page.dart';
+import 'package:bronco_bond/src/screens/home_page.dart';
+import 'package:bronco_bond/src/screens/chat_page.dart';
+import 'package:bronco_bond/src/screens/events_page.dart';
+import 'package:bronco_bond/src/screens/user_profile_page.dart';
 
 class BottomNavBar extends StatefulWidget {
   final String token;
@@ -16,7 +16,7 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class BottomNavBarState extends State<BottomNavBar> {
-  int _currentIndex = 2;
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +24,10 @@ class BottomNavBarState extends State<BottomNavBar> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          HomePage(),
-          ChatPage(),
+          const HomePage(),
+          const ChatPage(),
           SearchPage(token: widget.token),
-          EventsPage(),
+          const EventsPage(),
           UserProfile(userID: widget.userID)
         ],
       ),

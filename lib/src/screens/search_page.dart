@@ -1,8 +1,9 @@
-import 'package:bronco_bond/src/screens/userprofile.dart';
+import 'dart:typed_data';
+
+import 'package:bronco_bond/src/screens/user_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:bronco_bond/src/screens/login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bronco_bond/src/config.dart';
@@ -30,7 +31,7 @@ class SearchPageState extends State<SearchPage> {
 
     try {
       print(query);
-      final response = await http.get(Uri.parse('${search}?username=$query'));
+      final response = await http.get(Uri.parse('$search?username=$query'));
 
       if (response.statusCode == 200) {
         final users =
@@ -92,7 +93,7 @@ class SearchPageState extends State<SearchPage> {
                 color: const Color(0xFF3B5F43))),
         automaticallyImplyLeading: false,
       ),
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
           child: Column(
@@ -112,7 +113,7 @@ class SearchPageState extends State<SearchPage> {
                   buildIcon("Professors", Icons.local_library_rounded),
                 ],
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -120,7 +121,7 @@ class SearchPageState extends State<SearchPage> {
                   buildIcon("Messages", Icons.forum_rounded),
                 ],
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -145,11 +146,11 @@ class SearchPageState extends State<SearchPage> {
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: TextField(
               controller: fieldController,
               keyboardType: TextInputType.text,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Search...',
                 border: InputBorder.none,
                 icon: Icon(Icons.search_rounded),
@@ -177,22 +178,22 @@ class SearchPageState extends State<SearchPage> {
             child: InkWell(
               splashColor: Colors.blue.withAlpha(30),
               onTap: () {
-                debugPrint('${title} tapped.');
+                debugPrint('$title tapped.');
               },
 
               child: Icon(
                 iconData,
                 size: 110,
-                color: Color(0xff3B5F43),
+                color: const Color(0xff3B5F43),
               ), // Display text if imagePath is empty
             ),
           ),
         )),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         Center(
             child: Text(
           title,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ))
       ],
     );
@@ -216,7 +217,20 @@ class SearchPageState extends State<SearchPage> {
                 color: selectedResultIndex == user
                     ? Colors.grey.withOpacity(0.5) // Grey when tapped
                     : null, // Default background color when not tapped
-                child: ListTile(title: Text(searchResults[user]['username']))),
+                child: ListTile(
+                    leading: CircleAvatar(
+                      //radius: 30,
+                      backgroundColor: Colors.white,
+                      backgroundImage:
+                          searchResults[user]['profilePicture'] != null &&
+                                  searchResults[user]['profilePicture'] != ''
+                              ? MemoryImage(decodeProfilePicture(
+                                  searchResults[user]['profilePicture']))
+                              : const AssetImage(
+                                  'assets/images/user_profile_icon.png',
+                                ) as ImageProvider,
+                    ),
+                    title: Text(searchResults[user]['username']))),
           ),
         );
       },
@@ -228,5 +242,13 @@ class SearchPageState extends State<SearchPage> {
       context,
       MaterialPageRoute(builder: (context) => UserProfile(userID: user['_id'])),
     );
+  }
+
+  Uint8List decodeProfilePicture(dynamic profilePicture) {
+    List<int> profilePictureData =
+        List<int>.from(profilePicture['data']['data']);
+    List<int> decodedImageBytes =
+        base64Decode(String.fromCharCodes(profilePictureData));
+    return Uint8List.fromList(decodedImageBytes);
   }
 }

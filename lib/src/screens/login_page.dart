@@ -1,9 +1,9 @@
-import 'package:bronco_bond/src/screens/forgotpassword.dart';
-import 'package:bronco_bond/src/screens/register.dart';
+import 'package:bronco_bond/src/screens/forgot_password.dart';
+import 'package:bronco_bond/src/screens/registration_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
-import 'package:bronco_bond/src/screens/navbar.dart';
+import 'package:bronco_bond/src/screens/nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -47,8 +47,9 @@ class LoginPageState extends State<LoginPage> {
             body: jsonEncode(regBody));
 
         print('${response.statusCode}');
+        print(response.body);
         if (response.statusCode == 200) {
-          var jsonResponse = jsonDecode(response.body);
+          Map<String, dynamic> jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status']) {
             var myToken = jsonResponse['token'];
             var myUserID = getUserIDFromToken(myToken);
@@ -71,8 +72,24 @@ class LoginPageState extends State<LoginPage> {
           }
         } else {
           print('HTTP request failed with status: ${response.statusCode}');
-          // Handle other HTTP status codes
-          // You might want to show an error message to the user
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Login Failed'),
+                content:
+                    const Text('Please check your email and password and try again.'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
         }
       } catch (e) {
         print('Error during HTTP request: $e');
@@ -83,6 +100,23 @@ class LoginPageState extends State<LoginPage> {
       // Handle case where email or password is empty
       // You might want to show an error message to the user
       print('Email or password is empty');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Login Failed'),
+            content: const Text('Email or password is empty. Please try again.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 

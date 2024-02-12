@@ -1,4 +1,4 @@
-import 'package:bronco_bond/src/screens/userInfo.dart';
+import 'package:bronco_bond/src/screens/user_info_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
@@ -40,10 +40,15 @@ class RegisterPageState extends State<RegisterPage> {
         var jsonResponse = jsonDecode(response.body);
 
         print(jsonResponse['status']);
+        print('Response body: ${response.body}');
 
         if (jsonResponse['status']) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const UserInfoPage()));
+          var userID = jsonResponse['_id'];
+          print('User ID: $userID');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UserInfoPage(userID: userID)));
         } else {
           print("SomeThing Went Wrong");
         }
