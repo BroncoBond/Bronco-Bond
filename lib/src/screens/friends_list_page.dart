@@ -171,11 +171,9 @@ class FriendsListPageState extends State<FriendsListPage> {
       future: Future.wait(bonds.map((bond) => fetchUsernames(bond))),
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Container(
-            child: Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
-              ),
+          return const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
             ),
           );
         } else if (snapshot.hasError) {

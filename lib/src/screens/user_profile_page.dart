@@ -238,11 +238,31 @@ class UserProfileState extends State<UserProfile>
       body: FutureBuilder(
         future: prefsFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            prefs = snapshot.data as SharedPreferences;
-            return buildUserProfile(prefs);
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container(
+              color: Colors.white,
+              child: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
+                ),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else if ((snapshot.connectionState == ConnectionState.done)) {
+            final prefs = snapshot.data as SharedPreferences?;
+            if (prefs != null) {
+              return buildUserProfile(prefs);
+            } else {
+              // Handle the case where prefs is null
+              return Center(
+                child: Text('SharedPreferences is null'),
+              );
+            }
           } else {
-            return Center(child: CircularProgressIndicator());
+            return SizedBox();
           }
         },
       ),
