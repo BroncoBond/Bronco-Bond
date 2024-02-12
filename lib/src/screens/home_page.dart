@@ -59,7 +59,7 @@ class HomePageState extends State<HomePage> {
 
   Widget buildCard(String tabName, String cardName) {
     return Card(
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       child: ListTile(
         title: Text(cardName),
         subtitle: Text('Subtitle for $cardName in $tabName'),

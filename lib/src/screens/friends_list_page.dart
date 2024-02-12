@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:bronco_bond/src/screens/welcome_page.dart';
 import 'package:bronco_bond/src/screens/user_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -30,7 +29,7 @@ class FriendsListPageState extends State<FriendsListPage> {
 
   Future<void> fetchDataUsingUserID(String userID) async {
     try {
-      final response = await http.get(Uri.parse('${getUserByID}/$userID'));
+      final response = await http.get(Uri.parse('$getUserByID/$userID'));
 
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
@@ -53,7 +52,7 @@ class FriendsListPageState extends State<FriendsListPage> {
 
   Future<Map<String, dynamic>> fetchUsernames(String userID) async {
     try {
-      final response = await http.get(Uri.parse('${getUserByID}/$userID'));
+      final response = await http.get(Uri.parse('$getUserByID/$userID'));
 
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
