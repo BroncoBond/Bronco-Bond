@@ -24,10 +24,10 @@ class BottomNavBarState extends State<BottomNavBar> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          HomePage(),
-          ChatPage(),
+          const HomePage(),
+          const ChatPage(),
           SearchPage(token: widget.token),
-          EventsPage(),
+          const EventsPage(),
           UserProfile(userID: widget.userID)
         ],
       ),

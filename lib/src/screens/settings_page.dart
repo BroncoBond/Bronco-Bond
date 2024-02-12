@@ -40,7 +40,7 @@ class SettingsPageState extends State<SettingsPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => LoginPage(),
+              builder: (context) => const LoginPage(),
             ),
           );
         } else {
@@ -68,7 +68,7 @@ class SettingsPageState extends State<SettingsPage> {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            icon: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black)),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black)),
         title: Text(
           'Settings',
           style: GoogleFonts.raleway(
@@ -78,7 +78,7 @@ class SettingsPageState extends State<SettingsPage> {
       body: ListView(
         children: <Widget>[
           ListTile(
-            leading: Icon(Icons.account_circle),
+            leading: const Icon(Icons.account_circle),
             title: Text(
               'Account',
               style: GoogleFonts.raleway(
@@ -91,7 +91,7 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.notifications),
+            leading: const Icon(Icons.notifications),
             title: Text(
               'Notifications',
               style: GoogleFonts.raleway(
@@ -104,7 +104,7 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.bookmark),
+            leading: const Icon(Icons.bookmark),
             title: Text(
               'Bookmarks',
               style: GoogleFonts.raleway(
@@ -117,7 +117,7 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.block),
+            leading: const Icon(Icons.block),
             title: Text(
               'Blocked Accounts',
               style: GoogleFonts.raleway(
@@ -130,7 +130,7 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.smartphone),
+            leading: const Icon(Icons.smartphone),
             title: Text(
               'Device Permissions',
               style: GoogleFonts.raleway(
@@ -143,7 +143,7 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.accessibility),
+            leading: const Icon(Icons.accessibility),
             title: Text(
               'Accessibility',
               style: GoogleFonts.raleway(
@@ -156,7 +156,7 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.translate),
+            leading: const Icon(Icons.translate),
             title: Text(
               'Language',
               style: GoogleFonts.raleway(
@@ -169,7 +169,7 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.info),
+            leading: const Icon(Icons.info),
             title: Text(
               'About',
               style: GoogleFonts.raleway(
@@ -182,7 +182,7 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.account_box),
+            leading: const Icon(Icons.account_box),
             title: Text(
               'Account Status',
               style: GoogleFonts.raleway(
@@ -195,7 +195,7 @@ class SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.help),
+            leading: const Icon(Icons.help),
             title: Text(
               'Help',
               style: GoogleFonts.raleway(
@@ -212,7 +212,7 @@ class SettingsPageState extends State<SettingsPage> {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: TextButton(
             onPressed: () {
               //create dump for all user info
