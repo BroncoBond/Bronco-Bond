@@ -17,6 +17,10 @@ const port = process.env.WEBSITES_PORT || process.env.PORT;
 app.use(express.json({ limit: process.env.JSON_LIMIT || '50mb' }));
 app.use(helmet());
 app.use(morgan("common"));
+app.use(express.static('public'));
+
+// Set EJS as the view engine
+app.set('view engine', 'ejs');
 
 // Routes
 app.use('/user', userRouter);
@@ -26,7 +30,7 @@ app.use(errorHandler);
 
 // Root route
 app.get('/', (req, res) => {
-    res.send("Hello World!! \n          Jay was here :)");
+    res.render('index', { title: 'BroncoBond', message: 'Hello World, this is BroncoBond!' });
 });
 
 // Start the server
