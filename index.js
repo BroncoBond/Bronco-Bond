@@ -1,27 +1,52 @@
-const app = require('./app');
+// External dependencies
+const express = require('express');
+const bodyParser = require('body-parser');
+const helmet = require("helmet");
+const morgan = require("morgan");
+
+// Internal dependencies
 const db = require('./config/db');
 const UserModel = require('./model/user.model');
+const userRouter = require('./routers/user.router');
+const errorHandler = require('./middleware/errorHandler');
 
+const app = express();
 const port = process.env.WEBSITES_PORT || process.env.PORT;
 
+// Middleware
+app.use(express.json({ limit: process.env.JSON_LIMIT || '50mb' }));
+app.use(helmet());
+app.use(morgan("common"));
 
-const server = app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+// Routes
+app.use('/user', userRouter);
 
-server.on('error', (error) => {
-    console.error('Error starting server:', error.message);
-    process.exit(1);
-});
+// Error Handler
+app.use(errorHandler);
 
-// Handle shutdown gracefully (optional)
-process.on('SIGINT', () => {
-    server.close(() => {
-        console.log('Server is shutting down');
-        process.exit(0);
-    });
-});
-
+// Root route
 app.get('/', (req, res) => {
-    res.send("Hello World!!");
+    res.send("Hello World!! \n          Jay was here :)");
 });
+
+// Start the server
+startServer(port);
+
+function startServer(port) {
+    const server = app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+
+    server.on('error', (error) => {
+        console.error('Error starting server:', error.message);
+        process.exit(1);
+    });
+
+    // Handle shutdown gracefully (optional)
+    process.on('SIGINT', () => {
+        server.close(() => {
+            console.log('Server is shutting down');
+            process.exit(0);
+        });
+    });
+}

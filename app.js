@@ -1,4 +1,4 @@
-const express = require('express');
+/* const express = require('express');
 const bodyParser = require('body-parser');
 const userRouter = require('./routers/user.router');
 const helmet = require("helmet");
@@ -21,7 +21,7 @@ app.use((err, req, res, next) => {
 });
 
 
-module.exports = app;
+module.exports = app; */
 
 
 /* 
