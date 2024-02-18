@@ -42,12 +42,17 @@ const userSchema = new Schema({
             contentType: String
         },
         bonds: {
-            type:Array,
+            type: Schema.Types.ObjectId,
+            ref: 'User;',
             default:[]
         },
         numOfBonds: {
             type: Number,
             default:0
+        },
+        interests: {
+            type: [String],
+            default:[]
         },
         isAdmin: {
             type: Boolean,
