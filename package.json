@@ -25,6 +25,7 @@
     "express": "^4.18.2",
     "express-session": "^1.18.0",
     "helmet": "^7.1.0",
+    "i": "^0.3.7",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
     "mongoose": "^8.1.1",
@@ -34,6 +35,6 @@
     "socket.io": "^4.7.4"
   },
   "description": "BroncoBond",
-  "devDependencies": {},
-  "keywords": []
+  "keywords": [],
+  "devDependencies": {}
 }
