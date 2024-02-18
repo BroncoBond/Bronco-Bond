@@ -53,3 +53,6 @@ class MyApp extends StatelessWidget {
         });
   }
 }
+
+// dart run flutter_native_splash:create
+// flutter pub run flutter_launcher_icons
