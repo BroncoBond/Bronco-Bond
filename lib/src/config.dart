@@ -1,5 +1,5 @@
 //when running, change to your ip
-const String url = 'https://broncobondwebapp.azurewebsites.net';
+const String url = 'https://broncobondwebservice.onrender.com';
 const String register = '$url/user/register';
 const String login = '$url/user/login';
 const String search = '$url/user/search';

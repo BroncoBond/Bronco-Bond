@@ -42,7 +42,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.bronco_bond"
-        minSdkVersion 16
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

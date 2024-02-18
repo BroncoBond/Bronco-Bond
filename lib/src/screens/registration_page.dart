@@ -37,21 +37,27 @@ class RegisterPageState extends State<RegisterPage> {
             headers: {"Content-Type": "application/json"},
             body: jsonEncode(regBody));
 
-        var jsonResponse = jsonDecode(response.body);
+        if (response.body.isNotEmpty) {
+          var jsonResponse = jsonDecode(response.body);
 
-        print(jsonResponse['status']);
-        print('Response body: ${response.body}');
+          print(jsonResponse['status']);
+          print('Response body: ${response.body}');
 
-        if (jsonResponse['status']) {
-          var userID = jsonResponse['_id'];
-          print('User ID: $userID');
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => UserInfoPage(userID: userID)));
+          if (jsonResponse['status']) {
+            var userID = jsonResponse['_id'];
+            print('User ID: $userID');
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserInfoPage(userID: userID)));
+          } else {
+            print("SomeThing Went Wrong");
+          }
         } else {
-          print("SomeThing Went Wrong");
+          print("Empty Response");
         }
+      } else {
+        print("Passwords do not match");
       }
     } else {
       setState(() {
