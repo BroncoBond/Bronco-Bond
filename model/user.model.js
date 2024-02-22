@@ -42,8 +42,7 @@ const userSchema = new Schema({
             contentType: String
         },
         bonds: {
-            type: Schema.Types.ObjectId,
-            ref: 'User;',
+            type: Array,
             default:[]
         },
         numOfBonds: {
