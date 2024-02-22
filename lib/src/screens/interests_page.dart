@@ -9,13 +9,6 @@ class InterestsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_rounded),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
           title: Text(
             "BroncoBond",
             style: GoogleFonts.raleway(
