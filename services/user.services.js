@@ -37,6 +37,25 @@ class UserService{
         }
     }
 
+    static async acceptRequest(req, res) {
+        try {
+            const recipient = await User.findById(req.params.id);
+            const currentUser = await User.findById(req.body._id);
+            if (!recipient.bonds.includes(req.body._id)) {
+                await recipient.updateOne({ $push: { bonds: req.body._id}, $inc: { numOfBonds: 1} });
+                await currentUser.updateOne({ $push: { bonds: req.params.id}, $inc: { numOfBonds: 1} });
+                // If the user is trying to friend recipient, return 200 status with the error
+                return res.status(200).json("User has been friended")
+            } else {
+                // If the user is trying to friend a already friended recipient, return a 403 status with an error message
+                return res.status(403).json("You already friend this user")
+            }
+        } catch (error) {
+            // If there is a error trying to friend recipient, return a 500 status with an error message
+            return res.status(500).json(error)
+        }
+    }
+
 /*     static async searchUserByUsername(username, secretKey, jwt_expre) {
     try {
         const user = await UserModel.findOne({ username });

@@ -41,10 +41,21 @@ const userSchema = new Schema({
             data: Buffer,
             contentType: String
         },
-        bonds: {
-            type: Array,
+        bonds: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
             default:[]
-        },
+        }],
+        sentBondRequest: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            default:[]
+        }],
+        bondRequestList: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            default:[]
+        }],
         numOfBonds: {
             type: Number,
             default:0
@@ -108,6 +119,6 @@ userSchema.statics.searchUserByEmail = async function (email) {
 };
 
 
-const userModel = db.model('user',userSchema);
+const User = db.model('User',userSchema);
 
-module.exports = userModel;
+module.exports = User;

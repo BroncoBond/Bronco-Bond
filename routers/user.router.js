@@ -26,12 +26,19 @@ router.get("/:id", userController.getById);
 //Delete User
 router.delete("/:id", userController.deleteAccount);
 
-//friend User
-router.put("/bond/:id", userController.bondUser);
+//Send Bond Request to User
+router.put("/sendBond/:id", userController.requestBondUser);
+
+//Accept Bond Request from User
+router.put("/acceptBond/:id", userController.acceptBondRequest);
+
+//Decline Bond Request from User
+router.put("/declineBond/:id", userController.declineBondRequest)
 
 //unfriend User
 router.delete("/unBond/:id", userController.unfriendUser);
 
+//Logout User
 router.post("/logout", auth.isAuth, userController.logout);
 
 module.exports = router;

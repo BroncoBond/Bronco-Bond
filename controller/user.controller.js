@@ -221,28 +221,68 @@ exports.deleteAccount = async (req, res) => {
     }
 };
 
-// This function is used to friend another user's account
-exports.bondUser = async (req,res) => {
+// This function is used to send a request to recipient
+exports.requestBondUser = async (req, res) => {
     if (req.body._id !== req.params.id) {
         try {
-            const user = await User.findById(req.params.id);
-            const currentUser = await User.findById(req.body._id);
-            if (!user.bonds.includes(req.body._id)) {
-                await user.updateOne({ $push: { bonds: req.body._id}, $inc: { numOfBonds: 1} });
-                await currentUser.updateOne({ $push: { bonds: req.params.id}, $inc: { numOfBonds: 1} });
-                // If the user is trying to friend user, return 200 status with the error
-                return res.status(200).json("User has been friended")
-            } else {
-                // If the user is trying to friend a already friended user, return a 403 status with an error message
-                return res.status(403).json("You already friend this user")
+            const recipient = await User.findByIdAndUpdate(req.params.id, {
+                $addToSet: { bondRequestList: req.body._id}
+        }, {new: true });
+
+            if (!recipient) {
+                return res.status(404).json("Recipient user not found");
             }
+
+            return res.status(200).json("Friend request sent");
         } catch (error) {
-            // If there is a error trying to friend user, return a 500 status with an error message
-            return res.status(500).json(error)
+            return res.status(500).json({ error: error.message});
         }
     } else {
-        // If the user is trying to friend themselves, return a 403 status with an error message
-        return res.status(403).json("You can't friend yourself")
+        return res.status(403).json("You can't friend youself");
+    }
+}
+
+exports.acceptBondRequest = async(req, res) => {
+    try {
+        const recipient = await User.findById(req.params.id);
+        const requester = await User.findById(req.body._id);
+
+        if (!recipient || !requester) {
+            return res.status(404).json("User not found");
+        }
+
+        if (!recipient.bondRequestList.includes(req.body._id)) {
+            return res.status(400).json("No bond request from this user");
+        }
+
+        await recipient.updateOne({ $pull: { bondRequestList: req.body._id}});
+
+        const result = await UserService.acceptBondRequest(req.params.id, req.body._id);
+
+        return res.status(result.status).json(result.message);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+exports.declineBondRequest = async(req, res) => {
+    try {
+        const recipient = await User.findById(req.params.id);
+        const requester = await User.findById(req.body._id);
+
+        if (!recipient || !requester) {
+            return res.status(404).json("User not found");
+        }
+
+        if (!recipient.bondRequestList.includes(req.body._id)) {
+            return res.status(400).json("No bond request from this user");
+        }
+
+        await recipient.updateOne({ $pull: { bondRequestList: req.body._id}});
+
+        return res.status(200).json("Bond Request Declined");
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
     }
 }
 
