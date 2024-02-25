@@ -10,8 +10,7 @@ import 'package:bronco_bond/src/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchPage extends StatefulWidget {
-  final token;
-  const SearchPage({@required this.token, Key? key}) : super(key: key);
+  const SearchPage({super.key});
 
   @override
   State<SearchPage> createState() => SearchPageState();
@@ -46,9 +45,10 @@ class SearchPageState extends State<SearchPage> {
           print(user['username']);
         }
 
+        /*
         var jsonResponse = jsonDecode(response.body);
         var myToken = jsonResponse['token'];
-        prefs.setString('token', myToken); // Handle null values
+        prefs.setString('token', myToken); // Handle null values */
 
         print('Search Results: $searchResults');
       } else {
@@ -63,18 +63,6 @@ class SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     initSharedPref();
-    Map<String, dynamic>? jwtDecodedToken;
-
-    try {
-      jwtDecodedToken = JwtDecoder.decode(widget.token);
-      print('Decoded token: $jwtDecodedToken');
-    } catch (e) {
-      print('Error decoding token: $e');
-    }
-
-    // Check if 'username' field exists, otherwise set a default value
-    username = jwtDecodedToken?['username'] ?? 'Unknown';
-    userID = jwtDecodedToken?['_id'] ?? 'Unknown';
   }
 
   void initSharedPref() async {
@@ -101,7 +89,6 @@ class SearchPageState extends State<SearchPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(username),
               Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: buildSearchBar(" ", searchController)),
