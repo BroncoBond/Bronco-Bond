@@ -284,6 +284,7 @@ exports.declineBondRequest = async(req, res) => {
         }
 
         await recipient.updateOne({ $pull: { bondRequestsToUser: req.body._id}});
+        await requester.updateOne({ $pull: { bondRequestsFromUser: req.params.id}});
 
         return res.status(200).json("Bond Request Declined");
     } catch (error) {
