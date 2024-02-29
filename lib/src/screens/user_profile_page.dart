@@ -86,9 +86,10 @@ class UserProfileState extends State<UserProfile>
           descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
           graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
           bonds = userData['user']['bonds'] ?? [];
-          bondRequests = userData['user']['bondRequestList'] ?? [];
+          bondRequests = userData['user']['bondRequestsToUser'] ?? [];
           isBonded = bonds.contains(currentUserID);
           isRequested = bondRequests.contains(currentUserID);
+          print('$isRequested');
 
           late dynamic profilePicture =
               userData['user']['profilePicture'] ?? '';
