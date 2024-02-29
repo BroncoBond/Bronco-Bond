@@ -85,7 +85,7 @@ const List<String> minors = [
   "Computer Science",
   "Contract Management",
   "Criminology",
-  "Culinology®",
+  "Culinology",
   "Dance",
   "Data Science",
   "Economics",
