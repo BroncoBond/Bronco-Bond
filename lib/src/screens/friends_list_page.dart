@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:bronco_bond/src/screens/user_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -71,6 +70,29 @@ class FriendsListPageState extends State<FriendsListPage> {
       return {};
     }
   }
+
+  void acceptRequest(String userID, String? currentUserID) async {
+    // User id of the person you want to follow in the body
+    var regBody = {"_id": userID};
+
+    try {
+      // Current user id is in route
+      // print('Current User: $currentUserID');
+      // print('User you want to follow: $userID');
+
+      var response = await http.put(Uri.parse('$acceptUser/$currentUserID'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(regBody));
+
+      print(response.body);
+
+      setState(() {});
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
+
+  void declineRequest() {}
 
   @override
   Widget build(BuildContext context) {
@@ -264,6 +286,7 @@ class FriendsListPageState extends State<FriendsListPage> {
               final userData = snapshot.data![index];
               final profilePicture = userData['user']['profilePicture'];
               final username = userData['user']['username'];
+              final userID = userData['user']['_id'];
               return MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: InkWell(
@@ -278,17 +301,47 @@ class FriendsListPageState extends State<FriendsListPage> {
                         ? Colors.grey.withOpacity(0.5) // Grey when tapped
                         : null, // Default background color when not tapped
                     child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: profilePicture != null &&
-                                profilePicture != ''
-                            ? MemoryImage(decodeProfilePicture(profilePicture))
-                            : const AssetImage(
-                                    'assets/images/user_profile_icon.png')
-                                as ImageProvider,
-                      ),
-                      title: Text(username ?? 'Unknown'),
-                    ),
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          backgroundImage:
+                              profilePicture != null && profilePicture != ''
+                                  ? MemoryImage(
+                                      decodeProfilePicture(profilePicture))
+                                  : const AssetImage(
+                                          'assets/images/user_profile_icon.png')
+                                      as ImageProvider,
+                        ),
+                        title: Text(username ?? 'Unknown'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                acceptRequest(userID, widget.userID);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xff3B5F43),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                              child: const Text('Accept'),
+                            ),
+                            const SizedBox(width: 8.0),
+                            ElevatedButton(
+                              onPressed: () {
+                                declineRequest();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFABABAB),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
+                              child: const Text('Accept'),
+                            ),
+                          ],
+                        )),
                   ),
                 ),
               );

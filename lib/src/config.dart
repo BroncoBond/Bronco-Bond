@@ -9,3 +9,5 @@ const String getUserByID = '$url/user';
 const String bondUser = '$url/user/sendBond';
 const String unbondUser = '$url/user/unbond';
 const String logout = '$url/user/logout';
+const String acceptUser = '$url/user/acceptBond';
+const String declineUser = '$url/user/declineBond';
