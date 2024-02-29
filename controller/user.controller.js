@@ -180,8 +180,9 @@ exports.updateUserInfo = async (req, res) => {
 
             // Checks if request body contains image and calls the compressImage function
             if (image) {
+                // Passes in the image variable and options object with width and height set to 200
                 const compressedImage = await UserService.compressImage(image, { width: 200, height: 200 });
-                req.body.profilePicture = compressedImage;
+                req.body.profilePicture = compressedImage; // Sets the profilePicture property of the req.body object to the compressedImage variable
             } 
 
             // Log the data that will be used to update the user
