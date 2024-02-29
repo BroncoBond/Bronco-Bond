@@ -2,7 +2,9 @@ const UserService = require("../services/user.services");
 const bcrypt = require("bcrypt");
 const User = require("../model/user.model");
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 require('dotenv').config();
+
 
 exports.register = async (req, res, next) => {
     try {
@@ -136,7 +138,7 @@ exports.getAllUserIds = async (req, res) => {
 
 exports.getAllUserData = async (req, res) => {
     try {
-        const users = await User.find({}).select('-password -email'); // fetch the user data for all users
+        const users = await User.find({}).select('-password -email -profilePicture'); // fetch the user data for all users
         return res.status(200).json(users); // return the array of user data
     } catch (error) {
         console.error('Error fetching user IDs:', error);
@@ -225,8 +227,11 @@ exports.deleteAccount = async (req, res) => {
 exports.requestBondUser = async (req, res) => {
     if (req.body._id !== req.params.id) {
         try {
-            const recipient = await User.findByIdAndUpdate(req.params.id, {
-                $addToSet: { bondRequestList: req.body._id}
+            const recipient = await User.findByIdAndUpdate(req.body._id, {
+                $addToSet: { bondRequestsToUser: req.params.id}
+        }, {new: true });
+            const sender = await User.findByIdAndUpdate(req.params.id, {
+                $addToSet: { bondRequestsFromUser: req.body._id}
         }, {new: true });
 
             if (!recipient) {
@@ -244,23 +249,23 @@ exports.requestBondUser = async (req, res) => {
 
 exports.acceptBondRequest = async(req, res) => {
     try {
-        const recipient = await User.findById(req.params.id);
-        const requester = await User.findById(req.body._id);
 
-        if (!recipient || !requester) {
+        const recipient = await User.findById(req.params.id);
+        const sender = await User.findById(req.body._id);
+
+        if (!recipient || !sender) {
             return res.status(404).json("User not found");
         }
 
-        if (!recipient.bondRequestList.includes(req.body._id)) {
+        if (!recipient.bondRequestsToUser.includes(req.body._id)) {
             return res.status(400).json("No bond request from this user");
         }
 
-        await recipient.updateOne({ $pull: { bondRequestList: req.body._id}});
-
         const result = await UserService.acceptBondRequest(req.params.id, req.body._id);
-
+        
         return res.status(result.status).json(result.message);
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ error: error.message });
     }
 }
@@ -274,11 +279,11 @@ exports.declineBondRequest = async(req, res) => {
             return res.status(404).json("User not found");
         }
 
-        if (!recipient.bondRequestList.includes(req.body._id)) {
+        if (!recipient.bondRequestsToUser.includes(req.body._id)) {
             return res.status(400).json("No bond request from this user");
         }
 
-        await recipient.updateOne({ $pull: { bondRequestList: req.body._id}});
+        await recipient.updateOne({ $pull: { bondRequestsToUser: req.body._id}});
 
         return res.status(200).json("Bond Request Declined");
     } catch (error) {
@@ -292,21 +297,22 @@ exports.unfriendUser = async (req, res) => {
         try {
             const user = await User.findById(req.params.id);
             const currentUser = await User.findById(req.body._id);
-            if (user.bonds.includes(req.body._id)) {
+            console.log(typeof req.body._id); // Log the type of req.body._id
+            console.log(typeof req.params.id); // Log the type of req.params.id
+            console.log(user.bonds.map(bond => typeof bond)); // Log the types of the elements of user.bonds
+            if (user.bonds.map(bond => bond.toString()).includes(req.body._id)) {
                 await user.updateOne({ $pull: { bonds: req.body._id }, $inc: { numOfBonds: -1 } });
                 await currentUser.updateOne({ $pull: { bonds: req.params.id }, $inc: { numOfBonds: -1 } });
-                // If the user is successfully unfriended, return a 200 status with a success message
+                console.log('User bonds after:', user.bonds);
+                console.log('Current user bonds after:', currentUser.bonds);
                 return res.status(200).json("User has been unfriended");
             } else {
-                // If the user is trying to unfriend a user who is not in their friends list, return a 403 status with an error message
                 return res.status(403).json("You are not friends with this user");
             }
         } catch (error) {
-            // If there is an error trying to unfriend the user, return a 500 status with an error message
             return res.status(500).json(error);
         }
     } else {
-        // If the user is trying to unfriend themselves, return a 403 status with an error message
         return res.status(403).json("You can't unfriend yourself");
     }
 }

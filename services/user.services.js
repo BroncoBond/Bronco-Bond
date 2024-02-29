@@ -1,9 +1,9 @@
-const UserModel = require('../model/user.model')
+const User = require('../model/user.model')
 const jwt = require(`jsonwebtoken`);
 
 class UserService{
     static async registerUser(email, username, password) {
-        const createUser = new UserModel({ email, username, password });
+        const createUser = new User({ email, username, password });
         try {
             const newUser = await createUser.save();
 
@@ -31,34 +31,45 @@ class UserService{
 
     static async checkuser(email){
         try {
-            return await UserModel.findOne({email});
+            return await User.findOne({email});
         } catch (error) {
             throw error;
         }
     }
 
-    static async acceptRequest(req, res) {
+    static async acceptBondRequest(recipientID, senderID) {
         try {
-            const recipient = await User.findById(req.params.id);
-            const currentUser = await User.findById(req.body._id);
-            if (!recipient.bonds.includes(req.body._id)) {
-                await recipient.updateOne({ $push: { bonds: req.body._id}, $inc: { numOfBonds: 1} });
-                await currentUser.updateOne({ $push: { bonds: req.params.id}, $inc: { numOfBonds: 1} });
-                // If the user is trying to friend recipient, return 200 status with the error
-                return res.status(200).json("User has been friended")
+            if (recipientID === senderID) {
+                return { status: 400, message: "A user cannot send a bond request to themselves" };
+            }
+
+            let recipient = await User.findById(recipientID);
+            let sender = await User.findById(senderID);
+
+            if (!recipient.bonds.includes(senderID) && !sender.bonds.includes(recipientID)) {
+                recipient.bonds.push(senderID);
+                recipient.numOfBonds += 1;
+                recipient.bondRequestsToUser.pull(senderID);
+                await recipient.save();
+
+                sender.bonds.push(recipientID);
+                sender.numOfBonds += 1;
+                sender.bondRequestsFromUser.pull(recipientID);
+                await sender.save();
+
+                return { status: 200, message: "Bond request accepted" };
             } else {
-                // If the user is trying to friend a already friended recipient, return a 403 status with an error message
-                return res.status(403).json("You already friend this user")
+                return { status: 403, message: "You are already friended with this user" };
             }
         } catch (error) {
-            // If there is a error trying to friend recipient, return a 500 status with an error message
-            return res.status(500).json(error)
+            console.log(error);
+            return { status: 500, message: error };
         }
     }
 
 /*     static async searchUserByUsername(username, secretKey, jwt_expre) {
     try {
-        const user = await UserModel.findOne({ username });
+        const user = await User.findOne({ username });
 
         if (!user) {
             throw new Error('User not found');
