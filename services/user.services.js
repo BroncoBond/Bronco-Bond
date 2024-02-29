@@ -1,5 +1,6 @@
 const UserModel = require('../model/user.model')
 const jwt = require(`jsonwebtoken`);
+const sharp = require('sharp'); // Import sharp library for image processing
 
 class UserService{
     static async registerUser(email, username, password) {
@@ -86,6 +87,16 @@ class UserService{
             return jwt.sign(data, secretKey, {expiresIn:jwt_expre});
         } catch (error) {
             throw error;
+        }
+    }
+
+    // Compresses image utilizing 'sharp' library
+    static async compressImage(imageBuffer, options) { //imageBuffer - options - 
+        try {
+            const compressImageBuffer = await sharp(imageBuffer).resize(options).toBuffer();
+            return compressImageBuffer;
+        } catch (error) {
+            return error;
         }
     }
 }
