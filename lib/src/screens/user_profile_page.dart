@@ -89,6 +89,8 @@ class UserProfileState extends State<UserProfile>
           bondRequests = userData['user']['bondRequestsToUser'] ?? [];
           isBonded = bonds.contains(currentUserID);
           isRequested = bondRequests.contains(currentUserID);
+          print('isBonded: $isBonded');
+          print('isRequested: $isRequested');
 
           late dynamic profilePicture =
               userData['user']['profilePicture'] ?? '';
@@ -161,6 +163,7 @@ class UserProfileState extends State<UserProfile>
       print('Unfollowed user: $userID');
       setState(() {
         isBonded = false;
+        isRequested = false;
       });
     } catch (e) {
       print('Error fetching user data: $e');
@@ -714,7 +717,9 @@ class UserProfileState extends State<UserProfile>
             if (isBonded) {
               unbond(userID, currentUserID);
             } else if (isRequested) {
-              // cancel bond request, set isRequested == false
+              setState(() {
+                isRequested = false;
+              });
             } else {
               sendBond(userID, currentUserID);
             }
