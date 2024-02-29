@@ -89,24 +89,23 @@ class UserProfileState extends State<UserProfile>
           bondRequests = userData['user']['bondRequestsToUser'] ?? [];
           isBonded = bonds.contains(currentUserID);
           isRequested = bondRequests.contains(currentUserID);
-          print('$isRequested');
 
           late dynamic profilePicture =
               userData['user']['profilePicture'] ?? '';
           if (profilePicture != null && profilePicture != '') {
-            print('${profilePicture['contentType'].runtimeType}');
-            print('${profilePicture['contentType']}');
-            print('${profilePicture['data']['data'].runtimeType}');
-            print('${profilePicture['data']['data']}');
+            //print('${profilePicture['contentType'].runtimeType}');
+            //print('${profilePicture['contentType']}');
+            //print('${profilePicture['data']['data'].runtimeType}');
+            //print('${profilePicture['data']['data']}');
 
             profilePictureData = List<int>.from(profilePicture['data']['data']);
             profilePictureContentType = profilePicture['contentType'];
-            print('$profilePictureData');
+            //print('$profilePictureData');
             List<int> decodedImageBytes =
                 base64Decode(String.fromCharCodes(profilePictureData));
             //print('${decodedImageBytes}');
             pfp = Uint8List.fromList(decodedImageBytes);
-            print('pfp: $pfp');
+            //print('pfp: $pfp');
           } else {
             pfp = Uint8List(0);
           }
@@ -278,7 +277,7 @@ class UserProfileState extends State<UserProfile>
     bool isCurrentUserProfile = widget.userID == currentUserID;
     return Column(
       children: [
-        buildProfileHeader(),
+        buildProfileHeader(isCurrentUserProfile),
         buildInfoBar(),
         // Check if this is the current user, if not then show a follow button
         if (!isCurrentUserProfile)
@@ -456,7 +455,7 @@ class UserProfileState extends State<UserProfile>
     );
   }
 
-  Widget buildProfileHeader() {
+  Widget buildProfileHeader(bool isCurrentUserProfile) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -495,7 +494,8 @@ class UserProfileState extends State<UserProfile>
             children: [
               buildStatColumn('Posts', 0),
               const SizedBox(width: 20),
-              buildBondsStat('Bonds', numOfBonds, widget.userID),
+              buildBondsStat(
+                  'Bonds', numOfBonds, widget.userID, isCurrentUserProfile),
               const SizedBox(width: 20),
               buildStatColumn('Interests', 0),
             ],
@@ -523,41 +523,46 @@ class UserProfileState extends State<UserProfile>
     );
   }
 
-  Widget buildBondsStat(String label, int value, String userID) {
-    return Column(
-      children: [
-        ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FriendsListPage(userID: userID),
-                ),
-              );
-            },
-            style: ButtonStyle(
-              padding: MaterialStateProperty.all(EdgeInsets.zero), // No padding
-              backgroundColor: MaterialStateProperty.all(Color(0xFFFFFCFC)),
-              shadowColor: MaterialStateProperty.all(Colors.transparent),
-              elevation: MaterialStateProperty.all(0),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  value.toString(),
-                  style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                ),
-                Text(
-                  label,
-                  style: const TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w400),
-                ),
-              ],
-            )),
-      ],
+  Widget buildBondsStat(
+      String label, int value, String userID, bool isCurrentUserProfile) {
+    return IgnorePointer(
+      ignoring: !isCurrentUserProfile,
+      child: Column(
+        children: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FriendsListPage(userID: userID),
+                  ),
+                );
+              },
+              style: ButtonStyle(
+                padding:
+                    MaterialStateProperty.all(EdgeInsets.zero), // No padding
+                backgroundColor: MaterialStateProperty.all(Color(0xFFFFFCFC)),
+                shadowColor: MaterialStateProperty.all(Colors.transparent),
+                elevation: MaterialStateProperty.all(0),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    value.toString(),
+                    style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                  Text(
+                    label,
+                    style: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w400),
+                  ),
+                ],
+              )),
+        ],
+      ),
     );
   }
 
