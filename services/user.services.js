@@ -90,15 +90,20 @@ class UserService{
         }
     }
 
-    // Compresses image utilizing 'sharp' library
-    static async compressImage(imageBuffer, options) { //imageBuffer - options - 
+
+    static async compressImage(image, options) {
         try {
-            const compressImageBuffer = await sharp(imageBuffer).resize(options).toBuffer();
-            return compressImageBuffer;
+          const compressedImage = await sharp(image.data)
+            .resize(options.width, options.height, { fit: "inside" }) // Uses the 'sharp' library to 'resize' the image to the width and height specified in the 'options' parameter
+            .jpeg({ quality: 80 }) // Compresses the image to JPEG format with a quality of 80
+            .toBuffer(); // Converts image to a Buffer object, which can be used to store compressed image data in the database
+      
+          return compressedImage;
         } catch (error) {
-            return error;
+          console.error("Error compressing image: ", error);
+          throw error;
         }
-    }
+      }
 }
 
 class CustomError extends Error {
