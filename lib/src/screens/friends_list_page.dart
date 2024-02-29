@@ -72,27 +72,32 @@ class FriendsListPageState extends State<FriendsListPage> {
   }
 
   void acceptRequest(String userID, String? currentUserID) async {
-    // User id of the person you want to follow in the body
     var regBody = {"_id": userID};
 
     try {
-      // Current user id is in route
-      // print('Current User: $currentUserID');
-      // print('User you want to follow: $userID');
-
       var response = await http.put(Uri.parse('$acceptUser/$currentUserID'),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
 
       print(response.body);
-
-      setState(() {});
     } catch (e) {
       print('Error fetching user data: $e');
     }
   }
 
-  void declineRequest() {}
+  void declineRequest(String userID, String? currentUserID) async {
+    var regBody = {"_id": userID};
+
+    try {
+      var response = await http.put(Uri.parse('$declineUser/$currentUserID'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(regBody));
+
+      print(response.body);
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -330,7 +335,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                             const SizedBox(width: 8.0),
                             ElevatedButton(
                               onPressed: () {
-                                declineRequest();
+                                declineRequest(userID, widget.userID);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFABABAB),
@@ -338,7 +343,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                               ),
-                              child: const Text('Accept'),
+                              child: const Text('Decline'),
                             ),
                           ],
                         )),
