@@ -178,26 +178,18 @@ exports.updateUserInfo = async (req, res) => {
 
             const { username, password, profilePicture, graduationDate, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName} = req.body;
 
-            // Checks if body is image and calls the compressImage 
+            // Checks if request body contains image and calls the compressImage function
             if (image) {
-                // Compress image
-                const compressedImage = await UserService.compressImage(image.data, { width: 200, height: 200}); // Adjust width and height as needed
-
-                // Update user information including the compressed imageu
-                const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-                    $set: {username, password, profilePicture: compressedImage, graduationDate, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName },
-                }, { new: true}); // Add { new: true } to return the updated user
-
-                // Send the response
-                return res.status(200).json({status: true, success: 'User Update Successfully', user: updatedUser});
-            }
+                const compressedImage = await UserService.compressImage(image, { width: 200, height: 200 });
+                req.body.profilePicture = compressedImage;
+            } 
 
             // Log the data that will be used to update the user
             console.log('Updating user with data:', req.body);
             
             // Try to update the user with the given ID and data
             const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-                $set: { username, password, profilePicture, graduationDate, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName},
+                $set: { username, password, profilePicture: compressedImage, graduationDate, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName},
             }, { new: true }); // Add { new: true } to return the updated user
 
             if (!updatedUser) {
