@@ -673,10 +673,9 @@ class UserProfileState extends State<UserProfile>
               child: const Text(
                 "Message",
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
             ),
           ),
@@ -696,12 +695,10 @@ class UserProfileState extends State<UserProfile>
       // if users are bonded already, show "unbond"
       buttonText = 'Unbond';
       buttonColor = Color(0xFFABABAB);
-      textColor = Colors.black;
     } else if (isRequested) {
       // if users are only requested but not friends, show "requested"
       buttonText = 'Requested';
       buttonColor = Color(0xFFABABAB);
-      textColor = Colors.black;
     } else {
       // if users are not bonded, show "bond"
       buttonText = 'Bond';
