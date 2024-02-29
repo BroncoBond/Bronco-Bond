@@ -27,6 +27,7 @@ class UserProfileState extends State<UserProfile>
   late String descriptionBio = '';
   late String graduationDate = '';
   late List<dynamic> bonds = [];
+  late List<dynamic> bondRequests = [];
   late List<int> profilePictureData;
   late String profilePictureContentType;
   late Uint8List pfp;
@@ -35,6 +36,7 @@ class UserProfileState extends State<UserProfile>
   late SharedPreferences prefs;
   late Timer timer;
   bool isBonded = false;
+  bool isRequested = false;
 
   @override
   void initState() {
@@ -84,7 +86,9 @@ class UserProfileState extends State<UserProfile>
           descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
           graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
           bonds = userData['user']['bonds'] ?? [];
+          bondRequests = userData['user']['bondRequestList'] ?? [];
           isBonded = bonds.contains(currentUserID);
+          isRequested = bondRequests.contains(currentUserID);
 
           late dynamic profilePicture =
               userData['user']['profilePicture'] ?? '';
@@ -115,14 +119,14 @@ class UserProfileState extends State<UserProfile>
     }
   }
 
-  void bond(String userID, String? currentUserID) async {
+  void sendBond(String userID, String? currentUserID) async {
     // User id of the person you want to follow in the body
     var regBody = {"_id": userID};
 
     try {
       // Current user id is in route
-      print('Current User: $currentUserID');
-      print('User you want to follow: $userID');
+      // print('Current User: $currentUserID');
+      // print('User you want to follow: $userID');
 
       var response = await http.put(Uri.parse('$bondUser/$currentUserID'),
           headers: {"Content-Type": "application/json"},
@@ -130,9 +134,9 @@ class UserProfileState extends State<UserProfile>
 
       print(response.body);
 
-      print('Now following user: $userID');
       setState(() {
-        isBonded = true;
+        isRequested =
+            true; // set to "requested" when pressed if bonded is false.
       });
     } catch (e) {
       print('Error fetching user data: $e');
@@ -641,35 +645,7 @@ class UserProfileState extends State<UserProfile>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: SizedBox(
-            width: 180,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () {
-                isBonded
-                    ? unbond(userID, currentUserID)
-                    : bond(userID, currentUserID);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    isBonded ? Colors.grey : const Color(0xFF3B5F43),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: Text(
-                isBonded ? "Unbond" : "Bond",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isBonded ? Colors.black : Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ),
+        buildBondButton(userID, currentUserID),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: SizedBox(
@@ -697,6 +673,62 @@ class UserProfileState extends State<UserProfile>
           ),
         ),
       ],
+    );
+  }
+
+  /*
+  * Builds the Bond button based off the status of the 2 users
+  */
+  Widget buildBondButton(String userID, String? currentUserID) {
+    String buttonText = '';
+    Color buttonColor = Color(0xFF3B5F43);
+    Color textColor = Colors.white;
+    if (isBonded) {
+      // if users are bonded already, show "unbond"
+      buttonText = 'Unbond';
+      buttonColor = Color(0xFFABABAB);
+      textColor = Colors.black;
+    } else if (isRequested) {
+      // if users are only requested but not friends, show "requested"
+      buttonText = 'Requested';
+      buttonColor = Color(0xFFABABAB);
+      textColor = Colors.black;
+    } else {
+      // if users are not bonded, show "bond"
+      buttonText = 'Bond';
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: SizedBox(
+        width: 180,
+        height: 40,
+        child: ElevatedButton(
+          onPressed: () {
+            if (isBonded) {
+              unbond(userID, currentUserID);
+            } else if (isRequested) {
+              // cancel bond request, set isRequested == false
+            } else {
+              sendBond(userID, currentUserID);
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: buttonColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+          child: Text(
+            buttonText,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
