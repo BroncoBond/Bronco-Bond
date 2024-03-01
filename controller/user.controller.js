@@ -38,15 +38,16 @@ exports.login = async(req,res,next)=>{
     try {
         // Extract the email and password from the request body
         const {email,password} = req.body;
-
+        const{staySignedIn} = req.body;
+        console.log(staySignedIn);
         // Log the password for debugging purposes (note: this is generally not a good practice for production code due to security reasons)
-        console.log("------",password);
+        console.log("Pass: ",password);
 
         // Try to find a user with the given email
         const user = await UserService.checkuser(email);
 
         // Log the user for debugging purposes
-        console.log("----------------------------------------user---------------------------",user);
+        console.log("|--User--|\n",user);
 
         // If no user is found, throw an error
         if (!user) {
@@ -54,8 +55,9 @@ exports.login = async(req,res,next)=>{
         }
 
         // Check if the provided password matches the user's password
+        console.log("User Password: " + user.password);
         const isMatch = await user.comparePassword(password);
-        
+        console.log("isMatch: " + isMatch);
         // If the passwords don't match, throw an error
         if (isMatch === false) {
             throw new Error('Password Invalid');
@@ -64,9 +66,14 @@ exports.login = async(req,res,next)=>{
         // If the passwords match, create a token for the user
         let tokenData = {_id:user._id};
 
+        let token;
         // Generate the token
-        const token = await UserService.generateToken(tokenData, process.env.JWT_KEY, '1d')
-
+        if (!staySignedIn)
+        {
+            token = await UserService.generateToken(tokenData, process.env.JWT_KEY, '10m')
+        } else {
+            token = await UserService.generateToken(tokenData, process.env.JWT_KEY)
+        }
         // Replace the user's existing tokens with new token
         await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
 
@@ -340,6 +347,7 @@ exports.logout = async (req, res) => {
     const newTokens = tokens.filter(t => t.token !== token);
 
     await User.findByIdAndUpdate(req.user._id, { tokens: newTokens });
+    console.log("Signout Successful");
     res.json({ status: true, message: 'Sign out successfully!' });
   }
 };

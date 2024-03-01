@@ -35,5 +35,6 @@
     "socket.io": "^4.7.4"
   },
   "description": "BroncoBond",
-  "keywords": []
+  "keywords": [],
+  "devDependencies": {}
 }

@@ -90,6 +90,10 @@ const userSchema = new Schema({
 );
 
 userSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) {
+        return next();
+    }
+    
     try {
         const salt = await bcrypt.genSalt(10);
         const hashpass = await bcrypt.hash(this.password, salt);
@@ -100,9 +104,11 @@ userSchema.pre('save', async function(next) {
     }
 });
 
-userSchema.methods.comparePassword = async function(userPassword){
+userSchema.methods.comparePassword = function(userPassword){
     try {
-        const isMatch = await bcrypt.compare(userPassword,this.password);
+        console.log("Comparing password: " + this.password);
+        console.log("Comparing entered password: " + userPassword);
+        const isMatch = bcrypt.compareSync(userPassword,this.password);
         return isMatch;
     } catch (error) {
         throw error;
