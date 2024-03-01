@@ -38,7 +38,8 @@ class LoginPageState extends State<LoginPage> {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       var regBody = {
         "email": emailController.text,
-        "password": passwordController.text
+        "password": passwordController.text,
+        "signedIn": staySignedIn.toString()
       };
 
       try {
@@ -77,8 +78,8 @@ class LoginPageState extends State<LoginPage> {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: const Text('Login Failed'),
-                content:
-                    const Text('Please check your email and password and try again.'),
+                content: const Text(
+                    'Please check your email and password and try again.'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
@@ -105,7 +106,8 @@ class LoginPageState extends State<LoginPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Login Failed'),
-            content: const Text('Email or password is empty. Please try again.'),
+            content:
+                const Text('Email or password is empty. Please try again.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -151,7 +153,11 @@ class LoginPageState extends State<LoginPage> {
                 passwordController, true),
             const SizedBox(height: 30),
             buildLoginButton("Login", context),
-            buildCheckBox("Stay signed in", staySignedIn),
+            buildCheckBox("Stay signed in", staySignedIn, (value) {
+              setState(() {
+                staySignedIn = value ?? false;
+              });
+            }),
             const SizedBox(height: 70),
             buildTextButton(
               "Can't Sign In?",
@@ -323,7 +329,8 @@ class LoginPageState extends State<LoginPage> {
   }
 
   // Widget for Display Name on Profile checkbox
-  Widget buildCheckBox(String label, bool currentVal) {
+  Widget buildCheckBox(
+      String label, bool currentVal, Function(bool?) onChanged) {
     return Column(
       children: [
         Padding(
@@ -338,12 +345,9 @@ class LoginPageState extends State<LoginPage> {
               ),
             ),
             value: currentVal, // Set default value of checkbox to false
-            onChanged: (bool? newVal) {
-              setState(() {
-                /* Add checkbox functionality here */
-              });
-            },
+            onChanged: onChanged,
             controlAffinity: ListTileControlAffinity.leading,
+            activeColor: const Color(0xFF3B5F43),
           ),
         ),
         const SizedBox(height: 20),
