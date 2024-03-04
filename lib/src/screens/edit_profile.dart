@@ -24,7 +24,9 @@ class EditProfilePageState extends State<EditProfile> {
               fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black)
               ),
               centerTitle: true,
+        backgroundColor: Colors.white, 
       ),
+      backgroundColor: Colors.white, 
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
