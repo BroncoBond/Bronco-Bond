@@ -9,6 +9,8 @@ const db = require('./config/db');
 const UserModel = require('./model/user.model');
 const userRouter = require('./routers/user.router');
 const errorHandler = require('./middleware/errorHandler');
+const durationLogger = require('./middleware/durationLogger');
+const requestDurationLogger = require('./middleware/durationLogger');
 
 const app = express();
 const port = process.env.WEBSITES_PORT || process.env.PORT;
@@ -23,6 +25,7 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 // Routes
+app.use(requestDurationLogger);
 app.use('/user', userRouter);
 
 // Error Handler
