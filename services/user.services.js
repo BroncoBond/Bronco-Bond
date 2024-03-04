@@ -31,6 +31,7 @@ class UserService{
 
     static async checkuser(email){
         try {
+            console.log("Checking User: " + email);
             return await User.findOne({email});
         } catch (error) {
             throw error;
@@ -91,10 +92,15 @@ class UserService{
 
     static async generateToken(data,secretKey, jwt_expre) {
         try {
-            const tokenData = {
-                data
-            };
             return jwt.sign(data, secretKey, {expiresIn:jwt_expre});
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    static async generateToken(data, secretKey) {
+        try {
+            return jwt.sign(data, secretKey, {expiresIn:'10d'});
         } catch (error) {
             throw error;
         }
