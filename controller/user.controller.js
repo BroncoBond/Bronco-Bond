@@ -53,7 +53,7 @@ exports.login = async(req,res,next)=>{
         if (!user || !user._id) {
             throw new Error('User does not exist!');
         } else {
-            console.log("User found!")
+            console.log("User found!");
         }
 
         // Check if the provided password matches the user's password
