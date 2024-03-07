@@ -284,6 +284,7 @@ class UserProfileState extends State<UserProfile>
         // Check if this is the current user, if not then show a follow button
         if (!isCurrentUserProfile)
           buildOtherProfileButtons(widget.userID, currentUserID),
+        if (isCurrentUserProfile) buildEditProfileButton(currentUserID),
         TabBar(
           labelStyle:
               const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -614,7 +615,7 @@ class UserProfileState extends State<UserProfile>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
             child: Row(
               children: [
                 const SizedBox(width: 10),
@@ -624,38 +625,6 @@ class UserProfileState extends State<UserProfile>
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                    context,
-                      MaterialPageRoute(builder: (context) => EditProfile()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: const BorderSide(
-                        color: Color(0xFF3B5F43),
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    "Edit Profile",
-                    style: GoogleFonts.raleway(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    ),
-                  )),
-              ],
-            ),
-          )
         ],
       ),
     );
@@ -686,28 +655,28 @@ class UserProfileState extends State<UserProfile>
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         buildBondButton(userID, currentUserID),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: SizedBox(
-            width: 180,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () {
-                // Add your follow button logic here
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFABABAB),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+        SizedBox(
+          width: 180,
+          height: 40,
+          child: ElevatedButton(
+            onPressed: () {
+              // Add your follow button logic here
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                side: const BorderSide(
+                  color: Color(0xFF3B5F43),
                 ),
               ),
-              child: const Text(
-                "Message",
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
+            ),
+            child: const Text(
+              "Message",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black),
             ),
           ),
         ),
@@ -735,38 +704,72 @@ class UserProfileState extends State<UserProfile>
       buttonText = 'Bond';
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: SizedBox(
-        width: 180,
-        height: 40,
-        child: ElevatedButton(
-          onPressed: () {
-            if (isBonded) {
-              unbond(userID, currentUserID);
-            } else if (isRequested) {
-              setState(() {
-                isRequested = false;
-              });
-            } else {
-              sendBond(userID, currentUserID);
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: buttonColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-          ),
-          child: Text(
-            buttonText,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
+    return SizedBox(
+      width: 180,
+      height: 40,
+      child: ElevatedButton(
+        onPressed: () {
+          if (isBonded) {
+            unbond(userID, currentUserID);
+          } else if (isRequested) {
+            setState(() {
+              isRequested = false;
+            });
+          } else {
+            sendBond(userID, currentUserID);
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: buttonColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
           ),
         ),
+        child: Text(
+          buttonText,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: textColor,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildEditProfileButton(String? currentUserID) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditProfile()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: const BorderSide(
+                      color: Color(0xFF3B5F43),
+                    ),
+                  ),
+                ),
+                child: const Text(
+                  "Edit Profile",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                )),
+          ),
+        ],
       ),
     );
   }

@@ -50,7 +50,7 @@ class SearchPageState extends State<SearchPage> {
         var myToken = jsonResponse['token'];
         prefs.setString('token', myToken); // Handle null values */
 
-        print('Search Results: $searchResults');
+        //print('Search Results: $searchResults');
       } else {
         print('Failed to fetch search results');
       }
