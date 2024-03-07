@@ -540,6 +540,7 @@ class UserInfoPageState extends State<UserInfoPage> {
       value: value,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
+        width: 300,
         child: Text(
           value,
           style: const TextStyle(
@@ -548,6 +549,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             color: Colors.black,
           ),
           textAlign: TextAlign.start,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
