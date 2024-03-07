@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:bronco_bond/src/screens/edit_profile.dart';
 import 'package:bronco_bond/src/screens/settings_page.dart';
 import 'package:bronco_bond/src/screens/friends_list_page.dart';
 import 'package:flutter/material.dart';
@@ -623,6 +624,38 @@ class UserProfileState extends State<UserProfile>
               ],
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                    context,
+                      MaterialPageRoute(builder: (context) => EditProfile()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: const BorderSide(
+                        color: Color(0xFF3B5F43),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    "Edit Profile",
+                    style: GoogleFonts.raleway(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
+                  )),
+              ],
+            ),
+          )
         ],
       ),
     );
