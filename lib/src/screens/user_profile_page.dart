@@ -541,12 +541,10 @@ class UserProfileState extends State<UserProfile>
                   ),
                 );
               },
-              style: ButtonStyle(
-                padding:
-                    MaterialStateProperty.all(EdgeInsets.zero), // No padding
-                backgroundColor: MaterialStateProperty.all(Color(0xFFFFFCFC)),
-                shadowColor: MaterialStateProperty.all(Colors.transparent),
-                elevation: MaterialStateProperty.all(0),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFFFCFC),
+                shadowColor: Colors.transparent,
+                elevation: 0,
               ),
               child: Column(
                 children: [
