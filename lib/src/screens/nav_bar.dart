@@ -43,28 +43,28 @@ class BottomNavBarState extends State<BottomNavBar> {
         },
         selectedItemColor: const Color(0xff3B5F43),
         unselectedItemColor: Colors.grey,
-        showSelectedLabels: true,
-        showUnselectedLabels: false,
+        //showSelectedLabels: true,
+        //showUnselectedLabels: false,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_rounded),
-            label: 'Home',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.forum_rounded),
-            label: 'Messages',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.explore),
-            label: 'Explore',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today_rounded),
-            label: 'Events',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_rounded),
-            label: 'Profile',
+            label: '',
           ),
         ],
       ),
