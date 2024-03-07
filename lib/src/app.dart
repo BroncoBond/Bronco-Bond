@@ -50,6 +50,7 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
+      /*
       onGenerateRoute: (RouteSettings routeSettings) {
         switch (routeSettings.name) {
           case 'login':
@@ -74,6 +75,7 @@ class MyApp extends StatelessWidget {
                 builder: (BuildContext context) => const SigninPage());
         }
       },
+      */
     );
   }
 }
