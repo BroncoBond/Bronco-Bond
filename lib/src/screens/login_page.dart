@@ -38,7 +38,8 @@ class LoginPageState extends State<LoginPage> {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       var regBody = {
         "email": emailController.text,
-        "password": passwordController.text
+        "password": passwordController.text,
+        "staySignedIn": staySignedIn.toString()
       };
 
       try {
@@ -47,7 +48,7 @@ class LoginPageState extends State<LoginPage> {
             body: jsonEncode(regBody));
 
         print('${response.statusCode}');
-        print(response.body);
+        // print(response.body);
         if (response.statusCode == 200) {
           Map<String, dynamic> jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status']) {
@@ -72,24 +73,8 @@ class LoginPageState extends State<LoginPage> {
           }
         } else {
           print('HTTP request failed with status: ${response.statusCode}');
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('Login Failed'),
-                content:
-                    const Text('Please check your email and password and try again.'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('OK'),
-                  ),
-                ],
-              );
-            },
-          );
+          buildDialog(context, "Login failed!",
+              "Please check your email and password and try again.");
         }
       } catch (e) {
         print('Error during HTTP request: $e');
@@ -100,23 +85,8 @@ class LoginPageState extends State<LoginPage> {
       // Handle case where email or password is empty
       // You might want to show an error message to the user
       print('Email or password is empty');
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Login Failed'),
-            content: const Text('Email or password is empty. Please try again.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      buildDialog(context, "Login failed!",
+          "Email or password is empty. Please try again.");
     }
   }
 
@@ -151,7 +121,11 @@ class LoginPageState extends State<LoginPage> {
                 passwordController, true),
             const SizedBox(height: 30),
             buildLoginButton("Login", context),
-            buildCheckBox("Stay signed in", staySignedIn),
+            buildCheckBox("Stay signed in", staySignedIn, (value) {
+              setState(() {
+                staySignedIn = value ?? false;
+              });
+            }),
             const SizedBox(height: 70),
             buildTextButton(
               "Can't Sign In?",
@@ -323,7 +297,8 @@ class LoginPageState extends State<LoginPage> {
   }
 
   // Widget for Display Name on Profile checkbox
-  Widget buildCheckBox(String label, bool currentVal) {
+  Widget buildCheckBox(
+      String label, bool currentVal, Function(bool?) onChanged) {
     return Column(
       children: [
         Padding(
@@ -338,16 +313,34 @@ class LoginPageState extends State<LoginPage> {
               ),
             ),
             value: currentVal, // Set default value of checkbox to false
-            onChanged: (bool? newVal) {
-              setState(() {
-                /* Add checkbox functionality here */
-              });
-            },
+            onChanged: onChanged,
             controlAffinity: ListTileControlAffinity.leading,
+            activeColor: const Color(0xFF3B5F43),
           ),
         ),
         const SizedBox(height: 20),
       ],
+    );
+  }
+
+  static Future<dynamic> buildDialog(
+      BuildContext context, title, String content) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

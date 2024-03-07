@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:bronco_bond/src/screens/edit_profile.dart';
 import 'package:bronco_bond/src/screens/settings_page.dart';
 import 'package:bronco_bond/src/screens/friends_list_page.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ class UserProfileState extends State<UserProfile>
   late String descriptionBio = '';
   late String graduationDate = '';
   late List<dynamic> bonds = [];
+  late List<dynamic> bondRequests = [];
   late List<int> profilePictureData;
   late String profilePictureContentType;
   late Uint8List pfp;
@@ -35,6 +37,7 @@ class UserProfileState extends State<UserProfile>
   late SharedPreferences prefs;
   late Timer timer;
   bool isBonded = false;
+  bool isRequested = false;
 
   @override
   void initState() {
@@ -84,24 +87,26 @@ class UserProfileState extends State<UserProfile>
           descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
           graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
           bonds = userData['user']['bonds'] ?? [];
+          bondRequests = userData['user']['bondRequestsToUser'] ?? [];
           isBonded = bonds.contains(currentUserID);
+          isRequested = bondRequests.contains(currentUserID);
 
           late dynamic profilePicture =
               userData['user']['profilePicture'] ?? '';
           if (profilePicture != null && profilePicture != '') {
-            print('${profilePicture['contentType'].runtimeType}');
-            print('${profilePicture['contentType']}');
-            print('${profilePicture['data']['data'].runtimeType}');
-            print('${profilePicture['data']['data']}');
+            //print('${profilePicture['contentType'].runtimeType}');
+            //print('${profilePicture['contentType']}');
+            //print('${profilePicture['data']['data'].runtimeType}');
+            //print('${profilePicture['data']['data']}');
 
             profilePictureData = List<int>.from(profilePicture['data']['data']);
             profilePictureContentType = profilePicture['contentType'];
-            print('$profilePictureData');
+            //print('$profilePictureData');
             List<int> decodedImageBytes =
                 base64Decode(String.fromCharCodes(profilePictureData));
             //print('${decodedImageBytes}');
             pfp = Uint8List.fromList(decodedImageBytes);
-            print('pfp: $pfp');
+            //print('pfp: $pfp');
           } else {
             pfp = Uint8List(0);
           }
@@ -115,14 +120,14 @@ class UserProfileState extends State<UserProfile>
     }
   }
 
-  void bond(String userID, String? currentUserID) async {
+  void sendBond(String userID, String? currentUserID) async {
     // User id of the person you want to follow in the body
     var regBody = {"_id": userID};
 
     try {
       // Current user id is in route
-      print('Current User: $currentUserID');
-      print('User you want to follow: $userID');
+      // print('Current User: $currentUserID');
+      // print('User you want to follow: $userID');
 
       var response = await http.put(Uri.parse('$bondUser/$currentUserID'),
           headers: {"Content-Type": "application/json"},
@@ -130,9 +135,9 @@ class UserProfileState extends State<UserProfile>
 
       print(response.body);
 
-      print('Now following user: $userID');
       setState(() {
-        isBonded = true;
+        isRequested =
+            true; // set to "requested" when pressed if bonded is false.
       });
     } catch (e) {
       print('Error fetching user data: $e');
@@ -157,6 +162,7 @@ class UserProfileState extends State<UserProfile>
       print('Unfollowed user: $userID');
       setState(() {
         isBonded = false;
+        isRequested = false;
       });
     } catch (e) {
       print('Error fetching user data: $e');
@@ -273,11 +279,12 @@ class UserProfileState extends State<UserProfile>
     bool isCurrentUserProfile = widget.userID == currentUserID;
     return Column(
       children: [
-        buildProfileHeader(),
+        buildProfileHeader(isCurrentUserProfile),
         buildInfoBar(),
         // Check if this is the current user, if not then show a follow button
         if (!isCurrentUserProfile)
           buildOtherProfileButtons(widget.userID, currentUserID),
+        if (isCurrentUserProfile) buildEditProfileButton(currentUserID),
         TabBar(
           labelStyle:
               const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -451,7 +458,7 @@ class UserProfileState extends State<UserProfile>
     );
   }
 
-  Widget buildProfileHeader() {
+  Widget buildProfileHeader(bool isCurrentUserProfile) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -490,7 +497,8 @@ class UserProfileState extends State<UserProfile>
             children: [
               buildStatColumn('Posts', 0),
               const SizedBox(width: 20),
-              buildBondsStat('Bonds', numOfBonds, widget.userID),
+              buildBondsStat(
+                  'Bonds', numOfBonds, widget.userID, isCurrentUserProfile),
               const SizedBox(width: 20),
               buildStatColumn('Interests', 0),
             ],
@@ -518,41 +526,46 @@ class UserProfileState extends State<UserProfile>
     );
   }
 
-  Widget buildBondsStat(String label, int value, String userID) {
-    return Column(
-      children: [
-        ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FriendsListPage(userID: userID),
-                ),
-              );
-            },
-            style: ButtonStyle(
-              padding: MaterialStateProperty.all(EdgeInsets.zero), // No padding
-              backgroundColor: MaterialStateProperty.all(Colors.white),
-              shadowColor: MaterialStateProperty.all(Colors.transparent),
-              elevation: MaterialStateProperty.all(0),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  value.toString(),
-                  style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                ),
-                Text(
-                  label,
-                  style: const TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w400),
-                ),
-              ],
-            )),
-      ],
+  Widget buildBondsStat(
+      String label, int value, String userID, bool isCurrentUserProfile) {
+    return IgnorePointer(
+      ignoring: !isCurrentUserProfile,
+      child: Column(
+        children: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FriendsListPage(userID: userID),
+                  ),
+                );
+              },
+              style: ButtonStyle(
+                padding:
+                    MaterialStateProperty.all(EdgeInsets.zero), // No padding
+                backgroundColor: MaterialStateProperty.all(Color(0xFFFFFCFC)),
+                shadowColor: MaterialStateProperty.all(Colors.transparent),
+                elevation: MaterialStateProperty.all(0),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    value.toString(),
+                    style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                  Text(
+                    label,
+                    style: const TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w400),
+                  ),
+                ],
+              )),
+        ],
+      ),
     );
   }
 
@@ -602,7 +615,7 @@ class UserProfileState extends State<UserProfile>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
             child: Row(
               children: [
                 const SizedBox(width: 10),
@@ -641,62 +654,123 @@ class UserProfileState extends State<UserProfile>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: SizedBox(
-            width: 180,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () {
-                isBonded
-                    ? unbond(userID, currentUserID)
-                    : bond(userID, currentUserID);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    isBonded ? Colors.grey : const Color(0xFF3B5F43),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: Text(
-                isBonded ? "Unbond" : "Bond",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isBonded ? Colors.black : Colors.white,
+        buildBondButton(userID, currentUserID),
+        SizedBox(
+          width: 180,
+          height: 40,
+          child: ElevatedButton(
+            onPressed: () {
+              // Add your follow button logic here
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                side: const BorderSide(
+                  color: Color(0xFF3B5F43),
                 ),
               ),
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: SizedBox(
-            width: 180,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () {
-                // Add your follow button logic here
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFABABAB),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: const Text(
-                "Message",
-                style: TextStyle(
+            child: const Text(
+              "Message",
+              style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  /*
+  * Builds the Bond button based off the status of the 2 users
+  */
+  Widget buildBondButton(String userID, String? currentUserID) {
+    String buttonText = '';
+    Color buttonColor = Color(0xFF3B5F43);
+    Color textColor = Colors.white;
+    if (isBonded) {
+      // if users are bonded already, show "unbond"
+      buttonText = 'Unbond';
+      buttonColor = Color(0xFFABABAB);
+    } else if (isRequested) {
+      // if users are only requested but not friends, show "requested"
+      buttonText = 'Requested';
+      buttonColor = Color(0xFFABABAB);
+    } else {
+      // if users are not bonded, show "bond"
+      buttonText = 'Bond';
+    }
+
+    return SizedBox(
+      width: 180,
+      height: 40,
+      child: ElevatedButton(
+        onPressed: () {
+          if (isBonded) {
+            unbond(userID, currentUserID);
+          } else if (isRequested) {
+            setState(() {
+              isRequested = false;
+            });
+          } else {
+            sendBond(userID, currentUserID);
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: buttonColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        child: Text(
+          buttonText,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: textColor,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildEditProfileButton(String? currentUserID) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditProfile()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: const BorderSide(
+                      color: Color(0xFF3B5F43),
+                    ),
+                  ),
+                ),
+                child: const Text(
+                  "Edit Profile",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                )),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,14 +1,52 @@
+import 'package:bronco_bond/src/config.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final userID;
+  const HomePage({@required this.userID, Key? key}) : super(key: key);
 
   @override
   HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
+  late String username = '';
+  late SharedPreferences prefs;
+
+  Future<void> fetchDataUsingUserID(String userID) async {
+    try {
+      final response = await http.get(Uri.parse('$getUserByID/$userID'));
+
+      if (response.statusCode == 200) {
+        final userData = json.decode(response.body);
+
+        setState(() {
+          username = userData['user']['username'] ?? 'Unknown';
+        });
+      } else {
+        print('Failed to fetch user data. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+    fetchDataUsingUserID(widget.userID);
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -36,10 +74,20 @@ class HomePageState extends State<HomePage> {
           ),
           automaticallyImplyLeading: false,
         ),
-        body: TabBarView(
+        body: Column(
           children: [
-            buildTabContent('Tab 1'),
-            buildTabContent('Tab 2'),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Welcome $username!'),
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  buildTabContent('Tab 1'),
+                  buildTabContent('Tab 2'),
+                ],
+              ),
+            ),
           ],
         ),
       ),

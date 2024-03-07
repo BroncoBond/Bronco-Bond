@@ -35,14 +35,6 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/', // Initial route
         routes: {
-          /* add this into '/' route later, commented out for testing
-          (context) =>
-              (token != null && JwtDecoder.isExpired(token) == false)
-                  ? BottomNavBar(token: token)
-                  : const SigninPage(),
-
-          (context) => BottomNavBar(token: token)
-          */
           '/': (context) =>
               (token != null && JwtDecoder.isExpired(token) == false)
                   ? BottomNavBar(
@@ -54,5 +46,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// dart run flutter_native_splash:create
-// flutter pub run flutter_launcher_icons
+
+/*
+  Dev Notes (set up emulator first):
+    Step 1: In terminal [flutter pub get]
+    Step 2: In terminal [flutter pub run flutter_launcher_icons]
+    Step 3: In terminal [dart run flutter_native_splash:create]
+*/

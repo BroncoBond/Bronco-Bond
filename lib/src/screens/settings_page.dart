@@ -44,7 +44,14 @@ class SettingsPageState extends State<SettingsPage> {
             ),
           );
         } else {
-          print('Logout failed: ${jsonResponse['message']}');
+          print('Proper Logout failed: ${jsonResponse['message']}');
+          print('Sending you back to login');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginPage(),
+            ),
+          );
           // Handle login failure
           // You might want to show an error message to the user
         }
@@ -68,7 +75,8 @@ class SettingsPageState extends State<SettingsPage> {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black)),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                color: Colors.black)),
         title: Text(
           'Settings',
           style: GoogleFonts.raleway(

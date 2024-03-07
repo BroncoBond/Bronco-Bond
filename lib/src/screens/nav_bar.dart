@@ -24,9 +24,11 @@ class BottomNavBarState extends State<BottomNavBar> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          const HomePage(),
+          HomePage(
+            userID: widget.userID,
+          ),
           const ChatPage(),
-          SearchPage(token: widget.token),
+          const SearchPage(),
           const EventsPage(),
           UserProfile(userID: widget.userID)
         ],
@@ -53,8 +55,8 @@ class BottomNavBarState extends State<BottomNavBar> {
             label: 'Messages',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_rounded),
-            label: 'Search',
+            icon: Icon(Icons.explore),
+            label: 'Explore',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today_rounded),

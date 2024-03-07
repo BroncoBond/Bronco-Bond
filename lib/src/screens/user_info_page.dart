@@ -85,7 +85,7 @@ const List<String> minors = [
   "Computer Science",
   "Contract Management",
   "Criminology",
-  "Culinology®",
+  "Culinology",
   "Dance",
   "Data Science",
   "Economics",
@@ -232,14 +232,18 @@ class UserInfoPageState extends State<UserInfoPage> {
 
   void addInfoToUser(BuildContext context, String userID) async {
     print('User ID: $userID');
+
+    // Check if an image is uploaded and handle accordingly
+    String base64Image = '';
+    if (_imageFile != null) {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      base64Image = base64Encode(imageBytes);
+    }
     // check if major is empty or null since it is required
     if (_selectedMajor != null &&
         _selectedMajor!.isNotEmpty &&
         _selectedGradDate != null &&
         _selectedGradDate!.isNotEmpty) {
-      List<int> imageBytes = await _imageFile!.readAsBytes();
-      String base64Image = base64Encode(imageBytes);
-
       var regBody = {
         "_id": userID,
         "fullName": fullNameController.text,
@@ -248,7 +252,9 @@ class UserInfoPageState extends State<UserInfoPage> {
         "descriptionMajor": _selectedMajor,
         "descriptionMinor": _selectedMinor,
         "graduationDate": _selectedGradDate,
-        "profilePicture": {"data": base64Image, "contentType": "image/jpeg"}
+        "profilePicture": _imageFile != null
+            ? {"data": base64Image, "contentType": "image/jpeg"}
+            : null
       };
       print("major selected and body created");
       print(regBody);
@@ -534,6 +540,7 @@ class UserInfoPageState extends State<UserInfoPage> {
       value: value,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
+        width: 300,
         child: Text(
           value,
           style: const TextStyle(
@@ -542,6 +549,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             color: Colors.black,
           ),
           textAlign: TextAlign.start,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );

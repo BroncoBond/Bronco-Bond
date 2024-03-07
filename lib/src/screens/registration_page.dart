@@ -1,4 +1,5 @@
 import 'package:bronco_bond/src/screens/user_info_page.dart';
+import 'package:bronco_bond/src/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
@@ -37,21 +38,28 @@ class RegisterPageState extends State<RegisterPage> {
             headers: {"Content-Type": "application/json"},
             body: jsonEncode(regBody));
 
-        var jsonResponse = jsonDecode(response.body);
+        if (response.body.isNotEmpty) {
+          var jsonResponse = jsonDecode(response.body);
 
-        print(jsonResponse['status']);
-        print('Response body: ${response.body}');
+          print(jsonResponse['status']);
+          print('Response body: ${response.body}');
 
-        if (jsonResponse['status']) {
-          var userID = jsonResponse['_id'];
-          print('User ID: $userID');
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => UserInfoPage(userID: userID)));
+          if (jsonResponse['status']) {
+            var userID = jsonResponse['_id'];
+            print('User ID: $userID');
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserInfoPage(userID: userID)));
+          } else {
+            LoginPageState.buildDialog(context, "Registration failed!",
+                "Account with this email or username already exists.");
+          }
         } else {
-          print("SomeThing Went Wrong");
+          print("Empty Response");
         }
+      } else {
+        print("Passwords do not match");
       }
     } else {
       setState(() {
