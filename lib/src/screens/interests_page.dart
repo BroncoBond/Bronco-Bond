@@ -1,7 +1,9 @@
 import 'package:bronco_bond/src/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:velocity_x/velocity_x.dart';
+import 'package:bronco_bond/src/config.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 const List<String> interests = [
   "Engineering",
@@ -61,7 +63,32 @@ class InterestsPage extends StatefulWidget {
 class InterestsPageState extends State<InterestsPage> {
   List<String> userInterests = [];
 
-  void addInterestsToUser(BuildContext context, String userID) async {}
+  void addInterestsToUser(BuildContext context, String userID) async {
+    // check if major is empty or null since it is required
+    var regBody = {"_id": userID, "interests": userInterests};
+    print('Adding interests: $regBody');
+
+    try {
+      var response = await http.put(Uri.parse('$updateUser/$userID'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(regBody));
+
+      print('Response body: ${response.body}');
+      var jsonResponse = jsonDecode(response.body);
+
+      print("http request made");
+      print(jsonResponse['status']);
+
+      if (jsonResponse['status']) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => LoginPage()));
+      } else {
+        print("Something went wrong");
+      }
+    } catch (e) {
+      print('Error during HTTP request: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
