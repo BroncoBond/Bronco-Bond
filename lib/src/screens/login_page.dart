@@ -120,7 +120,9 @@ class LoginPageState extends State<LoginPage> {
             buildTextFieldWithIcon("Password", Icons.lock_rounded, "Password",
                 passwordController, true),
             const SizedBox(height: 30),
-            buildLoginButton("Login", context),
+            buildMainButton("Login", context, (BuildContext context) {
+              loginUser(context);
+            }),
             buildCheckBox("Stay signed in", staySignedIn, (value) {
               setState(() {
                 staySignedIn = value ?? false;
@@ -188,7 +190,8 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget buildLoginButton(String label, BuildContext context) {
+  static Widget buildMainButton(String label, BuildContext context,
+      void Function(BuildContext) onPressed) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
@@ -201,8 +204,7 @@ class LoginPageState extends State<LoginPage> {
           ),
           child: TextButton(
             onPressed: () {
-              print("Sign in");
-              loginUser(context);
+              onPressed(context);
             },
             child: Text(
               label,
@@ -211,37 +213,6 @@ class LoginPageState extends State<LoginPage> {
                 fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildButton(String label, BuildContext context, Widget destination) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Container(
-        width: 329,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          color: const Color(0xFF3B5F43),
-        ),
-        child: TextButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => destination,
-              ),
-            );
-          },
-          child: Text(
-            label,
-            style: GoogleFonts.raleway(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
             ),
           ),
         ),

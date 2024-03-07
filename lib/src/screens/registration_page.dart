@@ -109,7 +109,10 @@ class RegisterPageState extends State<RegisterPage> {
               });
             }),
             const SizedBox(height: 10),
-            buildButton("Register", context),
+            LoginPageState.buildMainButton("Next", context,
+                (BuildContext context) {
+              registerUser(context);
+            }),
           ],
         ),
       ),
@@ -203,7 +206,7 @@ class RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget buildButton(String label, BuildContext context) {
+  /*Widget buildButton(String label, BuildContext context) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
@@ -216,7 +219,6 @@ class RegisterPageState extends State<RegisterPage> {
           ),
           child: TextButton(
             onPressed: () {
-              print("Sign in");
               registerUser(context);
             },
             child: Text(
@@ -231,5 +233,5 @@ class RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
-  }
+  }*/
 }

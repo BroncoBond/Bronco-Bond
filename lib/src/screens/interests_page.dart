@@ -1,300 +1,192 @@
 import 'package:bronco_bond/src/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:velocity_x/velocity_x.dart';
 
-class InterestsPage extends StatelessWidget {
-  const InterestsPage({super.key});
+const List<String> interests = [
+  "Engineering",
+  "Biology",
+  "English",
+  "Math",
+  "Chemistry",
+  "Physics",
+  "Information Technology",
+  "Sociology",
+  "Psychology",
+  "Computer Science",
+  "Hospitality",
+  "Animal Science",
+  "Education",
+  "Football",
+  "Soccer",
+  "Swimming",
+  "Baseball",
+  "Basketball",
+  "Esports",
+  "Snow Sports",
+  "Badminton",
+  "Volleyball",
+  "Tennis",
+  "Rowing",
+  "Drawing",
+  "Singing",
+  "Gardening",
+  "Gym",
+  "Fraternity",
+  "Sorority",
+  "Digital Art",
+  "Archery",
+  "Cooking",
+  "Baking",
+  "Eating",
+  "Gaming",
+  "Movies",
+  "Studying",
+  "Watching TV",
+  "Anime",
+  "Chinese",
+  "German",
+  "Spanish",
+  "Korean",
+];
+
+class InterestsPage extends StatefulWidget {
+  final String userID;
+  const InterestsPage({Key? key, required this.userID}) : super(key: key);
+
+  @override
+  InterestsPageState createState() => InterestsPageState();
+}
+
+class InterestsPageState extends State<InterestsPage> {
+  List<String> userInterests = [];
+
+  void addInterestsToUser(BuildContext context, String userID) async {}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "BroncoBond",
-            style: GoogleFonts.raleway(
-              textStyle: Theme.of(context).textTheme.displaySmall,
-              fontSize: 25,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF3B5F43),
-            ),
+      appBar: AppBar(
+        title: Text(
+          "BroncoBond",
+          style: GoogleFonts.raleway(
+            textStyle: Theme.of(context).textTheme.displaySmall,
+            fontSize: 25,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF3B5F43),
           ),
-          centerTitle: true,
         ),
-        body: SingleChildScrollView(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          // crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  const Text("    How do you want to be involved?"),
+                  const Text(
+                    "How do you want to be involved?",
+                    style: TextStyle(
+                        // color: Colors.black,
+                        fontWeight: FontWeight.w700),
+                  ),
                   TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginPage(),
-                            ));
-                      },
-                      child: Text(
-                        'Skip',
-                        style: GoogleFonts.raleway(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                        ),
-                      ))
-                ],
-              ),
-              Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: buildSearchBar(" ")),
-              Text(
-                "Educational",
-                style: GoogleFonts.raleway(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                buildButton("Engineering"),
-                buildButton("Biology"),
-                buildButton("English"),
-                buildButton("Math"),
-              ]),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButton("Chemistry"),
-                  buildButton("Physics"),
-                  buildButton("Information Technology")
-                ],
-              ),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButton("Sociology"),
-                  buildButton("Psychology"),
-                  buildButton("Computer Science")
-                ],
-              ),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButton("Hospitality"),
-                  buildButton("Animal Science"),
-                  buildButton("Education")
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                "Sports",
-                style: GoogleFonts.raleway(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                buildButton("Football"),
-                buildButton("Soccer"),
-                buildButton("Swimming"),
-                buildButton("Baseball")
-              ]),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButton("Basketball"),
-                  buildButton("Esports"),
-                  buildButton("Snow Sports")
-                ],
-              ),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButton("Badminton"),
-                  buildButton("Volleyball"),
-                  buildButton("Tennis"),
-                  buildButton("Rowing")
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                "Hobbies",
-                style: GoogleFonts.raleway(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButton("Drawing"),
-                  buildButton("Singing"),
-                  buildButton("Gardening"),
-                  buildButton("Gym")
-                ],
-              ),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButton("Fraternity"),
-                  buildButton("Sorority"),
-                  buildButton("Digital Art"),
-                  buildButton("Archery")
-                ],
-              ),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButton("Cooking"),
-                  buildButton("Baking"),
-                  buildButton("Eating"),
-                  buildButton("Gaming")
-                ],
-              ),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButton("Movies"),
-                  buildButton("Studying"),
-                  buildButton("Watching TV"),
-                  buildButton("Anime")
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                "Languages",
-                style: GoogleFonts.raleway(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildButton("Chinese"),
-                  buildButton("German"),
-                  buildButton("Spanish"),
-                  buildButton("Korean")
-                ],
-              ),
-              const SizedBox(height: 10),
-              TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPage(),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginPage(),
+                          ));
+                    },
+                    child: const Text(
+                      'Skip',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
                       ),
-                    );
-                  },
-                  child: Text(
-                    "Next",
-                    style: GoogleFonts.raleway(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
                     ),
-                  ))
-            ] //column children
-                )));
+                  )
+                ],
+              ),
+            ),
+            /*Padding(
+                padding: const EdgeInsets.all(10.0), child: buildSearchBar()), */ // Comment out search bar for now
+            // Build all interests
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8.0, // padding between each button
+                runSpacing: 2.0, // padding between each row of buttons
+                children:
+                    interests.map((interest) => buildButton(interest)).toList(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            LoginPageState.buildMainButton("Next", context,
+                (BuildContext context) {
+              addInterestsToUser(context, widget.userID);
+            }),
+          ], //column children
+        ),
+      ),
+    );
   }
-}
 
 //Widget for button
-@override
-Widget buildButton(String label) {
-  return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-    TextButton(
-      style: ButtonStyle(
-        padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(7)),
-        foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            side: const BorderSide(
-              color: Color(0xFF3B5F43),
-              width: 1,
-            ),
+  Widget buildButton(String label) {
+    bool isSelected = userInterests.contains(label);
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor:
+            isSelected ? const Color(0xFFABABAB) : Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          side: const BorderSide(
+            color: Color(0xFF3B5F43),
+            width: 1,
           ),
         ),
+        elevation: 0,
       ),
       onPressed: () {
-        print('$label pressed');
+        setState(() {
+          // Toggle selection
+          if (userInterests.contains(label)) {
+            userInterests.remove(label);
+          } else {
+            userInterests.add(label);
+          }
+        });
       },
-      child: Text(label, style: const TextStyle(fontSize: 15)),
-    )
-  ]);
-}
-
-Widget buildSearchBar(String label) {
-  return Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10.0),
-      color: Colors.grey[200],
-    ),
-    child: const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.0),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: 'Search...',
-          border: InputBorder.none,
-          icon: Icon(Icons.search),
-        ),
-      ),
-    ),
-  );
-}
-
-Widget buildTextField(String label) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Text label
-      Text(
+      child: Text(
         label,
-        style: GoogleFonts.raleway(
-          fontSize: 16,
-          fontWeight: FontWeight.w800,
-          color: Colors.black,
-        ),
-        textAlign: TextAlign.start,
+        style: const TextStyle(
+            fontSize: 15, color: Colors.black, fontWeight: FontWeight.w500),
       ),
-      // Text field
-      SizedBox(
-        width: 327,
-        height: 43,
+    );
+  }
+
+  Widget buildSearchBar() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.0),
+        color: Colors.grey[200],
+      ),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
         child: TextField(
           decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: const BorderSide(color: Color(0xFFABABAB)),
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            hintText: 'Search...',
+            border: InputBorder.none,
+            icon: Icon(Icons.search),
           ),
-          textAlign: TextAlign.start,
         ),
       ),
-    ],
-  );
+    );
+  }
 }
