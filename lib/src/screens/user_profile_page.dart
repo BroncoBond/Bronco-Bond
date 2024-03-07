@@ -29,6 +29,7 @@ class UserProfileState extends State<UserProfile>
   late String graduationDate = '';
   late List<dynamic> bonds = [];
   late List<dynamic> bondRequests = [];
+  late List<dynamic> interests = [];
   late List<int> profilePictureData;
   late String profilePictureContentType;
   late Uint8List pfp;
@@ -80,12 +81,14 @@ class UserProfileState extends State<UserProfile>
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
 
+        print('Interests: ${userData['user']['interests']}');
         setState(() {
           username = userData['user']['username'] ?? 'Unknown';
           numOfBonds = userData['user']['numOfBonds'] ?? 0;
           descriptionMajor = userData['user']['descriptionMajor'] ?? 'Unknown';
           descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
           graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
+          interests = userData['user']['interests'] ?? [];
           bonds = userData['user']['bonds'] ?? [];
           bondRequests = userData['user']['bondRequestsToUser'] ?? [];
           isBonded = bonds.contains(currentUserID);
@@ -317,19 +320,59 @@ class UserProfileState extends State<UserProfile>
     return SingleChildScrollView(
       //alignment: Alignment.centerLeft,
       child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             buildAboutSection("Experience", "Add Experiences",
                 "Showcase professional experiences..."),
             buildAboutSection(
                 "Clubs", "Add Clubs", "Showcase clubs you participated in..."),
-            buildAboutSection(
-                "Interests", "Add Interests", "Share your interests"),
-          ])),
+            // Interests
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Interests",
+                  style: GoogleFonts.raleway(
+                    color: const Color(0xFF3B5F43),
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    spacing: 8.0, // padding between each button
+                    runSpacing: 2.0, // padding between each row of buttons
+                    children: interests.map((interest) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFABABAB),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Text(
+                          interest,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
 
+// Use template for now until user can add more to their page
   Widget buildAboutSection(
       String title, String buttonLabel, String description) {
     return Column(

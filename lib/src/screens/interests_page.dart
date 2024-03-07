@@ -66,7 +66,7 @@ class InterestsPageState extends State<InterestsPage> {
   void addInterestsToUser(BuildContext context, String userID) async {
     // check if major is empty or null since it is required
     var regBody = {"_id": userID, "interests": userInterests};
-    print('Adding interests: $regBody');
+    // print('Adding interests: $regBody');
 
     try {
       var response = await http.put(Uri.parse('$updateUser/$userID'),
@@ -110,7 +110,7 @@ class InterestsPageState extends State<InterestsPage> {
           // crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.only(left: 10.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -128,13 +128,23 @@ class InterestsPageState extends State<InterestsPage> {
                             builder: (context) => const LoginPage(),
                           ));
                     },
-                    child: const Text(
-                      'Skip',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                      ),
+                    child: const Row(
+                      children: [
+                        Text(
+                          'Skip',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF3B5F43),
+                          ),
+                        ),
+                        SizedBox(width: 2.0),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: Color(0xFF3B5F43),
+                          size: 16,
+                        )
+                      ],
                     ),
                   )
                 ],
@@ -153,7 +163,7 @@ class InterestsPageState extends State<InterestsPage> {
                     interests.map((interest) => buildButton(interest)).toList(),
               ),
             ),
-            const SizedBox(height: 10),
+            // const SizedBox(height: 10),
             LoginPageState.buildMainButton("Next", context,
                 (BuildContext context) {
               addInterestsToUser(context, widget.userID);
