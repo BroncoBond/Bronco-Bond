@@ -246,7 +246,7 @@ class UserProfileState extends State<UserProfile>
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container(
               color: Colors.white,
-              child: Center(
+              child: const Center(
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
                 ),
@@ -257,12 +257,12 @@ class UserProfileState extends State<UserProfile>
               child: Text('Error: ${snapshot.error}'),
             );
           } else if ((snapshot.connectionState == ConnectionState.done)) {
-            final prefs = snapshot.data as SharedPreferences?;
+            final prefs = snapshot.data;
             if (prefs != null) {
               return buildUserProfile(prefs);
             } else {
               // Handle the case where prefs is null
-              return Center(
+              return const Center(
                 child: Text('SharedPreferences is null'),
               );
             }
