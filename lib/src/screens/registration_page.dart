@@ -1,4 +1,5 @@
 import 'package:bronco_bond/src/screens/user_info_page.dart';
+import 'package:bronco_bond/src/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
@@ -51,7 +52,8 @@ class RegisterPageState extends State<RegisterPage> {
                 MaterialPageRoute(
                     builder: (context) => UserInfoPage(userID: userID)));
           } else {
-            print("SomeThing Went Wrong");
+            LoginPageState.buildDialog(context, "Registration failed!",
+                "Account with this email or username already exists.");
           }
         } else {
           print("Empty Response");

@@ -73,24 +73,8 @@ class LoginPageState extends State<LoginPage> {
           }
         } else {
           print('HTTP request failed with status: ${response.statusCode}');
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('Login Failed'),
-                content: const Text(
-                    'Please check your email and password and try again.'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('OK'),
-                  ),
-                ],
-              );
-            },
-          );
+          buildDialog(context, "Login failed!",
+              "Please check your email and password and try again.");
         }
       } catch (e) {
         print('Error during HTTP request: $e');
@@ -101,24 +85,8 @@ class LoginPageState extends State<LoginPage> {
       // Handle case where email or password is empty
       // You might want to show an error message to the user
       print('Email or password is empty');
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Login Failed'),
-            content:
-                const Text('Email or password is empty. Please try again.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      buildDialog(context, "Login failed!",
+          "Email or password is empty. Please try again.");
     }
   }
 
@@ -352,6 +320,27 @@ class LoginPageState extends State<LoginPage> {
         ),
         const SizedBox(height: 20),
       ],
+    );
+  }
+
+  static Future<dynamic> buildDialog(
+      BuildContext context, title, String content) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
