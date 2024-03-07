@@ -81,73 +81,105 @@ class SearchPageState extends State<SearchPage> {
                 color: const Color(0xFF3B5F43))),
         automaticallyImplyLeading: false,
       ),
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: buildSearchBar(" ", searchController)),
-              buildSearchResultsList(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildIcon("Organization", Icons.groups_rounded),
-                  buildIcon("Professors", Icons.local_library_rounded),
-                ],
-              ),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildIcon("People", Icons.language_rounded),
-                  buildIcon("Messages", Icons.forum_rounded),
-                ],
-              ),
-              const SizedBox(height: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildIcon("Events", Icons.calendar_today_rounded),
-                  buildIcon("Forums", Icons.newspaper_rounded),
-                ],
-              ),
-            ],
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: buildSearchBar(" ", searchController)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    buildIcon("Organization", Icons.groups_rounded),
+                    buildIcon("Professors", Icons.local_library_rounded),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    buildIcon("People", Icons.language_rounded),
+                    buildIcon("Messages", Icons.forum_rounded),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    buildIcon("Events", Icons.calendar_today_rounded),
+                    buildIcon("Forums", Icons.newspaper_rounded),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
+          if (searchResults.isNotEmpty)
+            Positioned(
+              top: 70,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: buildSearchResultsList(),
+            ),
+        ],
       ),
     );
   }
 
   Widget buildSearchBar(String label, TextEditingController fieldController) {
+    bool showCancelButton = searchResults.isNotEmpty;
     return Container(
       height: 48,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
-        color: Colors.grey[200],
+        color: Colors.grey[300],
       ),
-      child: Column(
+      child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: TextField(
-              controller: fieldController,
-              keyboardType: TextInputType.text,
-              decoration: const InputDecoration(
-                hintText: 'Search...',
-                border: InputBorder.none,
-                icon: Icon(Icons.search_rounded),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextField(
+                controller: fieldController,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  hintText: 'Search...',
+                  border: InputBorder.none,
+                  icon: Icon(
+                    Icons.search_rounded,
+                    color: Color(0xFF3B5F43),
+                  ),
+                ),
+                onSubmitted: (String value) {
+                  print('Search submitted: $value');
+                  performSearch();
+                },
               ),
-              onSubmitted: (String value) {
-                print('Search submitted: $value');
-                performSearch();
-              },
             ),
           ),
+          if (showCancelButton)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    searchController.clear();
+                    searchResults.clear();
+                    selectedResultIndex = -1;
+                  });
+                },
+                child: Text('Cancel',
+                    style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal)),
+              ),
+            ),
         ],
       ),
     );
@@ -188,7 +220,6 @@ class SearchPageState extends State<SearchPage> {
 
   Widget buildSearchResultsList() {
     return ListView.builder(
-      shrinkWrap: true,
       itemCount: searchResults.length,
       itemBuilder: (context, user) {
         return MouseRegion(
@@ -201,9 +232,15 @@ class SearchPageState extends State<SearchPage> {
               navigateToUserProfile(searchResults[user]);
             },
             child: Container(
-                color: selectedResultIndex == user
-                    ? Colors.grey.withOpacity(0.5) // Grey when tapped
-                    : null, // Default background color when not tapped
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey[400]!),
+                  ),
+                  color: selectedResultIndex == user
+                      ? Color(0xffABABAB) // Grey when tapped
+                      : Colors.grey[
+                          200], // Default background color when not tapped
+                ),
                 child: ListTile(
                     leading: CircleAvatar(
                       //radius: 30,
