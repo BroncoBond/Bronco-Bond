@@ -320,141 +320,71 @@ class UserProfileState extends State<UserProfile>
           padding: const EdgeInsets.all(16.0),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(
-              "Experience",
-              style: GoogleFonts.raleway(
-                color: const Color(0xFF3B5F43),
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 400,
-              height: 40,
-              child: ElevatedButton(
-                  onPressed: () {
-                    //add function to add experience
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: const BorderSide(
-                        color: Color(0xFF3B5F43),
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    "Add Experience",
-                    style: GoogleFonts.raleway(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    ),
-                  )),
-            ),
-            const SizedBox(height: 7),
-            Text(
-              "Showcase professional experiences...",
-              style: GoogleFonts.raleway(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 20),
-            //clubs
-            Text(
-              "Clubs",
-              style: GoogleFonts.raleway(
-                color: const Color(0xFF3B5F43),
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 400,
-              height: 40,
-              child: ElevatedButton(
-                  onPressed: () {
-                    //add function to add experience
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: const BorderSide(
-                        color: Color(0xFF3B5F43),
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    "Add Clubs",
-                    style: GoogleFonts.raleway(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    ),
-                  )),
-            ),
-            const SizedBox(height: 7),
-            Text(
-              "Showcase clubs you participate in...",
-              style: GoogleFonts.raleway(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-              ),
-            ),
-
-            //Interests
-            const SizedBox(height: 20),
-            Text(
-              "Interests",
-              style: GoogleFonts.raleway(
-                color: const Color(0xFF3B5F43),
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 400,
-              height: 40,
-              child: ElevatedButton(
-                  onPressed: () {
-                    //add function to add experience
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: const BorderSide(
-                        color: Color(0xFF3B5F43),
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    "Add Interests",
-                    style: GoogleFonts.raleway(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    ),
-                  )),
-            ),
-            const SizedBox(height: 7),
-            Text(
-              "Share your interests",
-              style: GoogleFonts.raleway(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-              ),
-            ),
+            buildAboutSection("Experience", "Add Experiences",
+                "Showcase professional experiences..."),
+            buildAboutSection(
+                "Clubs", "Add Clubs", "Showcase clubs you participated in..."),
+            buildAboutSection(
+                "Interests", "Add Interests", "Share your interests"),
           ])),
+    );
+  }
+
+  Widget buildAboutSection(
+      String title, String buttonLabel, String description) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.raleway(
+            color: const Color(0xFF3B5F43),
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10.0, bottom: 7.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                    onPressed: () {
+                      //add function to add experience
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        side: const BorderSide(
+                          color: Color(0xFF3B5F43),
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      buttonLabel,
+                      style: GoogleFonts.raleway(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    )),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 20.0),
+          child: Text(
+            description,
+            style: GoogleFonts.raleway(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -565,29 +495,6 @@ class UserProfileState extends State<UserProfile>
         ],
       ),
     );
-  }
-
-  @override
-  Widget buildButton(String label) {
-    return Container(
-        width: double.infinity,
-        margin: const EdgeInsets.symmetric(horizontal: 5.0),
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          TextButton(
-            style: ButtonStyle(
-                padding: MaterialStateProperty.all<EdgeInsets>(
-                    const EdgeInsets.all(12)),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                        side: const BorderSide(color: Colors.black)))),
-            onPressed: () {
-              print('$label pressed');
-            },
-            child: Text(label, style: const TextStyle(fontSize: 15)),
-          )
-        ]));
   }
 
   Widget buildInfoBar() {
