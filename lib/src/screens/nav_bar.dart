@@ -55,8 +55,8 @@ class BottomNavBarState extends State<BottomNavBar> {
             label: 'Messages',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_rounded),
-            label: 'Search',
+            icon: Icon(Icons.explore),
+            label: 'Explore',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today_rounded),

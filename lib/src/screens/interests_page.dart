@@ -24,25 +24,28 @@ class InterestsPage extends StatelessWidget {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                const Text("    How do you want to be involved?"),
-                TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginPage(),
-                          ));
-                    },
-                    child: Text(
-                      'Skip',
-                      style: GoogleFonts.raleway(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                      ),
-                    ))
-              ]),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  const Text("    How do you want to be involved?"),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginPage(),
+                            ));
+                      },
+                      child: Text(
+                        'Skip',
+                        style: GoogleFonts.raleway(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                        ),
+                      ))
+                ],
+              ),
               Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: buildSearchBar(" ")),
@@ -224,13 +227,18 @@ Widget buildButton(String label) {
   return Row(mainAxisAlignment: MainAxisAlignment.end, children: [
     TextButton(
       style: ButtonStyle(
-          padding:
-              MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(17)),
-          foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
-                  side: const BorderSide(color: Colors.black)))),
+        padding: MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(7)),
+        foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            side: const BorderSide(
+              color: Color(0xFF3B5F43),
+              width: 1,
+            ),
+          ),
+        ),
+      ),
       onPressed: () {
         print('$label pressed');
       },
