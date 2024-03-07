@@ -19,14 +19,14 @@ class RegisterPageState extends State<RegisterPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
-  bool _isNotValidate = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
   void registerUser(BuildContext context) async {
     if (emailController.text.isNotEmpty &&
         passwordController.text.isNotEmpty &&
-        usernameController.text.isNotEmpty) {
+        usernameController.text.isNotEmpty &&
+        confirmPasswordController.text.isNotEmpty) {
       if (passwordController.text == confirmPasswordController.text) {
         var regBody = {
           "email": emailController.text,
@@ -62,9 +62,8 @@ class RegisterPageState extends State<RegisterPage> {
         print("Passwords do not match");
       }
     } else {
-      setState(() {
-        _isNotValidate = true;
-      });
+      LoginPageState.buildDialog(context, "Registration failed!",
+          "Please fill out all fields and try again.");
     }
   }
 
@@ -92,7 +91,7 @@ class RegisterPageState extends State<RegisterPage> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             buildTextField("Username*", usernameController),
             buildTextField("Email*", emailController),
@@ -108,7 +107,6 @@ class RegisterPageState extends State<RegisterPage> {
                 _obscureConfirmPassword = !_obscureConfirmPassword;
               });
             }),
-            const SizedBox(height: 10),
             LoginPageState.buildMainButton("Next", context,
                 (BuildContext context) {
               registerUser(context);
@@ -125,84 +123,90 @@ class RegisterPageState extends State<RegisterPage> {
       TextEditingController fieldController,
       bool obscureText,
       VoidCallback toggleVisibility) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Text label
-        Text(
-          label,
-          style: GoogleFonts.raleway(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: Colors.black,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Text label
+          Text(
+            label,
+            style: GoogleFonts.raleway(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: Colors.black,
+            ),
+            textAlign: TextAlign.start,
           ),
-          textAlign: TextAlign.start,
-        ),
-        // Text field
-        SizedBox(
-          width: 327,
-          height: 43,
-          child: Stack(
-            alignment: Alignment.centerRight,
-            children: [
-              TextField(
-                controller: fieldController,
-                keyboardType: TextInputType.text,
-                obscureText: obscureText,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFFABABAB)),
-                    borderRadius: BorderRadius.circular(8.0),
+          // Text field
+          SizedBox(
+            width: 327,
+            height: 43,
+            child: Stack(
+              alignment: Alignment.centerRight,
+              children: [
+                TextField(
+                  controller: fieldController,
+                  keyboardType: TextInputType.text,
+                  obscureText: obscureText,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color(0xFFABABAB)),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  textAlign: TextAlign.start,
                 ),
-                textAlign: TextAlign.start,
-              ),
-              IconButton(
-                  onPressed: toggleVisibility,
-                  icon: Icon(
-                    obscureText ? Icons.visibility : Icons.visibility_off,
-                    color: Colors.grey,
-                  ))
-            ],
+                IconButton(
+                    onPressed: toggleVisibility,
+                    icon: Icon(
+                      obscureText ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.grey,
+                    ))
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget buildTextField(String label, TextEditingController fieldController) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Text label
-        Text(
-          label,
-          style: GoogleFonts.raleway(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: Colors.black,
-          ),
-          textAlign: TextAlign.start,
-        ),
-        // Text field
-        SizedBox(
-          width: 327,
-          height: 43,
-          child: TextField(
-            controller: fieldController,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: const BorderSide(color: Color(0xFFABABAB)),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Text label
+          Text(
+            label,
+            style: GoogleFonts.raleway(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: Colors.black,
             ),
             textAlign: TextAlign.start,
           ),
-        ),
-      ],
+          // Text field
+          SizedBox(
+            width: 327,
+            height: 43,
+            child: TextField(
+              controller: fieldController,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Color(0xFFABABAB)),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              ),
+              textAlign: TextAlign.start,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
