@@ -89,8 +89,6 @@ class UserProfileState extends State<UserProfile>
           bondRequests = userData['user']['bondRequestsToUser'] ?? [];
           isBonded = bonds.contains(currentUserID);
           isRequested = bondRequests.contains(currentUserID);
-          print('isBonded: $isBonded');
-          print('isRequested: $isRequested');
 
           late dynamic profilePicture =
               userData['user']['profilePicture'] ?? '';

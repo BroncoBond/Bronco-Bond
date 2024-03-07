@@ -39,7 +39,7 @@ class LoginPageState extends State<LoginPage> {
       var regBody = {
         "email": emailController.text,
         "password": passwordController.text,
-        "signedIn": staySignedIn.toString()
+        "staySignedIn": staySignedIn.toString()
       };
 
       try {
@@ -48,7 +48,7 @@ class LoginPageState extends State<LoginPage> {
             body: jsonEncode(regBody));
 
         print('${response.statusCode}');
-        print(response.body);
+        // print(response.body);
         if (response.statusCode == 200) {
           Map<String, dynamic> jsonResponse = jsonDecode(response.body);
           if (jsonResponse['status']) {
