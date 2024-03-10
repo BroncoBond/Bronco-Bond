@@ -344,7 +344,7 @@ class UserProfileState extends State<UserProfile>
                   child: Wrap(
                     alignment: WrapAlignment.start,
                     spacing: 8.0, // padding between each button
-                    runSpacing: 4.0, // padding between each row of buttons
+                    runSpacing: 8.0, // padding between each row of buttons
                     children: interests.map((interest) {
                       return Container(
                         decoration: BoxDecoration(

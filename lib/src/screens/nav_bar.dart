@@ -41,8 +41,9 @@ class BottomNavBarState extends State<BottomNavBar> {
             _currentIndex = index;
           });
         },
-        selectedItemColor: const Color(0xff3B5F43),
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: const Color(0xffFED053),
+        unselectedItemColor: const Color(0xffABABAB),
+        backgroundColor: const Color(0xff3B5F43),
         //showSelectedLabels: true,
         //showUnselectedLabels: false,
         items: const [
