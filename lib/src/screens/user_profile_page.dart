@@ -349,10 +349,12 @@ class UserProfileState extends State<UserProfile>
                     children: interests.map((interest) {
                       return Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFFABABAB),
-                          borderRadius: BorderRadius.circular(4.0),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(
+                              width: 1, color: const Color(0xFF3B5F43)),
                         ),
-                        padding: const EdgeInsets.all(5.0),
+                        padding: const EdgeInsets.all(6.0),
                         child: Text(
                           interest,
                           style: const TextStyle(

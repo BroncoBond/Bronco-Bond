@@ -300,15 +300,28 @@ class LoginPageState extends State<LoginPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title),
+          title: Text(
+            title,
+            style: const TextStyle(
+              color: Colors.red,
+            ),
+          ),
           content: Text(content),
           actions: <Widget>[
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: ButtonStyle(
+                  overlayColor: MaterialStateColor.resolveWith(
+                      (states) => Color(0xffABABAB)),
+                ),
+                child: const Text(
+                  'OK',
+                  style: TextStyle(
+                    color: Color(0xFF3B5F43),
+                  ),
+                )),
           ],
         );
       },
