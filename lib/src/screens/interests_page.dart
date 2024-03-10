@@ -64,9 +64,7 @@ class InterestsPageState extends State<InterestsPage> {
   List<String> userInterests = [];
 
   void addInterestsToUser(BuildContext context, String userID) async {
-    // check if major is empty or null since it is required
     var regBody = {"_id": userID, "interests": userInterests};
-    // print('Adding interests: $regBody');
 
     try {
       var response = await http.put(Uri.parse('$updateUser/$userID'),
@@ -80,6 +78,7 @@ class InterestsPageState extends State<InterestsPage> {
       print(jsonResponse['status']);
 
       if (jsonResponse['status']) {
+        print('Added interests: $regBody');
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => LoginPage()));
       } else {

@@ -81,7 +81,6 @@ class UserProfileState extends State<UserProfile>
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
 
-        print('Interests: ${userData['user']['interests']}');
         setState(() {
           username = userData['user']['username'] ?? 'Unknown';
           numOfBonds = userData['user']['numOfBonds'] ?? 0;
@@ -328,7 +327,7 @@ class UserProfileState extends State<UserProfile>
                 "Showcase professional experiences..."),
             buildAboutSection(
                 "Clubs", "Add Clubs", "Showcase clubs you participated in..."),
-            // Interests
+            // Interests section
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -341,22 +340,23 @@ class UserProfileState extends State<UserProfile>
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.only(top: 8.0),
                   child: Wrap(
                     alignment: WrapAlignment.start,
                     spacing: 8.0, // padding between each button
-                    runSpacing: 2.0, // padding between each row of buttons
+                    runSpacing: 4.0, // padding between each row of buttons
                     children: interests.map((interest) {
                       return Container(
                         decoration: BoxDecoration(
                           color: const Color(0xFFABABAB),
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(4.0),
                         ),
+                        padding: const EdgeInsets.all(5.0),
                         child: Text(
                           interest,
                           style: const TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w500,
                             color: Colors.black,
                           ),
                         ),
