@@ -91,30 +91,37 @@ exports.login = async(req,res,next)=>{
 
 // This function is used to search for a user by their username
 exports.searchUserByUsername = async (req, res) => {
-    // Extract the username from the request query
     const { username } = req.query;
-    
-    // Check if a username was provided
+
     if (!username) {
         return res.status(400).json({ error: 'You must provide a username to search.' });
     }
-
     try {
-        // Create a case-insensitive regular expression to search for usernames that contain the given input
-        const regex = new RegExp(username, 'i');
+        const users = await User.aggregate([
+            {
+                $search: {
+                    index: "UserSearch",
+                    text: {
+                        query: username,
+                        path: {
+                            wildcard: "*"
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    password: 0,
+                    email: 0
+                }
+            }
+        ]);
 
-        // Try to find users whose username matches the regular expression
-        const users = await User.find({ username: { $regex: regex } }).select('-password -email');
-
-        // If users are found, return the users data
         if (users.length > 0) {
             return res.status(200).json(users);
         }
-
-        // If no users are found, return a 404 status with an error message
         return res.status(404).json({ error: 'No users found' });
     } catch (err) {
-        // If there's an error searching for the users, return a 500 status with the error
         console.error('Error searching for users:', err);
         return res.status(500).json({ error: 'An error occurred while searching for users.' });
     }

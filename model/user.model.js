@@ -3,10 +3,7 @@ const bcrypt = require("bcrypt");
 
 const db = require('../config/db');
 
-const { Schema } = mongoose;
-
-
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
         email:{
             type:String,
             lowercase:true,
@@ -66,7 +63,7 @@ const userSchema = new Schema({
         },
         isAdmin: {
             type: Boolean,
-            default: false,
+            default: false
         },
         descriptionMajor: {
             type: String,
