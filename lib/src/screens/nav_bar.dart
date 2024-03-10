@@ -48,23 +48,38 @@ class BottomNavBarState extends State<BottomNavBar> {
         //showUnselectedLabels: false,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
+            icon: Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: Icon(Icons.home_rounded),
+            ),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.forum_rounded),
+            icon: Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: Icon(Icons.forum_rounded),
+            ),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
+            icon: Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: Icon(Icons.explore),
+            ),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_rounded),
+            icon: Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: Icon(Icons.calendar_today_rounded),
+            ),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
+            icon: Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: Icon(Icons.person_rounded),
+            ),
             label: '',
           ),
         ],

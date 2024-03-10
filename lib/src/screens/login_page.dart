@@ -258,8 +258,10 @@ class LoginPageState extends State<LoginPage> {
                 borderSide: const BorderSide(color: Color(0xFFABABAB)),
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF3B5F43))),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Color(0xFF3B5F43)),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12),
             ),
             textAlign: TextAlign.start,
