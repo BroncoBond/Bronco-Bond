@@ -62,6 +62,7 @@ class InterestsPage extends StatefulWidget {
 
 class InterestsPageState extends State<InterestsPage> {
   List<String> userInterests = [];
+  TextEditingController interestsController = TextEditingController();
 
   void addInterestsToUser(BuildContext context, String userID) async {
     var regBody = {"_id": userID, "interests": userInterests};
@@ -163,6 +164,7 @@ class InterestsPageState extends State<InterestsPage> {
               ),
             ),
             // const SizedBox(height: 10),
+            buildCustomInterest(interestsController),
             LoginPageState.buildMainButton("Next", context,
                 (BuildContext context) {
               addInterestsToUser(context, widget.userID);
@@ -224,5 +226,62 @@ class InterestsPageState extends State<InterestsPage> {
         ),
       ),
     );
+  }
+
+  Widget buildCustomInterest(TextEditingController textEditingController) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        controller: textEditingController,
+        decoration: InputDecoration(
+            labelText: "Add your own interests",
+            labelStyle: const TextStyle(color: Color(0xFF3B5F43)),
+            border: OutlineInputBorder(
+              borderSide: const BorderSide(color: Color(0xFF3B5F43)),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            focusColor: const Color(0xFF3B5F43),
+            focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF3B5F43))),
+            suffixIcon: IconButton(
+              icon: const Icon(
+                Icons.add,
+                color: Color(0xFF3B5F43),
+              ),
+              onPressed: () {
+                setState(() {
+                  String newInterests = textEditingController.text.trim();
+                  List<String> interestsToAdd = newInterests.split(',');
+                  interestsToAdd.forEach((interest) {
+                    String trimmedInterest = interest.trim();
+                    if (trimmedInterest.isNotEmpty) {
+                      trimmedInterest = trimmedInterest
+                          .split(' ')
+                          .map((word) => word.capitalize())
+                          .join(' ');
+                      userInterests.add(trimmedInterest);
+                    }
+                  });
+                  textEditingController.clear();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Interests added successfully"),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: Color(0xff3B5F43),
+                    ),
+                  );
+                });
+              },
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 10, horizontal: 15)),
+      ),
+    );
+  }
+}
+
+extension StringExtensions on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

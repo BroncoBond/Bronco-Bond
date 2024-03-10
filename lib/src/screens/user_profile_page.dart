@@ -198,6 +198,7 @@ class UserProfileState extends State<UserProfile>
                   ),
                   backgroundColor: const Color(0xFF3B5F43),
                   leadingWidth: 0.0,
+                  automaticallyImplyLeading: false,
                   actions: [
                     IconButton(
                         onPressed: () {
