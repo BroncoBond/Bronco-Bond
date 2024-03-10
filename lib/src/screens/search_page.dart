@@ -78,7 +78,8 @@ class SearchPageState extends State<SearchPage> {
                 textStyle: Theme.of(context).textTheme.displaySmall,
                 fontSize: 25,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF3B5F43))),
+                color: Colors.white)),
+        backgroundColor: const Color(0xFF3B5F43),
         automaticallyImplyLeading: false,
       ),
       body: Stack(
@@ -95,24 +96,25 @@ class SearchPageState extends State<SearchPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    buildIcon("Organization", Icons.groups_rounded),
-                    buildIcon("Professors", Icons.local_library_rounded),
+                    buildIcon("Communities", Icons.diversity_3_rounded),
+                    buildIcon("Professors", Icons.school_rounded),
                   ],
                 ),
                 const SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    buildIcon("People", Icons.language_rounded),
-                    buildIcon("Messages", Icons.forum_rounded),
+                    buildIcon("People", Icons.group_rounded),
+                    buildIcon("News", Icons.newspaper_rounded),
                   ],
                 ),
                 const SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    buildIcon("Events", Icons.calendar_today_rounded),
-                    buildIcon("Forums", Icons.newspaper_rounded),
+                    buildIcon(
+                        "Student Benefits", Icons.volunteer_activism_rounded),
+                    buildIcon("Forums", Icons.live_help_rounded),
                   ],
                 ),
               ],
@@ -189,25 +191,25 @@ class SearchPageState extends State<SearchPage> {
     return Column(
       children: [
         Center(
-            child: SizedBox(
-          width: 175,
-          height: 175,
-          child: Card(
-            clipBehavior: Clip.hardEdge,
-            child: InkWell(
-              splashColor: Colors.blue.withAlpha(30),
-              onTap: () {
-                debugPrint('$title tapped.');
-              },
-
-              child: Icon(
-                iconData,
-                size: 110,
-                color: const Color(0xff3B5F43),
-              ), // Display text if imagePath is empty
+          child: SizedBox(
+            width: 175,
+            height: 175,
+            child: Card(
+              clipBehavior: Clip.hardEdge,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: const Color(0xff3B5F43)),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Icon(
+                  iconData,
+                  size: 100,
+                  color: const Color(0xff3B5F43),
+                ), // Display text if imagePath is empty
+              ),
             ),
           ),
-        )),
+        ),
         const SizedBox(height: 5),
         Center(
             child: Text(

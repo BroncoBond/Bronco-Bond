@@ -193,23 +193,24 @@ class UserProfileState extends State<UserProfile>
                       textStyle: Theme.of(context).textTheme.displaySmall,
                       fontSize: 25,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF3B5F43),
+                      color: Colors.white,
                     ),
                   ),
+                  backgroundColor: const Color(0xFF3B5F43),
                   leadingWidth: 0.0,
                   actions: [
                     IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SettingsPage(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.settings_rounded),
-                      color: const Color(0xFF3B5F43),
-                    ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsPage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.settings_rounded),
+                        color: Colors.white // const Color(0xFF3B5F43),
+                        ),
                   ],
                 );
               } else {
