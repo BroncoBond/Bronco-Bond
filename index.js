@@ -1,25 +1,35 @@
 // External dependencies
 const express = require('express');
-const bodyParser = require('body-parser');
 const helmet = require("helmet");
 const morgan = require("morgan");
+var http = require("http");
+const cors = require("cors");
 
 // Internal dependencies
-const db = require('./config/db');
-const UserModel = require('./model/user.model');
 const userRouter = require('./routers/user.router');
 const errorHandler = require('./middleware/errorHandler');
-const durationLogger = require('./middleware/durationLogger');
 const requestDurationLogger = require('./middleware/durationLogger');
 
 const app = express();
 const port = process.env.WEBSITES_PORT || process.env.PORT;
+var server = http.createServer(app);
+var io = require("socket.io")(server,{
+    cors: {
+        origin:"*"
+    }
+});
 
 // Middleware
 app.use(express.json({ limit: process.env.JSON_LIMIT || '50mb' }));
 app.use(helmet());
 app.use(morgan("common"));
 app.use(express.static('public'));
+app.use(cors());
+
+//io socket
+io.on("Connection",(socket)=>{
+    console.log("connected");
+});
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
