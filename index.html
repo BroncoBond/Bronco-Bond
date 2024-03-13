@@ -22,7 +22,9 @@
     </form>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script>
-      var socket = io();
+      localStorage.debug = '*';  // Enable debug logging
+      
+      var socket = io('http://localhost:8080');
 
       socket.on('connect', () => {
         console.log('Connected to server');
