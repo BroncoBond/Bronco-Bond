@@ -1,31 +1,49 @@
 // External dependencies
 const express = require('express');
+const app = express();
+const http = require('http');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const cors = require('cors');
-const http = require('http');
+const server = http.createServer(app);
+const {Server} = require('socket.io');
+const io = new Server(server);
+const socketSetup = require('./socket');
+
+// const express = require('express');
+// const app = express();
+// const http = require('http');
+// const server = http.createServer(app);
+// const {Server} = require('socket.io');
+// const io = new Server(server);
+// const socketSetup = require('./socket');
 
 // Internal dependencies
 const userRouter = require('./routers/user.router');
 const errorHandler = require('./middleware/errorHandler');
 const requestDurationLogger = require('./middleware/durationLogger');
 
-const app = express();
-const port = process.env.WEBSITES_PORT || process.env.PORT;
+const port = process.env.WEBSITES_PORT;
 
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+    // res.render('index', { title: 'BroncoBond', message: 'Hello World, this is BroncoBond!' });
+});
+
+server.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+});
+
+socketSetup(io);
 
 // Middleware
 app.use(express.json({ limit: process.env.JSON_LIMIT || '50mb' }));
-app.use(helmet());
+// app.use(helmet());
 app.use(morgan("common"));
-app.use(express.static('public'));
+// app.use(express.static('public'));
 app.use(cors());
 
-// Set EJS as the view engine
-app.set('view engine', 'ejs');
+
 
 // Routes
 app.use(requestDurationLogger);
@@ -35,19 +53,20 @@ app.use('/user', userRouter);
 app.use(errorHandler);
 
 // Root route
-app.get('/', (req, res) => {
-    //res.render('index', { title: 'BroncoBond', message: 'Hello World, this is BroncoBond!' });
-    res.sendFile(__dirname + '/index.html');
-});
+// app.get('/', (req, res) => {
+//     res.sendFile(__dirname + '/index.html');
+//     // res.render('index', { title: 'BroncoBond', message: 'Hello World, this is BroncoBond!' });
+// });
 
 // Start the server
-startServer(port);
+//startServer(port, io, server);
 
-function startServer(port) {
-    const server = app.listen(port, () => {
+function startServer(port, io, server) {
+    server.listen(port, () => {
         console.log(`Server is running on port ${port}`);
-        startSocketIO(server);
     });
+
+    socketSetup(io);
 
     server.on('error', (error) => {
         console.error('Error starting server:', error.message);
@@ -56,29 +75,12 @@ function startServer(port) {
 
     // Handle shutdown gracefully (optional)
     process.on('SIGINT', () => {
-        server.close(() => {
+        server_.close(() => {
             console.log('Server is shutting down');
             process.exit(0);
         });
     });
 }
-
-function startSocketIO(server) {
-    const io = require('socket.io')(server, {
-        cors: {
-            origin: "*"
-        }
-    });
-
-    console.log("startSocketIo:");
-    io.on('connection', (socket) => {
-        console.log('a user connected');
-        socket.on('disconnect', () => {
-            console.log('user disconnected');
-        });
-    });
-}
-
 /* 
 
     Dev Notes:
