@@ -10,14 +10,6 @@ const {Server} = require('socket.io');
 const io = new Server(server);
 const socketSetup = require('./socket');
 
-// const express = require('express');
-// const app = express();
-// const http = require('http');
-// const server = http.createServer(app);
-// const {Server} = require('socket.io');
-// const io = new Server(server);
-// const socketSetup = require('./socket');
-
 // Internal dependencies
 const userRouter = require('./routers/user.router');
 const errorHandler = require('./middleware/errorHandler');
@@ -25,24 +17,42 @@ const requestDurationLogger = require('./middleware/durationLogger');
 
 const port = process.env.WEBSITES_PORT;
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-    // res.render('index', { title: 'BroncoBond', message: 'Hello World, this is BroncoBond!' });
-});
+// app.get('/', (req, res) => {
+//     res.sendFile(__dirname + '/index.html');
+//     // res.render('index', { title: 'BroncoBond', message: 'Hello World, this is BroncoBond!' });
+// });
 
-server.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
-});
+// server.listen(port, () => {
+//         console.log(`Server is running on port ${port}`);
+// });
 
-socketSetup(io);
+// socketSetup(io);
 
 // Middleware
 app.use(express.json({ limit: process.env.JSON_LIMIT || '50mb' }));
-// app.use(helmet());
-app.use(morgan("common"));
-// app.use(express.static('public'));
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https:', 'http:'],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https:', 'http:'],
+      connectSrc: ["'self'", 'ws:', 'https:', 'http:'],
+      fontSrc: ["'self'", 'https:', 'http:'],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  })
+);
+app.use(
+  morgan('common', {
+    skip: function (req, res) {
+      return req.method === 'GET' && req.headers.upgrade === 'websocket';
+    },
+  })
+);
+app.use(express.static('public'));
 app.use(cors());
-
 
 
 // Routes
@@ -53,13 +63,13 @@ app.use('/user', userRouter);
 app.use(errorHandler);
 
 // Root route
-// app.get('/', (req, res) => {
-//     res.sendFile(__dirname + '/index.html');
-//     // res.render('index', { title: 'BroncoBond', message: 'Hello World, this is BroncoBond!' });
-// });
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+    // res.render('index', { title: 'BroncoBond', message: 'Hello World, this is BroncoBond!' });
+});
 
 // Start the server
-//startServer(port, io, server);
+startServer(port, io, server);
 
 function startServer(port, io, server) {
     server.listen(port, () => {
