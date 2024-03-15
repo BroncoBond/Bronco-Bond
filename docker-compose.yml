@@ -1,0 +1,20 @@
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    environment:
+      - PORT=${WEBSITES_PORT}
+      - MONGO_URI=${mongodb+srv://BroncoAdmin:QSkJ3RmcqwzVKlkO@bbound.aurjrgj.mongodb.net/Bronco_Bond_Database?retryWrites=true&w=majority}
+    command: npm start
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongodb_data:/data/db
+volumes:
+  mongodb_data:
