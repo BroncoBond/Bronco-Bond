@@ -53,6 +53,10 @@ class UserService{
                 recipient.bondRequestsToUser.pull(senderID);
                 await recipient.save();
 
+                if (sender.bondRequestsToUser.includes(recipientID)) {
+                sender.bondRequestsToUser.pull(recipientID);
+                }
+
                 sender.bonds.push(recipientID);
                 sender.numOfBonds += 1;
                 sender.bondRequestsFromUser.pull(recipientID);
