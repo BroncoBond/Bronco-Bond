@@ -48,19 +48,26 @@ class UserService{
             let sender = await User.findById(senderID);
 
             if (!recipient.bonds.includes(senderID) && !sender.bonds.includes(recipientID)) {
-                recipient.bonds.push(senderID);
-                recipient.numOfBonds += 1;
-                recipient.bondRequestsToUser.pull(senderID);
-                await recipient.save();
 
+                if (sender.bondRequestsFromUser.includes(recipientID)) {
+                sender.bondRequestsFromUser.pull(recipientID);
+                }
                 if (sender.bondRequestsToUser.includes(recipientID)) {
                 sender.bondRequestsToUser.pull(recipientID);
                 }
-
                 sender.bonds.push(recipientID);
                 sender.numOfBonds += 1;
-                sender.bondRequestsFromUser.pull(recipientID);
                 await sender.save();
+
+                if (recipient.bondRequestsFromUser.includes(senderID)) {
+                    recipient.bondRequestsFromUser.pull(senderID);
+                }
+                if (recipient.bondRequestsToUser.includes(senderID)) {
+                    recipient.bondRequestsToUser.pull(senderID);
+                }
+                recipient.bonds.push(senderID);
+                recipient.numOfBonds += 1;
+                await recipient.save();
 
                 return { status: 200, message: "Bond request accepted" };
             } else {
