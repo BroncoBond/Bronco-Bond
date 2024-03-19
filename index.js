@@ -13,7 +13,7 @@ const durationLogger = require('./middleware/durationLogger');
 const requestDurationLogger = require('./middleware/durationLogger');
 
 const app = express();
-const port = process.env.WEBSITES_PORT || process.env.PORT;
+const port = process.env.WEBSITES_PORT
 
 // Middleware
 app.use(express.json({ limit: process.env.JSON_LIMIT || '50mb' }));
