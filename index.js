@@ -104,5 +104,6 @@ Step 5: Check Frontend IP
 
 Debug SocketIO: 
 Step 1: In terminal [DEBUG=* node index.js]
+Step 1: In command-prompt [set DEBUG=* && node index.js]
 
 */
