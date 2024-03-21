@@ -253,7 +253,8 @@ class InterestsPageState extends State<InterestsPage> {
                   String newInterests = textEditingController.text.trim();
                   List<String> interestsToAdd = newInterests.split(',');
                   interestsToAdd.forEach((interest) {
-                    String trimmedInterest = interest.trim();
+                    String trimmedInterest =
+                        interest.trim().split(' ').take(3).join(' ');
                     if (trimmedInterest.isNotEmpty) {
                       trimmedInterest = trimmedInterest
                           .split(' ')
