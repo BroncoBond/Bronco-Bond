@@ -1,11 +1,18 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer'); // Node.js library that navigates the webpage, interacts, and extracts data
 
 async function scrapeEventDetails() {
+    // Initializes and launches browser
     const browser = await puppeteer.launch();
+    // Creates a new tab
     const page = await browser.newPage();
-    await page.goto('https://mybar.cpp.edu/event/9701405');
 
-    // Evaluate script to extract event details
+    // Define URL for the event
+    const url = 'https://mybar.cpp.edu/event/9859501';
+
+    // Navigate to URL
+    await page.goto(url);
+
+    // Evaluate page to extract event details
     const eventDetails = await page.evaluate(() => {
         const data = window.initialAppState.preFetchedData.event; // The event data is stored in JavaScrip object that is assigned to window.initialAppState
         return {
@@ -18,9 +25,12 @@ async function scrapeEventDetails() {
         };
     });
 
+    // Print event details
     console.log(eventDetails);
 
+    // Close browser
     await browser.close();
 }
 
+// Calls function
 scrapeEventDetails();
