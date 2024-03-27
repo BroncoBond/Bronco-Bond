@@ -36,6 +36,8 @@ class UserProfileState extends State<UserProfile>
   late TabController _tabController;
   late Future<SharedPreferences> prefsFuture;
   late SharedPreferences prefs;
+  String? currentUserID;
+  bool isCurrentUserProfile = false;
   late Timer timer;
   bool isBonded = false;
   bool isRequested = false;
@@ -51,7 +53,7 @@ class UserProfileState extends State<UserProfile>
 
     prefsFuture.then((value) {
       prefs = value;
-      String? currentUserID = prefs.getString('userID');
+      currentUserID = prefs.getString('userID');
       // Get user data using the userID
       fetchDataUsingUserID(widget.userID, currentUserID);
       // Timer to fetch data periodically (commented out so backend isn't constantly running during testing)
@@ -182,8 +184,7 @@ class UserProfileState extends State<UserProfile>
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               prefs = snapshot.data as SharedPreferences;
-              String? currentUserID = prefs.getString('userID');
-              bool isCurrentUserProfile = widget.userID == currentUserID;
+              isCurrentUserProfile = widget.userID == currentUserID;
               if (isCurrentUserProfile) {
                 return AppBar(
                   title: Text(
@@ -279,7 +280,6 @@ class UserProfileState extends State<UserProfile>
   }
 
   Widget buildUserProfile(SharedPreferences prefs) {
-    String? currentUserID = prefs.getString('userID');
     bool isCurrentUserProfile = widget.userID == currentUserID;
     return Column(
       children: [
