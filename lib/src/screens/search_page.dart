@@ -20,7 +20,7 @@ class SearchPageState extends State<SearchPage> {
   late String username;
   late String userID;
   late SharedPreferences prefs;
-
+  String? currentUserID;
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> searchResults = [];
   int selectedResultIndex = -1;
@@ -66,6 +66,7 @@ class SearchPageState extends State<SearchPage> {
 
   void initSharedPref() async {
     prefs = await SharedPreferences.getInstance();
+    currentUserID = prefs.getString('userID');
   }
 
   @override
@@ -230,7 +231,9 @@ class SearchPageState extends State<SearchPage> {
               setState(() {
                 selectedResultIndex = user;
               });
-              navigateToUserProfile(searchResults[user]);
+              if (searchResults[user]['_id'] != currentUserID) {
+                navigateToUserProfile(searchResults[user]);
+              }
             },
             child: Container(
                 decoration: BoxDecoration(
