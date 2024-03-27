@@ -62,7 +62,7 @@ class FriendsListPageState extends State<FriendsListPage> {
     }
   }
 
-  Future<Map<String, dynamic>> fetchUsernames(String userID) async {
+  Future<Map<String, dynamic>> fetchBondUsernames(String userID) async {
     try {
       final response = await http.get(Uri.parse('$getUserByID/$userID'));
 
@@ -80,11 +80,11 @@ class FriendsListPageState extends State<FriendsListPage> {
     }
   }
 
-  void acceptRequest(String userID, String? currentUserID) async {
+  void acceptRequest(String userID) async {
     var regBody = {"_id": userID};
 
     try {
-      var response = await http.put(Uri.parse('$acceptUser/$currentUserID'),
+      var response = await http.put(Uri.parse('$acceptUser/${widget.userID}'),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
 
@@ -94,11 +94,11 @@ class FriendsListPageState extends State<FriendsListPage> {
     }
   }
 
-  void declineRequest(String userID, String? currentUserID) async {
+  void declineRequest(String userID) async {
     var regBody = {"_id": userID};
 
     try {
-      var response = await http.put(Uri.parse('$declineUser/$currentUserID'),
+      var response = await http.put(Uri.parse('$declineUser/${widget.userID}'),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
 
@@ -108,7 +108,40 @@ class FriendsListPageState extends State<FriendsListPage> {
     }
   }
 
-  void performSearch() async {}
+  // Searches database by username, returns user, then uses the user's id to send a bond request
+  void sendRequest() async {
+    final query = searchController.text;
+
+    try {
+      final response = await http.get(Uri.parse('$search?username=$query'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> users = json.decode(response.body);
+
+        final user = users.firstWhere((user) => user['username'] == query,
+            orElse: () => null);
+
+        if (user != null) {
+          final userID = user['_id'];
+
+          try {
+            var regBody = {"_id": userID};
+
+            var response = await http.put(
+                Uri.parse('$bondUser/${widget.userID}'),
+                headers: {"Content-Type": "application/json"},
+                body: jsonEncode(regBody));
+          } catch (e) {
+            print('Error fetching user data: $e');
+          }
+        }
+      } else {
+        print('Failed to fetch search results');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +176,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                 const Expanded(
                   child: TabBar(
                     labelStyle:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     labelColor: Color(0xFF3B5F43),
                     indicatorColor: Color(0xFF3B5F43),
                     unselectedLabelColor: Colors.grey,
@@ -154,7 +187,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                       Tab(
                         child: Align(
                           alignment: Alignment.center,
-                          child: Text('Friends'),
+                          child: Text('Bonds'),
                         ),
                       ),
                       Tab(
@@ -188,7 +221,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                       ),
                     ),
                     child: Text(
-                      "Add Friend",
+                      "Add Bond",
                       style: GoogleFonts.raleway(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -207,7 +240,7 @@ class FriendsListPageState extends State<FriendsListPage> {
             Positioned.fill(
               child: TabBarView(
                 children: [
-                  buildFriendsTab(bonds), // Tab View for "Friends"
+                  buildBondsTab(bonds), // Tab View for "Friends"
                   buildRequestsTab(
                       bondRequestsToUser), // Tab View for "Requests" (to user)
                   buildPendingTab(
@@ -235,14 +268,14 @@ class FriendsListPageState extends State<FriendsListPage> {
     );
   }
 
-  Widget buildFriendsTab(List<dynamic> bonds) {
+  Widget buildBondsTab(List<dynamic> bonds) {
     if (bonds.isEmpty) {
       return const Center(
-        child: Text('No friends found'),
+        child: Text('No bonds found'),
       );
     }
     return FutureBuilder(
-      future: Future.wait(bonds.map((bond) => fetchUsernames(bond))),
+      future: Future.wait(bonds.map((bond) => fetchBondUsernames(bond))),
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -297,11 +330,11 @@ class FriendsListPageState extends State<FriendsListPage> {
   Widget buildRequestsTab(List<dynamic> requests) {
     if (requests.isEmpty) {
       return const Center(
-        child: Text('No friend requests'),
+        child: Text('No bond requests'),
       );
     }
     return FutureBuilder(
-      future: Future.wait(requests.map((user) => fetchUsernames(user))),
+      future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -349,7 +382,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                acceptRequest(userID, widget.userID);
+                                acceptRequest(userID);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xff3B5F43),
@@ -362,7 +395,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                             const SizedBox(width: 8.0),
                             ElevatedButton(
                               onPressed: () {
-                                declineRequest(userID, widget.userID);
+                                declineRequest(userID);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFABABAB),
@@ -391,7 +424,7 @@ class FriendsListPageState extends State<FriendsListPage> {
       );
     }
     return FutureBuilder(
-      future: Future.wait(requests.map((user) => fetchUsernames(user))),
+      future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -457,13 +490,16 @@ class FriendsListPageState extends State<FriendsListPage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: TextField(
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
                 controller: fieldController,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
-                  hintText: 'Add friend by username',
+                  hintText: 'Add bond by username',
                   border: InputBorder.none,
                   icon: Icon(
-                    Icons.search_rounded,
+                    Icons.person_add_rounded,
                     color: Color(0xFF3B5F43),
                   ),
                 ),
@@ -474,7 +510,7 @@ class FriendsListPageState extends State<FriendsListPage> {
             padding: const EdgeInsets.all(7.0),
             child: ElevatedButton(
               onPressed: () {
-                performSearch();
+                sendRequest();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF3B5F43),

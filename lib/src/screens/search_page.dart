@@ -29,7 +29,6 @@ class SearchPageState extends State<SearchPage> {
     final query = searchController.text;
 
     try {
-      print(query);
       final response = await http.get(Uri.parse('$search?username=$query'));
 
       if (response.statusCode == 200) {
