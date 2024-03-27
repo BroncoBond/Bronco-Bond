@@ -257,7 +257,9 @@ class FriendsListPageState extends State<FriendsListPage> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xff3B5F43),
+                      backgroundColor: showSearchBar
+                          ? const Color(0xFFABABAB)
+                          : const Color(0xff3B5F43),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -296,7 +298,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                 left: 0,
                 right: 0,
                 child: Material(
-                  elevation: 2,
+                  elevation: 3,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 12.0),

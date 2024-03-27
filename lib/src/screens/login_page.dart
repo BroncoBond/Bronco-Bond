@@ -58,7 +58,7 @@ class LoginPageState extends State<LoginPage> {
             prefs.setString('token', myToken);
             prefs.setString('userID', myUserID);
 
-            print('This is the current user\'s ID: $myUserID');
+            // print('This is the current user\'s ID: $myUserID');
             Navigator.push(
               context,
               MaterialPageRoute(
