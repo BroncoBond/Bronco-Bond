@@ -118,9 +118,11 @@ class FriendsListPageState extends State<FriendsListPage> {
       if (response.statusCode == 200) {
         final List<dynamic> users = json.decode(response.body);
 
+        // Get exact user from username
         final user = users.firstWhere((user) => user['username'] == query,
             orElse: () => null);
 
+        // Get userID from user and send friend request
         if (user != null) {
           final userID = user['_id'];
 
@@ -131,16 +133,56 @@ class FriendsListPageState extends State<FriendsListPage> {
                 Uri.parse('$bondUser/${widget.userID}'),
                 headers: {"Content-Type": "application/json"},
                 body: jsonEncode(regBody));
+
+            // Display success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Bond request sent to ${user['username']}'),
+                duration: Duration(seconds: 2),
+                backgroundColor: Color(0xff3B5F43),
+              ),
+            );
           } catch (e) {
             print('Error fetching user data: $e');
+            // Display error message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('An error occurred! Try again later.'),
+                duration: Duration(seconds: 2),
+                backgroundColor: Colors.red,
+              ),
+            );
           }
+        } else {
+          // Display error if user is null and does not exist
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('User does not exist!'),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       } else {
-        print('Failed to fetch search results');
+        // Display error if user is null and does not exist
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User does not exist!'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
       print('Error: $e');
     }
+  }
+
+  void navigateToUserProfile(String userID) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => UserProfile(userID: userID)),
+    );
   }
 
   @override
@@ -531,13 +573,6 @@ class FriendsListPageState extends State<FriendsListPage> {
           ),
         ],
       ),
-    );
-  }
-
-  void navigateToUserProfile(String userID) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => UserProfile(userID: userID)),
     );
   }
 
