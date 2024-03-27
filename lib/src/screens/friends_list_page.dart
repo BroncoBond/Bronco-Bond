@@ -20,12 +20,21 @@ class FriendsListPageState extends State<FriendsListPage> {
   late List<dynamic> bonds = [];
   late List<dynamic> bondRequestsFromUser = [];
   late List<dynamic> bondRequestsToUser = [];
+  TextEditingController searchController = TextEditingController();
+  List<Map<String, dynamic>> searchResults = [];
   int selectedUserIndex = -1;
+
+  bool showSearchBar = false;
 
   @override
   void initState() {
     super.initState();
     // fetchDataUsingUserID(widget.userID);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   Future<void> fetchDataUsingUserID(String userID) async {
@@ -99,6 +108,8 @@ class FriendsListPageState extends State<FriendsListPage> {
     }
   }
 
+  void performSearch() async {}
+
   @override
   Widget build(BuildContext context) {
     // Check if username is empty before fetching data
@@ -118,11 +129,9 @@ class FriendsListPageState extends State<FriendsListPage> {
           ),
           title: Text(
             username,
-            style: GoogleFonts.raleway(
-              textStyle: Theme.of(context).textTheme.displaySmall,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+            style: const TextStyle(
               color: Colors.black,
+              fontWeight: FontWeight.w500,
             ),
           ),
           bottom: PreferredSize(
@@ -167,7 +176,11 @@ class FriendsListPageState extends State<FriendsListPage> {
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        showSearchBar = !showSearchBar;
+                      });
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xff3B5F43),
                       shape: RoundedRectangleBorder(
@@ -189,9 +202,9 @@ class FriendsListPageState extends State<FriendsListPage> {
           ),
           centerTitle: true,
         ),
-        body: Row(
+        body: Stack(
           children: [
-            Expanded(
+            Positioned.fill(
               child: TabBarView(
                 children: [
                   buildFriendsTab(bonds), // Tab View for "Friends"
@@ -202,6 +215,20 @@ class FriendsListPageState extends State<FriendsListPage> {
                 ],
               ),
             ),
+            if (showSearchBar)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Material(
+                  elevation: 2,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 12.0),
+                    child: buildSearchBar(searchController),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -416,6 +443,61 @@ class FriendsListPageState extends State<FriendsListPage> {
     );
   }
 
+  Widget buildSearchBar(TextEditingController fieldController) {
+    return Container(
+      height: 48,
+      width: MediaQuery.sizeOf(context).width,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: Colors.grey[300],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextField(
+                controller: fieldController,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  hintText: 'Add friend by username',
+                  border: InputBorder.none,
+                  icon: Icon(
+                    Icons.search_rounded,
+                    color: Color(0xFF3B5F43),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(7.0),
+            child: ElevatedButton(
+              onPressed: () {
+                performSearch();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF3B5F43),
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: const Text(
+                'Send Bond Request',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void navigateToUserProfile(String userID) {
     Navigator.push(
       context,
@@ -431,30 +513,3 @@ class FriendsListPageState extends State<FriendsListPage> {
     return Uint8List.fromList(decodedImageBytes);
   }
 }
-
-
-
-
-/*return ListView.builder(
-      shrinkWrap: true,
-      itemCount: searchResults.length,
-      itemBuilder: (context, user) {
-        return MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: InkWell(
-            onTap: () {
-              setState(() {
-                selectedResultIndex = user;
-              });
-              navigateToUserProfile(searchResults[user]);
-            },
-            child: Container(
-                color: selectedResultIndex == user
-                    ? Colors.grey.withOpacity(0.5) // Grey when tapped
-                    : null, // Default background color when not tapped
-                child: ListTile(title: Text(searchResults[user]['username']))),
-          ),
-        );
-      },
-    );
-        );*/
