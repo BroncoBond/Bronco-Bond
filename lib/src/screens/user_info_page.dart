@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:bronco_bond/src/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/screens/interests_page.dart';
+import 'package:bronco_bond/src/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -271,8 +272,10 @@ class UserInfoPageState extends State<UserInfoPage> {
         print(jsonResponse['status']);
 
         if (jsonResponse['status']) {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const InterestsPage()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => InterestsPage(userID: userID)));
         } else {
           print("Something went wrong");
         }
@@ -353,7 +356,10 @@ class UserInfoPageState extends State<UserInfoPage> {
             }),
             const SizedBox(height: 10),
             buildTextArea(),
-            buildButton("Next", context),
+            LoginPageState.buildMainButton("Next", context,
+                (BuildContext context) {
+              addInfoToUser(context, widget.userID);
+            }),
           ],
         ),
       ),
@@ -591,7 +597,7 @@ class UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-  Widget buildButton(String label, BuildContext context) {
+/* Widget buildButton(String label, BuildContext context) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
@@ -619,4 +625,5 @@ class UserInfoPageState extends State<UserInfoPage> {
       ),
     );
   }
+*/
 }

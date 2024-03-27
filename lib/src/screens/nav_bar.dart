@@ -41,30 +41,46 @@ class BottomNavBarState extends State<BottomNavBar> {
             _currentIndex = index;
           });
         },
-        selectedItemColor: const Color(0xff3B5F43),
-        unselectedItemColor: Colors.grey,
-        showSelectedLabels: true,
-        showUnselectedLabels: false,
+        selectedItemColor: const Color(0xffFED053),
+        unselectedItemColor: const Color(0xffABABAB),
+        backgroundColor: const Color(0xff3B5F43),
+        //showSelectedLabels: true,
+        //showUnselectedLabels: false,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: 'Home',
+            icon: Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: Icon(Icons.home_rounded),
+            ),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.forum_rounded),
-            label: 'Messages',
+            icon: Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: Icon(Icons.forum_rounded),
+            ),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
-            label: 'Explore',
+            icon: Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: Icon(Icons.explore),
+            ),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_rounded),
-            label: 'Events',
+            icon: Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: Icon(Icons.calendar_today_rounded),
+            ),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profile',
+            icon: Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: Icon(Icons.person_rounded),
+            ),
+            label: '',
           ),
         ],
       ),

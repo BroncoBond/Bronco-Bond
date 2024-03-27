@@ -20,12 +20,21 @@ class FriendsListPageState extends State<FriendsListPage> {
   late List<dynamic> bonds = [];
   late List<dynamic> bondRequestsFromUser = [];
   late List<dynamic> bondRequestsToUser = [];
+  TextEditingController searchController = TextEditingController();
+  List<Map<String, dynamic>> searchResults = [];
   int selectedUserIndex = -1;
+
+  bool showSearchBar = false;
 
   @override
   void initState() {
     super.initState();
     // fetchDataUsingUserID(widget.userID);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   Future<void> fetchDataUsingUserID(String userID) async {
@@ -53,7 +62,7 @@ class FriendsListPageState extends State<FriendsListPage> {
     }
   }
 
-  Future<Map<String, dynamic>> fetchUsernames(String userID) async {
+  Future<Map<String, dynamic>> fetchBondUsernames(String userID) async {
     try {
       final response = await http.get(Uri.parse('$getUserByID/$userID'));
 
@@ -71,11 +80,11 @@ class FriendsListPageState extends State<FriendsListPage> {
     }
   }
 
-  void acceptRequest(String userID, String? currentUserID) async {
+  void acceptRequest(String userID) async {
     var regBody = {"_id": userID};
 
     try {
-      var response = await http.put(Uri.parse('$acceptUser/$currentUserID'),
+      var response = await http.put(Uri.parse('$acceptUser/${widget.userID}'),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
 
@@ -85,11 +94,11 @@ class FriendsListPageState extends State<FriendsListPage> {
     }
   }
 
-  void declineRequest(String userID, String? currentUserID) async {
+  void declineRequest(String userID) async {
     var regBody = {"_id": userID};
 
     try {
-      var response = await http.put(Uri.parse('$declineUser/$currentUserID'),
+      var response = await http.put(Uri.parse('$declineUser/${widget.userID}'),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
 
@@ -97,6 +106,83 @@ class FriendsListPageState extends State<FriendsListPage> {
     } catch (e) {
       print('Error fetching user data: $e');
     }
+  }
+
+  // Searches database by username, returns user, then uses the user's id to send a bond request
+  void sendRequest() async {
+    final query = searchController.text;
+
+    try {
+      final response = await http.get(Uri.parse('$search?username=$query'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> users = json.decode(response.body);
+
+        // Get exact user from username
+        final user = users.firstWhere((user) => user['username'] == query,
+            orElse: () => null);
+
+        // Get userID from user and send friend request
+        if (user != null) {
+          final userID = user['_id'];
+
+          try {
+            var regBody = {"_id": userID};
+
+            var response = await http.put(
+                Uri.parse('$bondUser/${widget.userID}'),
+                headers: {"Content-Type": "application/json"},
+                body: jsonEncode(regBody));
+
+            // Display success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Bond request sent to ${user['username']}'),
+                duration: Duration(seconds: 2),
+                backgroundColor: Color(0xff3B5F43),
+              ),
+            );
+          } catch (e) {
+            print('Error fetching user data: $e');
+            // Display error message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('An error occurred! Try again later.'),
+                duration: Duration(seconds: 2),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        } else {
+          // Display error if user is null and does not exist
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('User does not exist!'),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
+        // Display error if user is null and does not exist
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User does not exist!'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  void navigateToUserProfile(String userID) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => UserProfile(userID: userID)),
+    );
   }
 
   @override
@@ -118,11 +204,9 @@ class FriendsListPageState extends State<FriendsListPage> {
           ),
           title: Text(
             username,
-            style: GoogleFonts.raleway(
-              textStyle: Theme.of(context).textTheme.displaySmall,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+            style: const TextStyle(
               color: Colors.black,
+              fontWeight: FontWeight.w500,
             ),
           ),
           bottom: PreferredSize(
@@ -134,7 +218,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                 const Expanded(
                   child: TabBar(
                     labelStyle:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     labelColor: Color(0xFF3B5F43),
                     indicatorColor: Color(0xFF3B5F43),
                     unselectedLabelColor: Colors.grey,
@@ -145,7 +229,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                       Tab(
                         child: Align(
                           alignment: Alignment.center,
-                          child: Text('Friends'),
+                          child: Text('Bonds'),
                         ),
                       ),
                       Tab(
@@ -167,15 +251,21 @@ class FriendsListPageState extends State<FriendsListPage> {
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        showSearchBar = !showSearchBar;
+                      });
+                    },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xff3B5F43),
+                      backgroundColor: showSearchBar
+                          ? const Color(0xFFABABAB)
+                          : const Color(0xff3B5F43),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
                     child: Text(
-                      "Add Friend",
+                      "Add Bond",
                       style: GoogleFonts.raleway(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -189,12 +279,12 @@ class FriendsListPageState extends State<FriendsListPage> {
           ),
           centerTitle: true,
         ),
-        body: Row(
+        body: Stack(
           children: [
-            Expanded(
+            Positioned.fill(
               child: TabBarView(
                 children: [
-                  buildFriendsTab(bonds), // Tab View for "Friends"
+                  buildBondsTab(bonds), // Tab View for "Friends"
                   buildRequestsTab(
                       bondRequestsToUser), // Tab View for "Requests" (to user)
                   buildPendingTab(
@@ -202,20 +292,34 @@ class FriendsListPageState extends State<FriendsListPage> {
                 ],
               ),
             ),
+            if (showSearchBar)
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: Material(
+                  elevation: 3,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 12.0),
+                    child: buildSearchBar(searchController),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget buildFriendsTab(List<dynamic> bonds) {
+  Widget buildBondsTab(List<dynamic> bonds) {
     if (bonds.isEmpty) {
       return const Center(
-        child: Text('No friends found'),
+        child: Text('No bonds found'),
       );
     }
     return FutureBuilder(
-      future: Future.wait(bonds.map((bond) => fetchUsernames(bond))),
+      future: Future.wait(bonds.map((bond) => fetchBondUsernames(bond))),
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -270,11 +374,11 @@ class FriendsListPageState extends State<FriendsListPage> {
   Widget buildRequestsTab(List<dynamic> requests) {
     if (requests.isEmpty) {
       return const Center(
-        child: Text('No friend requests'),
+        child: Text('No bond requests'),
       );
     }
     return FutureBuilder(
-      future: Future.wait(requests.map((user) => fetchUsernames(user))),
+      future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -322,7 +426,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                acceptRequest(userID, widget.userID);
+                                acceptRequest(userID);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xff3B5F43),
@@ -335,7 +439,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                             const SizedBox(width: 8.0),
                             ElevatedButton(
                               onPressed: () {
-                                declineRequest(userID, widget.userID);
+                                declineRequest(userID);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFABABAB),
@@ -364,7 +468,7 @@ class FriendsListPageState extends State<FriendsListPage> {
       );
     }
     return FutureBuilder(
-      future: Future.wait(requests.map((user) => fetchUsernames(user))),
+      future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -416,10 +520,61 @@ class FriendsListPageState extends State<FriendsListPage> {
     );
   }
 
-  void navigateToUserProfile(String userID) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => UserProfile(userID: userID)),
+  Widget buildSearchBar(TextEditingController fieldController) {
+    return Container(
+      height: 48,
+      width: MediaQuery.sizeOf(context).width,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        color: Colors.grey[300],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextField(
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+                controller: fieldController,
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  hintText: 'Add bond by username',
+                  border: InputBorder.none,
+                  icon: Icon(
+                    Icons.person_add_rounded,
+                    color: Color(0xFF3B5F43),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(7.0),
+            child: ElevatedButton(
+              onPressed: () {
+                sendRequest();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF3B5F43),
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: const Text(
+                'Send Bond Request',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -431,30 +586,3 @@ class FriendsListPageState extends State<FriendsListPage> {
     return Uint8List.fromList(decodedImageBytes);
   }
 }
-
-
-
-
-/*return ListView.builder(
-      shrinkWrap: true,
-      itemCount: searchResults.length,
-      itemBuilder: (context, user) {
-        return MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: InkWell(
-            onTap: () {
-              setState(() {
-                selectedResultIndex = user;
-              });
-              navigateToUserProfile(searchResults[user]);
-            },
-            child: Container(
-                color: selectedResultIndex == user
-                    ? Colors.grey.withOpacity(0.5) // Grey when tapped
-                    : null, // Default background color when not tapped
-                child: ListTile(title: Text(searchResults[user]['username']))),
-          ),
-        );
-      },
-    );
-        );*/

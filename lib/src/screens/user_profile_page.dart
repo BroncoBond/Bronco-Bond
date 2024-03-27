@@ -29,12 +29,15 @@ class UserProfileState extends State<UserProfile>
   late String graduationDate = '';
   late List<dynamic> bonds = [];
   late List<dynamic> bondRequests = [];
+  late List<dynamic> interests = [];
   late List<int> profilePictureData;
   late String profilePictureContentType;
   late Uint8List pfp;
   late TabController _tabController;
   late Future<SharedPreferences> prefsFuture;
   late SharedPreferences prefs;
+  String? currentUserID;
+  bool isCurrentUserProfile = false;
   late Timer timer;
   bool isBonded = false;
   bool isRequested = false;
@@ -50,7 +53,7 @@ class UserProfileState extends State<UserProfile>
 
     prefsFuture.then((value) {
       prefs = value;
-      String? currentUserID = prefs.getString('userID');
+      currentUserID = prefs.getString('userID');
       // Get user data using the userID
       fetchDataUsingUserID(widget.userID, currentUserID);
       // Timer to fetch data periodically (commented out so backend isn't constantly running during testing)
@@ -86,6 +89,7 @@ class UserProfileState extends State<UserProfile>
           descriptionMajor = userData['user']['descriptionMajor'] ?? 'Unknown';
           descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
           graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
+          interests = userData['user']['interests'] ?? [];
           bonds = userData['user']['bonds'] ?? [];
           bondRequests = userData['user']['bondRequestsToUser'] ?? [];
           isBonded = bonds.contains(currentUserID);
@@ -180,8 +184,7 @@ class UserProfileState extends State<UserProfile>
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               prefs = snapshot.data as SharedPreferences;
-              String? currentUserID = prefs.getString('userID');
-              bool isCurrentUserProfile = widget.userID == currentUserID;
+              isCurrentUserProfile = widget.userID == currentUserID;
               if (isCurrentUserProfile) {
                 return AppBar(
                   title: Text(
@@ -191,23 +194,25 @@ class UserProfileState extends State<UserProfile>
                       textStyle: Theme.of(context).textTheme.displaySmall,
                       fontSize: 25,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF3B5F43),
+                      color: Colors.white,
                     ),
                   ),
+                  backgroundColor: const Color(0xFF3B5F43),
                   leadingWidth: 0.0,
+                  automaticallyImplyLeading: false,
                   actions: [
                     IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SettingsPage(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.settings_rounded),
-                      color: const Color(0xFF3B5F43),
-                    ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsPage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.settings_rounded),
+                        color: Colors.white // const Color(0xFF3B5F43),
+                        ),
                   ],
                 );
               } else {
@@ -275,7 +280,6 @@ class UserProfileState extends State<UserProfile>
   }
 
   Widget buildUserProfile(SharedPreferences prefs) {
-    String? currentUserID = prefs.getString('userID');
     bool isCurrentUserProfile = widget.userID == currentUserID;
     return Column(
       children: [
@@ -317,144 +321,117 @@ class UserProfileState extends State<UserProfile>
     return SingleChildScrollView(
       //alignment: Alignment.centerLeft,
       child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(
-              "Experience",
-              style: GoogleFonts.raleway(
-                color: const Color(0xFF3B5F43),
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 400,
-              height: 40,
-              child: ElevatedButton(
-                  onPressed: () {
-                    //add function to add experience
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: const BorderSide(
-                        color: Color(0xFF3B5F43),
-                      ),
-                    ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildAboutSection("Experience", "Add Experiences",
+                "Showcase professional experiences..."),
+            buildAboutSection(
+                "Clubs", "Add Clubs", "Showcase clubs you participated in..."),
+            // Interests section
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Interests",
+                  style: GoogleFonts.raleway(
+                    color: const Color(0xFF3B5F43),
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
                   ),
-                  child: Text(
-                    "Add Experience",
-                    style: GoogleFonts.raleway(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    ),
-                  )),
-            ),
-            const SizedBox(height: 7),
-            Text(
-              "Showcase professional experiences...",
-              style: GoogleFonts.raleway(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 20),
-            //clubs
-            Text(
-              "Clubs",
-              style: GoogleFonts.raleway(
-                color: const Color(0xFF3B5F43),
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 400,
-              height: 40,
-              child: ElevatedButton(
-                  onPressed: () {
-                    //add function to add experience
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: const BorderSide(
-                        color: Color(0xFF3B5F43),
-                      ),
-                    ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    spacing: 8.0, // padding between each button
+                    runSpacing: 8.0, // padding between each row of buttons
+                    children: interests.map((interest) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(
+                              width: 1, color: const Color(0xFF3B5F43)),
+                        ),
+                        padding: const EdgeInsets.all(6.0),
+                        child: Text(
+                          interest,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
-                  child: Text(
-                    "Add Clubs",
-                    style: GoogleFonts.raleway(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    ),
-                  )),
-            ),
-            const SizedBox(height: 7),
-            Text(
-              "Showcase clubs you participate in...",
-              style: GoogleFonts.raleway(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-              ),
-            ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
 
-            //Interests
-            const SizedBox(height: 20),
-            Text(
-              "Interests",
-              style: GoogleFonts.raleway(
-                color: const Color(0xFF3B5F43),
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 400,
-              height: 40,
-              child: ElevatedButton(
-                  onPressed: () {
-                    //add function to add experience
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: const BorderSide(
-                        color: Color(0xFF3B5F43),
+// Use template for now until user can add more to their page
+  Widget buildAboutSection(
+      String title, String buttonLabel, String description) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.raleway(
+            color: const Color(0xFF3B5F43),
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10.0, bottom: 7.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                    onPressed: () {
+                      //add function to add experience
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        side: const BorderSide(
+                          color: Color(0xFF3B5F43),
+                        ),
                       ),
                     ),
-                  ),
-                  child: Text(
-                    "Add Interests",
-                    style: GoogleFonts.raleway(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    ),
-                  )),
-            ),
-            const SizedBox(height: 7),
-            Text(
-              "Share your interests",
-              style: GoogleFonts.raleway(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
+                    child: Text(
+                      buttonLabel,
+                      style: GoogleFonts.raleway(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    )),
               ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 20.0),
+          child: Text(
+            description,
+            style: GoogleFonts.raleway(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
             ),
-          ])),
+          ),
+        ),
+      ],
     );
   }
 
@@ -541,12 +518,10 @@ class UserProfileState extends State<UserProfile>
                   ),
                 );
               },
-              style: ButtonStyle(
-                padding:
-                    MaterialStateProperty.all(EdgeInsets.zero), // No padding
-                backgroundColor: MaterialStateProperty.all(Color(0xFFFFFCFC)),
-                shadowColor: MaterialStateProperty.all(Colors.transparent),
-                elevation: MaterialStateProperty.all(0),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFFFCFC),
+                shadowColor: Colors.transparent,
+                elevation: 0,
               ),
               child: Column(
                 children: [
@@ -567,29 +542,6 @@ class UserProfileState extends State<UserProfile>
         ],
       ),
     );
-  }
-
-  @override
-  Widget buildButton(String label) {
-    return Container(
-        width: double.infinity,
-        margin: const EdgeInsets.symmetric(horizontal: 5.0),
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          TextButton(
-            style: ButtonStyle(
-                padding: MaterialStateProperty.all<EdgeInsets>(
-                    const EdgeInsets.all(12)),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                        side: const BorderSide(color: Colors.black)))),
-            onPressed: () {
-              print('$label pressed');
-            },
-            child: Text(label, style: const TextStyle(fontSize: 15)),
-          )
-        ]));
   }
 
   Widget buildInfoBar() {

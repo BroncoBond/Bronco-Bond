@@ -19,9 +19,10 @@ class ChatPageState extends State<ChatPage> {
             textStyle: Theme.of(context).textTheme.displaySmall,
             fontSize: 25,
             fontWeight: FontWeight.w800,
-            color: const Color(0xFF3B5F43),
+            color: Colors.white,
           ),
         ),
+        backgroundColor: const Color(0xFF3B5F43),
         automaticallyImplyLeading: false,
       ),
       body: const Center(

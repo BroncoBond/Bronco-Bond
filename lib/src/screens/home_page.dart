@@ -59,13 +59,14 @@ class HomePageState extends State<HomePage> {
                 textStyle: Theme.of(context).textTheme.bodyMedium,
                 fontSize: 25,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF3B5F43)),
+                color: Colors.white),
           ),
+          backgroundColor: const Color(0xFF3B5F43),
           bottom: const TabBar(
             labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            labelColor: Color(0xFF3B5F43),
-            indicatorColor: Color(0xFF3B5F43),
-            unselectedLabelColor: Colors.grey,
+            labelColor: Color(0xffFED053),
+            indicatorColor: Color(0xffFED053),
+            unselectedLabelColor: Colors.white,
             indicatorWeight: 3,
             tabs: [
               Tab(text: 'Communities'),
