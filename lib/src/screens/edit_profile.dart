@@ -6,13 +6,16 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 class EditProfile extends StatefulWidget {
-  const EditProfile({Key? key}) : super(key: key);
+  final userID;
+
+  const EditProfile({Key? key, required this.userID}) : super(key: key);
 
   @override
   EditProfilePageState createState() => EditProfilePageState();
 }
 
 class EditProfilePageState extends State<EditProfile> {
+  late Future<void> _dataFuture;
   late String username = '';
   late String fullName = '';
   late String prefName = '';
@@ -42,6 +45,10 @@ class EditProfilePageState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
+    //pfp = Uint8List(0);
+    //profilePictureData = [];
+
+    _dataFuture = fetchDataUsingUserID(widget.userID);
     _clubController = TextEditingController();
     _textController = TextEditingController();
   }
@@ -53,24 +60,27 @@ class EditProfilePageState extends State<EditProfile> {
     super.dispose();
   }
 
-  Future<void> fetchDataUsingUserID(
-      String userID, String? currentUserID) async {
+  Future<void> fetchDataUsingUserID(String userID) async {
     try {
       final response = await http.get(Uri.parse('$getUserByID/$userID'));
 
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
 
-        setState(() {
-          username = userData['user']['username'] ?? 'Unknown';
-          fullName = userData['user']['fullName'] ?? 'Unknown';
-          prefName = userData['user']['prefName'] ?? 'Unknown';
-          descriptionMajor = userData['user']['descriptionMajor'] ?? 'Unknown';
-          descriptionMinor = userData['user']['descriptionMinor'] ?? 'Unknown';
-          descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
-          graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
-          interests = userData['user']['interests'] ?? [];
+        if (mounted) {
+          setState(() {
+            username = userData['user']['username'] ?? 'Unknown';
+            fullName = userData['user']['fullName'] ?? 'Unknown';
+            prefName = userData['user']['prefName'] ?? 'Unknown';
+            descriptionMajor =
+                userData['user']['descriptionMajor'] ?? 'Unknown';
+            descriptionMinor =
+                userData['user']['descriptionMinor'] ?? 'Unknown';
+            descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
+            graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
+            interests = userData['user']['interests'] ?? [];
 
+            /*
           late dynamic profilePicture =
               userData['user']['profilePicture'] ?? '';
           if (profilePicture != null && profilePicture != '') {
@@ -90,7 +100,9 @@ class EditProfilePageState extends State<EditProfile> {
           } else {
             pfp = Uint8List(0);
           }
-        });
+          */
+          });
+        }
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
@@ -123,99 +135,134 @@ class EditProfilePageState extends State<EditProfile> {
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 20), // Add space from the top
+      body: FutureBuilder<void>(
+          future: _dataFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
+              ));
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 20), // Add space from the top
 
-              // Profile icon
-              Center(
-                child: Icon(
-                  Icons.account_circle,
-                  size: 100,
-                  color: Colors.grey,
+                      // Profile icon
+                      const Center(
+                        child: Icon(
+                          Icons.account_circle,
+                          size: 100,
+                          color: Colors.grey,
+                        ),
+                      ),
+
+                      const SizedBox(
+                          height: 20), // Add space below the profile icon
+
+                      // Rows for editing profile information
+                      EditableRow(label: 'User Name', initialValue: username),
+                      const Divider(
+                          color: Colors.grey,
+                          thickness: 1), // Add a horizontal line
+
+                      EditableRow(label: 'Full Name', initialValue: fullName),
+                      const Divider(
+                          color: Colors.grey,
+                          thickness: 1), // Add a horizontal line
+
+                      EditableRow(
+                          label: 'Preferred Name', initialValue: prefName),
+                      const Divider(
+                          color: Colors.grey,
+                          thickness: 1), // Add a horizontal line
+
+                      EditableRow(
+                          label: 'Major', initialValue: descriptionMajor),
+                      const Divider(
+                          color: Colors.grey,
+                          thickness: 1), // Add a horizontal line
+
+                      EditableRow(
+                          label: 'Minor', initialValue: descriptionMinor),
+                      const Divider(
+                          color: Colors.grey,
+                          thickness: 1), // Add a horizontal line
+
+                      EditableRow(
+                          label: 'Graduation Date',
+                          initialValue: graduationDate),
+                      const Divider(
+                          color: Colors.grey,
+                          thickness: 1), // Add a horizontal line
+
+                      EditableRow(label: 'Bio', initialValue: descriptionBio),
+                      const Divider(color: Colors.grey, thickness: 1),
+
+                      const SizedBox(height: 10),
+                      // Add space between profile info and selection widgets
+                      AddTextWidget(
+                        initialInterests: addedInterests,
+                        onInterestsChanged: (interests) {
+                          setState(() {
+                            addedInterests = interests;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      const Divider(color: Colors.grey),
+                      // Selected clubs widget
+                      const SizedBox(height: 20),
+                      SelectedClubsList(
+                        selectedClubs: selectedClubs,
+                        onDelete: (club) {
+                          setState(() {
+                            selectedClubs.remove(club);
+                          });
+                        },
+                      ), // Add space between selected clubs and added texts
+
+                      // Added texts widge
+
+                      const SizedBox(
+                          height:
+                              20), // Add space between added texts and selection dropdown
+
+                      // Dropdown menu for club selection
+                      DropdownButtonFormField<String>(
+                        value: null,
+                        items: clubSuggestions.map((String suggestion) {
+                          return DropdownMenuItem<String>(
+                            value: suggestion,
+                            child: Text(suggestion),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          if (newValue != null &&
+                              !selectedClubs.contains(newValue)) {
+                            setState(() {
+                              selectedClubs.add(newValue);
+                            });
+                          }
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Select Club',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-
-              SizedBox(height: 20), // Add space below the profile icon
-
-              // Rows for editing profile information
-              EditableRow(label: 'User Name', initialValue: 'JohnGreen123'),
-              Divider(color: Colors.grey), // Add a horizontal line
-              EditableRow(label: 'Full Name', initialValue: 'John James Green'),
-              Divider(color: Colors.grey), // Add a horizontal line
-              EditableRow(label: 'Preferred Name', initialValue: 'Johnny'),
-              Divider(color: Colors.grey), // Add a horizontal line
-              EditableRow(label: 'Major', initialValue: 'Art History'),
-              Divider(color: Colors.grey), // Add a horizontal line
-              EditableRow(label: 'Minor', initialValue: 'Communications'),
-              Divider(color: Colors.grey), // Add a horizontal line
-              EditableRow(label: 'Graduation Date', initialValue: '2024'),
-              Divider(color: Colors.grey), // Add a horizontal line
-              EditableRow(
-                  label: 'Bio', initialValue: 'Lorem ipsum dolor sit amet'),
-              Divider(color: Colors.grey), // Add a horizontal line
-              EditableRow(label: 'Bio', initialValue: descriptionBio),
-              Divider(color: Colors.grey),
-
-              SizedBox(height: 10),
-              // Add space between profile info and selection widgets
-              AddTextWidget(
-                initialInterests: addedInterests,
-                onInterestsChanged: (interests) {
-                  setState(() {
-                    addedInterests = interests;
-                  });
-                },
-              ),
-              SizedBox(height: 20),
-              Divider(color: Colors.grey),
-              // Selected clubs widget
-              SizedBox(height: 20),
-              SelectedClubsList(
-                selectedClubs: selectedClubs,
-                onDelete: (club) {
-                  setState(() {
-                    selectedClubs.remove(club);
-                  });
-                },
-              ), // Add space between selected clubs and added texts
-
-              // Added texts widge
-
-              SizedBox(
-                  height:
-                      20), // Add space between added texts and selection dropdown
-
-              // Dropdown menu for club selection
-              DropdownButtonFormField<String>(
-                value: null,
-                items: clubSuggestions.map((String suggestion) {
-                  return DropdownMenuItem<String>(
-                    value: suggestion,
-                    child: Text(suggestion),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  if (newValue != null && !selectedClubs.contains(newValue)) {
-                    setState(() {
-                      selectedClubs.add(newValue);
-                    });
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Select Club',
-                  border: OutlineInputBorder(),
-                  isDense: true,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+              );
+            }
+          }),
     );
   }
 }
@@ -233,16 +280,16 @@ class SelectedClubsList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Selected Clubs',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 15,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         if (selectedClubs.isEmpty)
-          Text(
+          const Text(
             'No clubs selected',
             style: TextStyle(
               fontStyle: FontStyle.italic,
@@ -261,7 +308,7 @@ class SelectedClubsList extends StatelessWidget {
                             child: Text(club),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete),
+                            icon: const Icon(Icons.delete),
                             onPressed: () {
                               onDelete(club);
                             },
@@ -413,16 +460,16 @@ class _AddTextWidgetState extends State<AddTextWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Selected Interests',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 15,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         if (_interests.isEmpty)
-          Text(
+          const Text(
             'No interests added',
             style: TextStyle(
               fontStyle: FontStyle.italic,
@@ -441,7 +488,7 @@ class _AddTextWidgetState extends State<AddTextWidget> {
                             child: Text(interest),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete),
+                            icon: const Icon(Icons.delete),
                             onPressed: () {
                               setState(() {
                                 _interests.remove(interest);
@@ -454,10 +501,10 @@ class _AddTextWidgetState extends State<AddTextWidget> {
                     ))
                 .toList(),
           ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         TextField(
           controller: _textController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Enter Interest',
             border: OutlineInputBorder(),
           ),

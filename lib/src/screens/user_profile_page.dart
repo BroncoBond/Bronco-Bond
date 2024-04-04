@@ -98,11 +98,6 @@ class UserProfileState extends State<UserProfile>
           late dynamic profilePicture =
               userData['user']['profilePicture'] ?? '';
           if (profilePicture != null && profilePicture != '') {
-            //print('${profilePicture['contentType'].runtimeType}');
-            //print('${profilePicture['contentType']}');
-            //print('${profilePicture['data']['data'].runtimeType}');
-            //print('${profilePicture['data']['data']}');
-
             profilePictureData = List<int>.from(profilePicture['data']['data']);
             profilePictureContentType = profilePicture['contentType'];
             //print('$profilePictureData');
@@ -700,7 +695,9 @@ class UserProfileState extends State<UserProfile>
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => EditProfile()),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            EditProfile(userID: currentUserID)),
                   );
                 },
                 style: ElevatedButton.styleFrom(
