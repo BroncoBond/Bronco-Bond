@@ -1,5 +1,9 @@
+import 'package:bronco_bond/src/config.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:typed_data';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -9,7 +13,27 @@ class EditProfile extends StatefulWidget {
 }
 
 class EditProfilePageState extends State<EditProfile> {
-  final List<String> clubSuggestions = ['CSS', 'sheCodes', 'Flutter Club', 'Coding Club', 'Art Club'];
+  late String username = '';
+  late String fullName = '';
+  late String prefName = '';
+  late String descriptionMajor = '';
+  late String descriptionMinor = '';
+  late String descriptionBio = '';
+  late String graduationDate = '';
+  late List<dynamic> bonds = [];
+  late List<dynamic> bondRequests = [];
+  late List<dynamic> interests = [];
+  late List<int> profilePictureData;
+  late String profilePictureContentType;
+  late Uint8List pfp;
+
+  final List<String> clubSuggestions = [
+    'CSS',
+    'sheCodes',
+    'Flutter Club',
+    'Coding Club',
+    'Art Club'
+  ];
   late TextEditingController _clubController;
   late TextEditingController _textController;
   List<String> selectedClubs = [];
@@ -29,6 +53,53 @@ class EditProfilePageState extends State<EditProfile> {
     super.dispose();
   }
 
+  Future<void> fetchDataUsingUserID(
+      String userID, String? currentUserID) async {
+    try {
+      final response = await http.get(Uri.parse('$getUserByID/$userID'));
+
+      if (response.statusCode == 200) {
+        final userData = json.decode(response.body);
+
+        setState(() {
+          username = userData['user']['username'] ?? 'Unknown';
+          fullName = userData['user']['fullName'] ?? 'Unknown';
+          prefName = userData['user']['prefName'] ?? 'Unknown';
+          descriptionMajor = userData['user']['descriptionMajor'] ?? 'Unknown';
+          descriptionMinor = userData['user']['descriptionMinor'] ?? 'Unknown';
+          descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
+          graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
+          interests = userData['user']['interests'] ?? [];
+
+          late dynamic profilePicture =
+              userData['user']['profilePicture'] ?? '';
+          if (profilePicture != null && profilePicture != '') {
+            //print('${profilePicture['contentType'].runtimeType}');
+            //print('${profilePicture['contentType']}');
+            //print('${profilePicture['data']['data'].runtimeType}');
+            //print('${profilePicture['data']['data']}');
+
+            profilePictureData = List<int>.from(profilePicture['data']['data']);
+            profilePictureContentType = profilePicture['contentType'];
+            //print('$profilePictureData');
+            List<int> decodedImageBytes =
+                base64Decode(String.fromCharCodes(profilePictureData));
+            //print('${decodedImageBytes}');
+            pfp = Uint8List.fromList(decodedImageBytes);
+            //print('pfp: $pfp');
+          } else {
+            pfp = Uint8List(0);
+          }
+        });
+      } else {
+        print('Failed to fetch user data. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +108,8 @@ class EditProfilePageState extends State<EditProfile> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
+          icon:
+              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
         ),
         title: Text(
           'Edit Profile',
@@ -83,11 +155,14 @@ class EditProfilePageState extends State<EditProfile> {
               Divider(color: Colors.grey), // Add a horizontal line
               EditableRow(label: 'Graduation Date', initialValue: '2024'),
               Divider(color: Colors.grey), // Add a horizontal line
-              EditableRow(label: 'Bio', initialValue: 'Lorem ipsum dolor sit amet'),
+              EditableRow(
+                  label: 'Bio', initialValue: 'Lorem ipsum dolor sit amet'),
+              Divider(color: Colors.grey), // Add a horizontal line
+              EditableRow(label: 'Bio', initialValue: descriptionBio),
               Divider(color: Colors.grey),
-                     
+
               SizedBox(height: 10),
-               // Add space between profile info and selection widgets
+              // Add space between profile info and selection widgets
               AddTextWidget(
                 initialInterests: addedInterests,
                 onInterestsChanged: (interests) {
@@ -96,10 +171,10 @@ class EditProfilePageState extends State<EditProfile> {
                   });
                 },
               ),
-              SizedBox(height: 20), 
+              SizedBox(height: 20),
               Divider(color: Colors.grey),
               // Selected clubs widget
-                             SizedBox(height: 20), 
+              SizedBox(height: 20),
               SelectedClubsList(
                 selectedClubs: selectedClubs,
                 onDelete: (club) {
@@ -107,11 +182,13 @@ class EditProfilePageState extends State<EditProfile> {
                     selectedClubs.remove(club);
                   });
                 },
-              ),// Add space between selected clubs and added texts
+              ), // Add space between selected clubs and added texts
 
               // Added texts widge
 
-              SizedBox(height: 20), // Add space between added texts and selection dropdown
+              SizedBox(
+                  height:
+                      20), // Add space between added texts and selection dropdown
 
               // Dropdown menu for club selection
               DropdownButtonFormField<String>(
@@ -147,7 +224,9 @@ class SelectedClubsList extends StatelessWidget {
   final List<String> selectedClubs;
   final void Function(String) onDelete;
 
-  const SelectedClubsList({Key? key, required this.selectedClubs, required this.onDelete}) : super(key: key);
+  const SelectedClubsList(
+      {Key? key, required this.selectedClubs, required this.onDelete})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -197,11 +276,43 @@ class SelectedClubsList extends StatelessWidget {
   }
 }
 
-class EditableRow extends StatelessWidget {
+class EditableRow extends StatefulWidget {
   final String label;
   final String initialValue;
 
-  const EditableRow({Key? key, required this.label, required this.initialValue}) : super(key: key);
+  const EditableRow({Key? key, required this.label, required this.initialValue})
+      : super(key: key);
+
+  @override
+  State<EditableRow> createState() => _EditableRowState();
+}
+
+class _EditableRowState extends State<EditableRow> {
+  bool isEditing = false;
+  late TextEditingController textController;
+
+  @override
+  void initState() {
+    super.initState();
+    textController = TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  void _toggleEdit() {
+    setState(() {
+      isEditing = !isEditing;
+    });
+  }
+
+  void _saveChanges() {
+    // Save changes by making a post request to the database
+    _toggleEdit();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,22 +322,53 @@ class EditableRow extends StatelessWidget {
         children: [
           Expanded(
             flex: 2,
-            child: Text(label),
+            child: Text(widget.label),
           ),
           Expanded(
             flex: 3,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.transparent), // Border
-                borderRadius: BorderRadius.circular(5.0), // Rounded corners
-              ),
-              child: TextFormField(
-                initialValue: initialValue,
-                decoration: InputDecoration(
-                  border: InputBorder.none, // Hide border
+            child: Stack(
+              children: [
+                TextFormField(
+                  readOnly: !isEditing,
+                  initialValue: widget.initialValue,
+                  style: const TextStyle(fontSize: 14),
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.all(10.0),
+                    border: isEditing
+                        ? OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide:
+                                const BorderSide(color: Color(0xff3B5F43)),
+                          )
+                        : InputBorder.none,
+                    focusedBorder: isEditing
+                        ? OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(
+                                color: Color(0xff3B5F43), width: 1),
+                          )
+                        : InputBorder.none,
+                  ),
                 ),
-              ),
+                if (isEditing)
+                  Positioned(
+                    right: 0,
+                    child: IconButton(
+                      icon: const Icon(Icons.check_rounded),
+                      color: const Color(0xff3B5F43),
+                      onPressed: _saveChanges,
+                    ),
+                  )
+                else
+                  Positioned(
+                    right: 0,
+                    child: IconButton(
+                      icon: const Icon(Icons.edit_rounded),
+                      color: const Color(0xffABABAB),
+                      onPressed: _toggleEdit,
+                    ),
+                  ),
+              ],
             ),
           ),
         ],
