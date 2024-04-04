@@ -45,8 +45,8 @@ class EditProfilePageState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    //pfp = Uint8List(0);
-    //profilePictureData = [];
+    pfp = Uint8List(0);
+    profilePictureData = [];
 
     _dataFuture = fetchDataUsingUserID(widget.userID);
     _clubController = TextEditingController();
@@ -80,27 +80,26 @@ class EditProfilePageState extends State<EditProfile> {
             graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
             interests = userData['user']['interests'] ?? [];
 
-            /*
-          late dynamic profilePicture =
-              userData['user']['profilePicture'] ?? '';
-          if (profilePicture != null && profilePicture != '') {
-            //print('${profilePicture['contentType'].runtimeType}');
-            //print('${profilePicture['contentType']}');
-            //print('${profilePicture['data']['data'].runtimeType}');
-            //print('${profilePicture['data']['data']}');
+            late dynamic profilePicture =
+                userData['user']['profilePicture'] ?? '';
+            if (profilePicture != null && profilePicture != '') {
+              //print('${profilePicture['contentType'].runtimeType}');
+              //print('${profilePicture['contentType']}');
+              //print('${profilePicture['data']['data'].runtimeType}');
+              //print('${profilePicture['data']['data']}');
 
-            profilePictureData = List<int>.from(profilePicture['data']['data']);
-            profilePictureContentType = profilePicture['contentType'];
-            //print('$profilePictureData');
-            List<int> decodedImageBytes =
-                base64Decode(String.fromCharCodes(profilePictureData));
-            //print('${decodedImageBytes}');
-            pfp = Uint8List.fromList(decodedImageBytes);
-            //print('pfp: $pfp');
-          } else {
-            pfp = Uint8List(0);
-          }
-          */
+              profilePictureData =
+                  List<int>.from(profilePicture['data']['data']);
+              profilePictureContentType = profilePicture['contentType'];
+              //print('$profilePictureData');
+              List<int> decodedImageBytes =
+                  base64Decode(String.fromCharCodes(profilePictureData));
+              //print('${decodedImageBytes}');
+              pfp = Uint8List.fromList(decodedImageBytes);
+              //print('pfp: $pfp');
+            } else {
+              pfp = Uint8List(0);
+            }
           });
         }
       } else {
@@ -155,16 +154,28 @@ class EditProfilePageState extends State<EditProfile> {
                       const SizedBox(height: 20), // Add space from the top
 
                       // Profile icon
-                      const Center(
-                        child: Icon(
-                          Icons.account_circle,
-                          size: 100,
-                          color: Colors.grey,
+                      CircleAvatar(
+                        radius: 45,
+                        backgroundColor: Colors.white,
+                        child: ClipOval(
+                          child: profilePictureData.isNotEmpty
+                              ? Image.memory(
+                                  pfp,
+                                  width: 90.0,
+                                  height: 90.0,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.asset(
+                                  'assets/images/user_profile_icon.png',
+                                  width: 90.0,
+                                  height: 90.0,
+                                  fit: BoxFit.cover,
+                                ),
                         ),
                       ),
 
                       const SizedBox(
-                          height: 20), // Add space below the profile icon
+                          height: 30), // Add space below the profile icon
 
                       // Rows for editing profile information
                       EditableRow(label: 'User Name', initialValue: username),
