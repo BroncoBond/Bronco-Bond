@@ -233,7 +233,7 @@ exports.deleteAccount = async (req, res) => {
 };
 
 // This function is used to send a request to recipient
-exports.requestBondUser = async (req, res) => {
+exports.sendBondRequest = async (req, res) => {
     if (req.body._id !== req.params.id) {
         try {
             const recipient = await User.findByIdAndUpdate(req.body._id, {
@@ -247,6 +247,10 @@ exports.requestBondUser = async (req, res) => {
                 return res.status(404).json("Recipient user not found");
             }
 
+            if (!sender) {
+                return res.status(404).json("Sender user not found");
+            }
+
             return res.status(200).json("Friend request sent");
         } catch (error) {
             return res.status(500).json({ error: error.message});
@@ -257,51 +261,62 @@ exports.requestBondUser = async (req, res) => {
 }
 
 exports.acceptBondRequest = async(req, res) => {
-    try {
+    if (req.params.id !== req.body._id) {
+        try {
+            const recipient = await User.findById(req.params.id);
+            const sender = await User.findById(req.body._id);
 
-        const recipient = await User.findById(req.params.id);
-        const sender = await User.findById(req.body._id);
+            if (!recipient || !sender) {
+                return res.status(404).json("User not found");
+            }
 
-        if (!recipient || !sender) {
-            return res.status(404).json("User not found");
+            if (!recipient.bondRequestsReceived.includes(sender.id)) {
+                return res.status(400).json("No bond request from this user");
+            }
+
+            const result = await UserService.acceptBondRequest(recipient.id, sender.id);
+            
+            return res.status(result.status).json(result.message);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ error: error.message });
         }
-
-        if (!recipient.bondRequestsReceived.includes(req.body._id)) {
-            return res.status(400).json("No bond request from this user");
-        }
-
-        const result = await UserService.acceptBondRequest(req.params.id, req.body._id);
-        
-        return res.status(result.status).json(result.message);
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: error.message });
+    } else {
+        return res.status(403).json("Identical Params and Body ID");
     }
 }
 
 exports.declineBondRequest = async(req, res) => {
-    try {
-        const recipient = await User.findById(req.params.id);
-        const sender = await User.findById(req.body._id);
+    if (req.params.id !== req.body._id) {
+        try {
+            const recipient = await User.findById(req.params.id);
+            const sender = await User.findById(req.body._id);
 
-        if (!recipient || !sender) {
-            return res.status(404).json("User not found");
+            if (!recipient || !sender) {
+                return res.status(404).json("User not found");
+            }
+
+            if (!recipient.bondRequestsReceived.includes(req.body._id)) {
+                return res.status(400).json("Sender ID not found in Recipient Data [bondRequestsReceived]");
+            }
+
+            if (!sender.bondRequestsSent.includes(req.params.id)) {
+                return res.status(400).json("Recipient ID not found in Sender Data [bondRequestsSent]");
+            }
+
+            await User.findByIdAndUpdate(req.params.id, {
+                $pull: { bondRequestsReceived: req.body._id}
+            }, {new: true});
+            await User.findByIdAndUpdate(req.body._id, {
+                $pull: { bondRequestsSent: req.params.id}
+            }, {new: true});
+
+            return res.status(200).json("Bond Request Declined");
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
         }
-
-        if (!recipient.bondRequestsReceived.includes(sender.id)) {
-            return res.status(400).json("Sender ID not found in Recipient Data [bondRequestsReceived]");
-        }
-
-        if (!sender.bondRequestsSent.includes(recipient.id)) {
-            return res.status(400).json("Recipient ID not found in Sender Data [bondRequestsSent]");
-        }
-
-        await recipient.updateOne({ $pull: { bondRequestsReceived: req.body._id}});
-        await sender.updateOne({ $pull: { bondRequestsSent: req.params.id}});
-
-        return res.status(200).json("Bond Request Declined");
-    } catch (error) {
-        return res.status(500).json({ error: error.message });
+    } else {
+        return res.status(403).json("Identical Params and Body ID");
     }
 }
 
@@ -332,7 +347,7 @@ exports.revokeBondRequest = async (req, res) => {
 }
 
 // This function is used to unfriend another user's account
-exports.unfriendUser = async (req, res) => {
+exports.unBondUser = async (req, res) => {
     try {
         if (req.body._id !== req.params.id) {
             const user = await User.findById(req.params.id);

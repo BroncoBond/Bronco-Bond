@@ -27,7 +27,7 @@ router.get("/:id", userController.getById);
 router.delete("/:id", userController.deleteAccount);
 
 //Send Bond Request to User
-router.put("/sendBondRequest/:id", userController.requestBondUser);
+router.put("/sendBondRequest/:id", userController.sendBondRequest);
 
 //Accept Bond Request from User
 router.put("/acceptBondRequest/:id", userController.acceptBondRequest);
@@ -39,7 +39,7 @@ router.put("/declineBondRequest/:id", userController.declineBondRequest);
 router.put("/revokeBondRequest/:id", userController.revokeBondRequest);
 
 //unfriend User
-router.delete("/unBond/:id", userController.unfriendUser);
+router.delete("/unBond/:id", userController.unBondUser);
 
 //Logout User
 router.post("/logout", auth.isAuth, userController.logout);

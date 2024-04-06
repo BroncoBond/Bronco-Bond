@@ -49,21 +49,21 @@ class UserService{
 
             if (!recipient.bonds.includes(senderID) && !sender.bonds.includes(recipientID)) {
 
-                if (sender.bondRequestsFromUser.includes(recipientID)) {
-                sender.bondRequestsFromUser.pull(recipientID);
+                if (sender.bondRequestsReceived.includes(recipientID)) {
+                sender.bondRequestsReceived.pull(recipientID);
                 }
-                if (sender.bondRequestsToUser.includes(recipientID)) {
-                sender.bondRequestsToUser.pull(recipientID);
+                if (sender.bondRequestsSent.includes(recipientID)) {
+                sender.bondRequestsSent.pull(recipientID);
                 }
                 sender.bonds.push(recipientID);
                 sender.numOfBonds += 1;
                 await sender.save();
 
-                if (recipient.bondRequestsFromUser.includes(senderID)) {
-                    recipient.bondRequestsFromUser.pull(senderID);
+                if (recipient.bondRequestsReceived.includes(senderID)) {
+                    recipient.bondRequestsReceived.pull(senderID);
                 }
-                if (recipient.bondRequestsToUser.includes(senderID)) {
-                    recipient.bondRequestsToUser.pull(senderID);
+                if (recipient.bondRequestsSent.includes(senderID)) {
+                    recipient.bondRequestsSent.pull(senderID);
                 }
                 recipient.bonds.push(senderID);
                 recipient.numOfBonds += 1;
