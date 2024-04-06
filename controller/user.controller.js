@@ -237,10 +237,10 @@ exports.requestBondUser = async (req, res) => {
     if (req.body._id !== req.params.id) {
         try {
             const recipient = await User.findByIdAndUpdate(req.body._id, {
-                $addToSet: { bondRequestsToUser: req.params.id}
+                $addToSet: { bondRequestsReceived: req.params.id}
         }, {new: true });
             const sender = await User.findByIdAndUpdate(req.params.id, {
-                $addToSet: { bondRequestsFromUser: req.body._id}
+                $addToSet: { bondRequestsSent: req.body._id}
         }, {new: true });
 
             if (!recipient) {
@@ -266,7 +266,7 @@ exports.acceptBondRequest = async(req, res) => {
             return res.status(404).json("User not found");
         }
 
-        if (!recipient.bondRequestsToUser.includes(req.body._id)) {
+        if (!recipient.bondRequestsReceived.includes(req.body._id)) {
             return res.status(400).json("No bond request from this user");
         }
 
@@ -282,18 +282,22 @@ exports.acceptBondRequest = async(req, res) => {
 exports.declineBondRequest = async(req, res) => {
     try {
         const recipient = await User.findById(req.params.id);
-        const requester = await User.findById(req.body._id);
+        const sender = await User.findById(req.body._id);
 
-        if (!recipient || !requester) {
+        if (!recipient || !sender) {
             return res.status(404).json("User not found");
         }
 
-        if (!recipient.bondRequestsToUser.includes(req.body._id)) {
-            return res.status(400).json("No bond request from this user");
+        if (!recipient.bondRequestsReceived.includes(sender.id)) {
+            return res.status(400).json("Sender ID not found in Recipient Data [bondRequestsReceived]");
         }
 
-        await recipient.updateOne({ $pull: { bondRequestsToUser: req.body._id}});
-        await requester.updateOne({ $pull: { bondRequestsFromUser: req.params.id}});
+        if (!sender.bondRequestsSent.includes(recipient.id)) {
+            return res.status(400).json("Recipient ID not found in Sender Data [bondRequestsSent]");
+        }
+
+        await recipient.updateOne({ $pull: { bondRequestsReceived: req.body._id}});
+        await sender.updateOne({ $pull: { bondRequestsSent: req.params.id}});
 
         return res.status(200).json("Bond Request Declined");
     } catch (error) {
@@ -301,10 +305,36 @@ exports.declineBondRequest = async(req, res) => {
     }
 }
 
+exports.revokeBondRequest = async (req, res) => {
+    try {
+        const sender = await User.findById(req.params.id);
+        const recipient = await User.findById(req.body._id);
+
+        if (!recipient || !sender) {
+            return res.status(404).json("User not found");
+        }
+
+        if (!sender.bondRequestsSent.includes(recipient.id)) {
+            return res.status(400).json("Recipient ID not found in Sender Data [bondRequestsSent]");
+        }
+
+        if (!recipient.bondRequestsReceived.includes(sender.id)) {
+            return res.status(400).json("Sender ID not found in Recipient Data [bondRequestsReceived]");
+        }
+
+        await recipient.updateOne({ $pull: { bondRequestsReceived: sender.id}});
+        await sender.updateOne({ $pull: { bondRequestsSent: recipient.id}});
+
+        return res.status(200).json("Bond Request Removed");
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
 // This function is used to unfriend another user's account
 exports.unfriendUser = async (req, res) => {
-    if (req.body._id !== req.params.id) {
-        try {
+    try {
+        if (req.body._id !== req.params.id) {
             const user = await User.findById(req.params.id);
             const currentUser = await User.findById(req.body._id);
             console.log(typeof req.body._id); // Log the type of req.body._id
@@ -319,11 +349,11 @@ exports.unfriendUser = async (req, res) => {
             } else {
                 return res.status(403).json("You are not friends with this user");
             }
-        } catch (error) {
-            return res.status(500).json(error);
+        } else {
+            return res.status(403).json("You can't unfriend yourself");
         }
-    } else {
-        return res.status(403).json("You can't unfriend yourself");
+    } catch (error) {
+        return res.status(500).json(error);
     }
 }
 

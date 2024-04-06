@@ -46,12 +46,12 @@ const userSchema = new Schema({
             ref: 'User',
             default:[]
         }],
-        bondRequestsToUser: [{
+        bondRequestsReceived: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
             default:[]
         }],
-        bondRequestsFromUser: [{
+        bondRequestsSent: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
             default:[]
