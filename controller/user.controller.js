@@ -236,12 +236,12 @@ exports.deleteAccount = async (req, res) => {
 exports.sendBondRequest = async (req, res) => {
     if (req.body._id !== req.params.id) {
         try {
-            const recipient = await User.findByIdAndUpdate(req.body._id, {
-                $addToSet: { bondRequestsReceived: req.params.id}
-        }, {new: true });
-            const sender = await User.findByIdAndUpdate(req.params.id, {
-                $addToSet: { bondRequestsSent: req.body._id}
-        }, {new: true });
+            const recipient = await User.findById(req.params.id);
+            const sender = await User.findById(req.body._id);
+
+            if (recipient.bonds.includes(sender.id) && sender.bonds.includes(recipient.id)) {
+                return res.status(403).json("Users are already friended");
+            }
 
             if (!recipient) {
                 return res.status(404).json("Recipient user not found");
@@ -250,6 +250,9 @@ exports.sendBondRequest = async (req, res) => {
             if (!sender) {
                 return res.status(404).json("Sender user not found");
             }
+            
+            await sender.updateOne({ $push: { bondRequestsSent: recipient.id } });
+            await recipient.updateOne({ $push: { bondRequestsReceived: sender.id } });
 
             return res.status(200).json("Friend request sent");
         } catch (error) {
