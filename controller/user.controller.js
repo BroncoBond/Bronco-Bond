@@ -186,14 +186,14 @@ exports.updateUserInfo = async (req, res) => {
                     return res.status(400).json({ error: 'Username already exists' });
                 }
             }
-            const { username, password, profilePicture, graduationDate, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName, interests} = req.body;
+            const { username, password, profilePicture, graduationDate, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName} = req.body;
 
             // Log the data that will be used to update the user
             console.log('Updating user with data:', req.body);
             
             // Try to update the user with the given ID and data
             const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-                $set: { username, password, profilePicture, graduationDate, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName, interests},
+                $set: { username, password, profilePicture, graduationDate, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName},
             }, { new: true }); // Add { new: true } to return the updated user
 
             if (!updatedUser) {
@@ -212,6 +212,29 @@ exports.updateUserInfo = async (req, res) => {
         return res.status(403).json("You can update only your account!");
     }
 };
+
+exports.updateUserInterets = async (req, res) => {
+    if (req.body._id === req.params.id || req.body.isAdmin) {
+        try {
+                const uniqueInterests = [...new Set(req.body.interests.map(interest => interest.toLowerCase()))];
+
+                const user = await User.findByIdAndUpdate(req.params.id, {
+                    $set: { interests: uniqueInterests }
+                }, { new: true });
+
+                if (!user) {
+                    return res.status(404).json({ error: 'Error updating user, user not found' });
+                }
+
+                res.status(200).json({ status: true, success: 'User interests updated successfully'});
+            } catch (err) {
+                console.error('Error updating user:', err);
+                return res.status(500).json({ error: 'Error updating user', details: err });
+        }
+    } else {
+        return res.status(403).json("You can update only your account!");
+    }
+}
 
 // This function is used to delete a user's account
 exports.deleteAccount = async (req, res) => {

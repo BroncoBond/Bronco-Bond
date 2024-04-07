@@ -12,7 +12,10 @@ router.post('/login', userController.login);
 router.get('/search', userController.searchUserByUsername);
 
 //Update User Info
-router.put("/userUpdate/:id", userController.updateUserInfo);
+router.put("/updateUserInfo/:id", userController.updateUserInfo);
+
+//Update User Interests
+router.put("/updateUserInterest/:id", userController.updateUserInterets);
 
 //Get all User ID
 router.get('/ids', userController.getAllUserIds);
