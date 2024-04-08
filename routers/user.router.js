@@ -15,7 +15,7 @@ router.get('/search', userController.searchUserByUsername);
 router.put("/updateUserInfo/:id", userController.updateUserInfo);
 
 //Update User Interests
-router.put("/updateUserInterest/:id", userController.updateUserInterets);
+router.put("/updateUserInterests/:id", userController.updateUserInterets);
 
 //Get all User ID
 router.get('/ids', userController.getAllUserIds);
