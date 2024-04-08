@@ -18,8 +18,8 @@ class FriendsListPage extends StatefulWidget {
 class FriendsListPageState extends State<FriendsListPage> {
   late String username = '';
   late List<dynamic> bonds = [];
-  late List<dynamic> bondRequestsFromUser = [];
-  late List<dynamic> bondRequestsToUser = [];
+  late List<dynamic> bondRequestsSent = [];
+  late List<dynamic> bondRequestsReceived = [];
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> searchResults = [];
   int selectedUserIndex = -1;
@@ -47,8 +47,8 @@ class FriendsListPageState extends State<FriendsListPage> {
         setState(() {
           username = userData['user']['username'] ?? 'Unknown';
           bonds = userData['user']['bonds'] ?? [];
-          bondRequestsFromUser = userData['user']['bondRequestsFromUser'] ?? [];
-          bondRequestsToUser = userData['user']['bondRequestsToUser'] ?? [];
+          bondRequestsSent = userData['user']['bondRequestsSent'] ?? [];
+          bondRequestsReceived = userData['user']['bondRequestsReceived'] ?? [];
         });
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
@@ -84,7 +84,8 @@ class FriendsListPageState extends State<FriendsListPage> {
     var regBody = {"_id": userID};
 
     try {
-      var response = await http.put(Uri.parse('$acceptUser/${widget.userID}'),
+      var response = await http.put(
+          Uri.parse('$acceptBondRequest/${widget.userID}'),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
 
@@ -98,7 +99,8 @@ class FriendsListPageState extends State<FriendsListPage> {
     var regBody = {"_id": userID};
 
     try {
-      var response = await http.put(Uri.parse('$declineUser/${widget.userID}'),
+      var response = await http.put(
+          Uri.parse('$declineBondRequest/${widget.userID}'),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
 
@@ -130,7 +132,7 @@ class FriendsListPageState extends State<FriendsListPage> {
             var regBody = {"_id": userID};
 
             var response = await http.put(
-                Uri.parse('$bondUser/${widget.userID}'),
+                Uri.parse('$sendBondRequest/${widget.userID}'),
                 headers: {"Content-Type": "application/json"},
                 body: jsonEncode(regBody));
 
@@ -286,9 +288,9 @@ class FriendsListPageState extends State<FriendsListPage> {
                 children: [
                   buildBondsTab(bonds), // Tab View for "Friends"
                   buildRequestsTab(
-                      bondRequestsToUser), // Tab View for "Requests" (to user)
+                      bondRequestsReceived), // Tab View for "Requests" (to user)
                   buildPendingTab(
-                      bondRequestsFromUser), // Tab View for "Pending" (requests from user)
+                      bondRequestsSent), // Tab View for "Pending" (requests from user)
                 ],
               ),
             ),

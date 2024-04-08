@@ -68,7 +68,7 @@ class InterestsPageState extends State<InterestsPage> {
     var regBody = {"_id": userID, "interests": userInterests};
 
     try {
-      var response = await http.put(Uri.parse('$updateUser/$userID'),
+      var response = await http.put(Uri.parse('$updateInterests/$userID'),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
 

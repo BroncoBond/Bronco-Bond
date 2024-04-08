@@ -83,33 +83,37 @@ class UserProfileState extends State<UserProfile>
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
 
-        setState(() {
-          username = userData['user']['username'] ?? 'Unknown';
-          numOfBonds = userData['user']['numOfBonds'] ?? 0;
-          descriptionMajor = userData['user']['descriptionMajor'] ?? 'Unknown';
-          descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
-          graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
-          interests = userData['user']['interests'] ?? [];
-          bonds = userData['user']['bonds'] ?? [];
-          bondRequests = userData['user']['bondRequestsToUser'] ?? [];
-          isBonded = bonds.contains(currentUserID);
-          isRequested = bondRequests.contains(currentUserID);
+        if (mounted) {
+          setState(() {
+            username = userData['user']['username'] ?? 'Unknown';
+            numOfBonds = userData['user']['numOfBonds'] ?? 0;
+            descriptionMajor =
+                userData['user']['descriptionMajor'] ?? 'Unknown';
+            descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
+            graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
+            interests = userData['user']['interests'] ?? [];
+            bonds = userData['user']['bonds'] ?? [];
+            bondRequests = userData['user']['bondRequestsReceived'] ?? [];
+            isBonded = bonds.contains(currentUserID);
+            isRequested = bondRequests.contains(currentUserID);
 
-          late dynamic profilePicture =
-              userData['user']['profilePicture'] ?? '';
-          if (profilePicture != null && profilePicture != '') {
-            profilePictureData = List<int>.from(profilePicture['data']['data']);
-            profilePictureContentType = profilePicture['contentType'];
-            //print('$profilePictureData');
-            List<int> decodedImageBytes =
-                base64Decode(String.fromCharCodes(profilePictureData));
-            //print('${decodedImageBytes}');
-            pfp = Uint8List.fromList(decodedImageBytes);
-            //print('pfp: $pfp');
-          } else {
-            pfp = Uint8List(0);
-          }
-        });
+            late dynamic profilePicture =
+                userData['user']['profilePicture'] ?? '';
+            if (profilePicture != null && profilePicture != '') {
+              profilePictureData =
+                  List<int>.from(profilePicture['data']['data']);
+              profilePictureContentType = profilePicture['contentType'];
+              //print('$profilePictureData');
+              List<int> decodedImageBytes =
+                  base64Decode(String.fromCharCodes(profilePictureData));
+              //print('${decodedImageBytes}');
+              pfp = Uint8List.fromList(decodedImageBytes);
+              //print('pfp: $pfp');
+            } else {
+              pfp = Uint8List(0);
+            }
+          });
+        }
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
@@ -119,16 +123,13 @@ class UserProfileState extends State<UserProfile>
     }
   }
 
-  void sendBond(String userID, String? currentUserID) async {
+  void sendRequest(String userID, String? currentUserID) async {
     // User id of the person you want to follow in the body
     var regBody = {"_id": userID};
 
     try {
-      // Current user id is in route
-      // print('Current User: $currentUserID');
-      // print('User you want to follow: $userID');
-
-      var response = await http.put(Uri.parse('$bondUser/$currentUserID'),
+      var response = await http.put(
+          Uri.parse('$sendBondRequest/$currentUserID'),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(regBody));
 
@@ -663,7 +664,7 @@ class UserProfileState extends State<UserProfile>
               isRequested = false;
             });
           } else {
-            sendBond(userID, currentUserID);
+            sendRequest(userID, currentUserID);
           }
         },
         style: ElevatedButton.styleFrom(
