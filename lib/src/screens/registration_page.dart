@@ -27,39 +27,45 @@ class RegisterPageState extends State<RegisterPage> {
         passwordController.text.isNotEmpty &&
         usernameController.text.isNotEmpty &&
         confirmPasswordController.text.isNotEmpty) {
-      if (passwordController.text == confirmPasswordController.text) {
-        var regBody = {
-          "email": emailController.text,
-          "username": usernameController.text,
-          "password": passwordController.text
-        };
+      if (passwordController.text.length >= 6) {
+        if (passwordController.text == confirmPasswordController.text) {
+          var regBody = {
+            "email": emailController.text,
+            "username": usernameController.text,
+            "password": passwordController.text
+          };
 
-        var response = await http.post(Uri.parse(register),
-            headers: {"Content-Type": "application/json"},
-            body: jsonEncode(regBody));
+          var response = await http.post(Uri.parse(register),
+              headers: {"Content-Type": "application/json"},
+              body: jsonEncode(regBody));
 
-        if (response.body.isNotEmpty) {
-          var jsonResponse = jsonDecode(response.body);
+          if (response.body.isNotEmpty) {
+            var jsonResponse = jsonDecode(response.body);
 
-          print(jsonResponse['status']);
-          print('Response body: ${response.body}');
+            print(jsonResponse['status']);
+            print('Response body: ${response.body}');
 
-          if (jsonResponse['status']) {
-            var userID = jsonResponse['_id'];
-            print('User ID: $userID');
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => UserInfoPage(userID: userID)));
+            if (jsonResponse['status']) {
+              var userID = jsonResponse['_id'];
+              print('User ID: $userID');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UserInfoPage(userID: userID)));
+            } else {
+              LoginPageState.buildDialog(context, "Registration failed!",
+                  "Account with this email or username already exists.");
+            }
           } else {
-            LoginPageState.buildDialog(context, "Registration failed!",
-                "Account with this email or username already exists.");
+            print("Empty Response");
           }
         } else {
-          print("Empty Response");
+          LoginPageState.buildDialog(context, "Registration failed!",
+              "Passwords do not match. Please try again.");
         }
       } else {
-        print("Passwords do not match");
+        LoginPageState.buildDialog(context, "Registration failed!",
+            "Password must be at least 6 characters!");
       }
     } else {
       LoginPageState.buildDialog(context, "Registration failed!",
