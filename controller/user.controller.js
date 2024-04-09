@@ -3,10 +3,13 @@ const bcrypt = require("bcrypt");
 const User = require("../model/user.model");
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const generateToken = require('../utils/generateToken');
 require('dotenv').config();
 
 
 exports.register = async (req, res, next) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         const { email, username, password } = req.body;
 
@@ -15,8 +18,14 @@ exports.register = async (req, res, next) => {
         // Log the success response
         console.log('User registered successfully:', successRes);
 
-        res.json({ status: true, success: 'User Registered Successfully' , _id: successRes._id});
+        const token = await generateToken.generateTokenAndSetCookie(successRes._id, res, '7d');
+        
+        await session.commitTransaction();
+
+        res.json({ status: true, success: 'User Registered Successfully' , _id: successRes._id, token: token});
     } catch (error) {
+        await session.commitTransaction();
+
         // Log specific errors
         if (error.message === 'Email already exists' || error.message === 'Username already exists') {
             console.error('Registration error:', error.message);
@@ -28,6 +37,8 @@ exports.register = async (req, res, next) => {
 
         // Send a generic error response
         res.status(500).json({ status: false, error: 'Internal Server Error' });
+    } finally {
+        session.endSession();
     }
 };
 
@@ -65,17 +76,8 @@ exports.login = async(req,res,next)=>{
             throw new Error('Password Invalid');
         }
 
-        // If the passwords match, create a token for the user
-        let tokenData = {_id:user._id};
+        const token = await generateToken.generateTokenAndSetCookie(user._id, res, staySignedIn ? '30d' : '1d');
 
-        let token;
-        // Generate the token
-        if (!staySignedIn)
-        {
-            token = await UserService.generateToken(tokenData, process.env.JWT_KEY, '10m')
-        } else {
-            token = await UserService.generateToken(tokenData, process.env.JWT_KEY)
-        }
         // Replace the user's existing tokens with new token
         await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
 
@@ -407,22 +409,30 @@ exports.makeAdmin = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-  if (req.headers && req.headers.authorization) {
-    const token = req.headers.authorization.split(' ')[1];
-    if (!token) {
-      return res
-        .status(401)
-        .json({ status: false, message: 'Authorization fail!' });
+    try {
+        if (req.headers && req.headers.authorization) {
+            const token = req.headers.authorization.split(' ')[1];
+            if (!token) {
+            return res
+                .status(401)
+                .json({ status: false, message: 'Authorization fail!' });
+            }
+
+            const tokens = req.user.tokens;
+
+            const newTokens = tokens.filter(t => t.token !== token);
+
+            await User.findByIdAndUpdate(req.user._id, { tokens: newTokens });
+            
+            res.clearCookie("jwt");
+            
+            console.log("Signout Successful");
+            res.json({ status: true, message: 'Sign out successfully!' });
+        }
+    } catch (err) {
+        console.log("Error in logout controller", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-
-    const tokens = req.user.tokens;
-
-    const newTokens = tokens.filter(t => t.token !== token);
-
-    await User.findByIdAndUpdate(req.user._id, { tokens: newTokens });
-    console.log("Signout Successful");
-    res.json({ status: true, message: 'Sign out successfully!' });
-  }
 };
 
 
