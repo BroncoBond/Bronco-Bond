@@ -67,41 +67,36 @@ class EditProfilePageState extends State<EditProfile> {
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
 
-        if (mounted) {
-          setState(() {
-            username = userData['user']['username'] ?? 'Unknown';
-            fullName = userData['user']['fullName'] ?? 'Unknown';
-            prefName = userData['user']['prefName'] ?? 'Unknown';
-            descriptionMajor =
-                userData['user']['descriptionMajor'] ?? 'Unknown';
-            descriptionMinor =
-                userData['user']['descriptionMinor'] ?? 'Unknown';
-            descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
-            graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
-            interests = userData['user']['interests'] ?? [];
+        setState(() {
+          username = userData['user']['username'] ?? 'Unknown';
+          fullName = userData['user']['fullName'] ?? 'Unknown';
+          prefName = userData['user']['prefName'] ?? 'Unknown';
+          descriptionMajor = userData['user']['descriptionMajor'] ?? 'Unknown';
+          descriptionMinor = userData['user']['descriptionMinor'] ?? 'Unknown';
+          descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
+          graduationDate = userData['user']['graduationDate'] ?? 'Unknown';
+          interests = userData['user']['interests'] ?? [];
 
-            late dynamic profilePicture =
-                userData['user']['profilePicture'] ?? '';
-            if (profilePicture != null && profilePicture != '') {
-              //print('${profilePicture['contentType'].runtimeType}');
-              //print('${profilePicture['contentType']}');
-              //print('${profilePicture['data']['data'].runtimeType}');
-              //print('${profilePicture['data']['data']}');
+          late dynamic profilePicture =
+              userData['user']['profilePicture'] ?? '';
+          if (profilePicture != null && profilePicture != '') {
+            //print('${profilePicture['contentType'].runtimeType}');
+            //print('${profilePicture['contentType']}');
+            //print('${profilePicture['data']['data'].runtimeType}');
+            //print('${profilePicture['data']['data']}');
 
-              profilePictureData =
-                  List<int>.from(profilePicture['data']['data']);
-              profilePictureContentType = profilePicture['contentType'];
-              //print('$profilePictureData');
-              List<int> decodedImageBytes =
-                  base64Decode(String.fromCharCodes(profilePictureData));
-              //print('${decodedImageBytes}');
-              pfp = Uint8List.fromList(decodedImageBytes);
-              //print('pfp: $pfp');
-            } else {
-              pfp = Uint8List(0);
-            }
-          });
-        }
+            profilePictureData = List<int>.from(profilePicture['data']['data']);
+            profilePictureContentType = profilePicture['contentType'];
+            //print('$profilePictureData');
+            List<int> decodedImageBytes =
+                base64Decode(String.fromCharCodes(profilePictureData));
+            //print('${decodedImageBytes}');
+            pfp = Uint8List.fromList(decodedImageBytes);
+            //print('pfp: $pfp');
+          } else {
+            pfp = Uint8List(0);
+          }
+        });
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
@@ -178,42 +173,65 @@ class EditProfilePageState extends State<EditProfile> {
                           height: 30), // Add space below the profile icon
 
                       // Rows for editing profile information
-                      EditableRow(label: 'User Name', initialValue: username),
-                      const Divider(
-                          color: Colors.grey,
-                          thickness: 1), // Add a horizontal line
-
-                      EditableRow(label: 'Full Name', initialValue: fullName),
+                      EditableRow(
+                        label: 'Username',
+                        initialValue: username,
+                        userID: widget.userID,
+                      ),
                       const Divider(
                           color: Colors.grey,
                           thickness: 1), // Add a horizontal line
 
                       EditableRow(
-                          label: 'Preferred Name', initialValue: prefName),
+                        label: 'Full Name',
+                        initialValue: fullName,
+                        userID: widget.userID,
+                      ),
                       const Divider(
                           color: Colors.grey,
                           thickness: 1), // Add a horizontal line
 
                       EditableRow(
-                          label: 'Major', initialValue: descriptionMajor),
+                        label: 'Preferred Name',
+                        initialValue: prefName,
+                        userID: widget.userID,
+                      ),
                       const Divider(
                           color: Colors.grey,
                           thickness: 1), // Add a horizontal line
 
                       EditableRow(
-                          label: 'Minor', initialValue: descriptionMinor),
+                        label: 'Major',
+                        initialValue: descriptionMajor,
+                        userID: widget.userID,
+                      ),
                       const Divider(
                           color: Colors.grey,
                           thickness: 1), // Add a horizontal line
 
                       EditableRow(
-                          label: 'Graduation Date',
-                          initialValue: graduationDate),
+                        label: 'Minor',
+                        initialValue: descriptionMinor,
+                        userID: widget.userID,
+                      ),
                       const Divider(
                           color: Colors.grey,
                           thickness: 1), // Add a horizontal line
 
-                      EditableRow(label: 'Bio', initialValue: descriptionBio),
+                      EditableRow(
+                        label: 'Graduation Date',
+                        initialValue: graduationDate,
+                        userID: widget.userID,
+                      ),
+                      const Divider(
+                          color: Colors.grey,
+                          thickness: 1), // Add a horizontal line
+
+                      EditableRow(
+                        label: 'Bio',
+                        initialValue: descriptionBio,
+                        userID: widget.userID,
+                      ),
                       const Divider(color: Colors.grey, thickness: 1),
 
                       const SizedBox(height: 10),
@@ -337,8 +355,13 @@ class SelectedClubsList extends StatelessWidget {
 class EditableRow extends StatefulWidget {
   final String label;
   final String initialValue;
+  final String userID;
 
-  const EditableRow({Key? key, required this.label, required this.initialValue})
+  const EditableRow(
+      {Key? key,
+      required this.label,
+      required this.initialValue,
+      required this.userID})
       : super(key: key);
 
   @override
@@ -367,9 +390,74 @@ class _EditableRowState extends State<EditableRow> {
     });
   }
 
-  void _saveChanges() {
-    // Save changes by making a post request to the database
-    _toggleEdit();
+  void _saveChanges() async {
+    var regBody = {
+      "_id": widget.userID,
+    };
+
+    print('${widget.label} has the text ${textController.text}');
+    switch (widget.label) {
+      case 'Username':
+        if (textController.text.isNotEmpty) {
+          regBody["username"] = textController.text;
+        } else {
+          // empty username
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text("Username cannot be empty!"),
+                duration: Duration(seconds: 2),
+                backgroundColor: Colors.red),
+          );
+        }
+        break;
+      case 'Full Name':
+        regBody["fullName"] = textController.text;
+        break;
+      case 'Preferred Name':
+        regBody["prefName"] = textController.text;
+        break;
+      case 'Major':
+        regBody["descriptionMajor"] = textController.text;
+        break;
+      case 'Minor':
+        regBody["descriptionMinor"] = textController.text;
+        break;
+      case 'Graduation Date':
+        regBody["graduationDate"] = textController.text;
+        break;
+      case 'Bio':
+        regBody["descriptionBio"] = textController.text;
+        break;
+    }
+
+    print(regBody);
+
+    try {
+      var response = await http.put(Uri.parse('$updateUser/${widget.userID}'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(regBody));
+
+      print('Response body: ${response.body}');
+      var jsonResponse = jsonDecode(response.body);
+
+      print("http request made");
+      print(jsonResponse['status']);
+
+      if (jsonResponse['status']) {
+        // Changes saved
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Changes saved successfully!"),
+              duration: Duration(seconds: 2),
+              backgroundColor: Color(0xff3B5F43)),
+        );
+        _toggleEdit();
+      } else {
+        print("Something went wrong");
+      }
+    } catch (e) {
+      print('Error during HTTP request: $e');
+    }
   }
 
   @override
@@ -388,7 +476,8 @@ class _EditableRowState extends State<EditableRow> {
               children: [
                 TextFormField(
                   readOnly: !isEditing,
-                  initialValue: widget.initialValue,
+                  //initialValue: widget.initialValue,
+                  controller: textController,
                   style: const TextStyle(fontSize: 14),
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.all(10.0),
