@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:io';
 
 class EditProfile extends StatefulWidget {
   final userID;
@@ -23,12 +24,11 @@ class EditProfilePageState extends State<EditProfile> {
   late String descriptionMinor = '';
   late String descriptionBio = '';
   late String graduationDate = '';
-  late List<dynamic> bonds = [];
-  late List<dynamic> bondRequests = [];
   late List<dynamic> interests = [];
   late List<int> profilePictureData;
   late String profilePictureContentType;
   late Uint8List pfp;
+  File? _imageFile;
 
   final List<String> clubSuggestions = [
     'CSS',
@@ -106,6 +106,8 @@ class EditProfilePageState extends State<EditProfile> {
     }
   }
 
+  void editPfp() async {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,24 +151,55 @@ class EditProfilePageState extends State<EditProfile> {
                       const SizedBox(height: 20), // Add space from the top
 
                       // Profile icon
-                      CircleAvatar(
-                        radius: 45,
-                        backgroundColor: Colors.white,
-                        child: ClipOval(
-                          child: profilePictureData.isNotEmpty
-                              ? Image.memory(
-                                  pfp,
-                                  width: 90.0,
-                                  height: 90.0,
-                                  fit: BoxFit.cover,
-                                )
-                              : Image.asset(
-                                  'assets/images/user_profile_icon.png',
-                                  width: 90.0,
-                                  height: 90.0,
-                                  fit: BoxFit.cover,
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 55,
+                            backgroundColor: Colors.white,
+                            child: ClipOval(
+                              child: profilePictureData.isNotEmpty
+                                  ? Image.memory(
+                                      pfp,
+                                      width: 110.0,
+                                      height: 110.0,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      'assets/images/user_profile_icon.png',
+                                      width: 110.0,
+                                      height: 110.0,
+                                      fit: BoxFit.cover,
+                                    ),
+                            ),
+                          ),
+                          Positioned(
+                            //top: 0,
+                            right: 130,
+                            bottom: 0,
+                            //left: 0,
+                            child: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(0xff3B5F43),
+                                //border:
+                                //Border.all(color: Colors.white, width: 3.0),
+                              ),
+                              child: Center(
+                                child: IconButton(
+                                  iconSize: 16,
+                                  icon: const Icon(Icons.edit,
+                                      color: Colors.white),
+                                  onPressed: () {
+                                    // Edit pfp
+                                  },
                                 ),
-                        ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
 
                       const SizedBox(
