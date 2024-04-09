@@ -213,7 +213,7 @@ exports.updateUserInfo = async (req, res) => {
     }
 };
 
-exports.updateUserInterets = async (req, res) => {
+exports.updateUserInterests = async (req, res) => {
     if (req.body._id === req.params.id || req.body.isAdmin) {
         try {
                 const uniqueInterests = [...new Set(req.body.interests.map(interest => interest.toLowerCase()))];
