@@ -4,43 +4,48 @@ const bcrypt = require("bcrypt");
 const User = require("../model/user.model");
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const generateToken = require('../utils/generateToken');
 require('dotenv').config();
 
 
 exports.register = async (req, res, next) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
     try {
         const { email, username, password } = req.body;
+        console.log('Received registration data:', email, username, password);
 
         const newUser = await UserService.registerUser(email, username, password);
-        generateToken.generateTokenAndSetCookie(newUser._id,res);
+        console.log('User created:', newUser);
+
+        let token;
+
+        try {
+            token = await generateToken.generateTokenAndSetCookie(newUser._id,res, '7d');
+            console.log("Token generated and cookie set:" + token);
+        } catch (err) {
+            console.log("Error generating token:", err);
+            // If generating the token fails, delete the user
+            await newUser.findByIdAndDelete(newUser._id);
+            throw err;
+        }
+
         // Log the success response
-        console.log('User registered successfully:', newUser);
+        console.log("User registered successfully:", newUser);
 
-        const token = await generateToken.generateTokenAndSetCookie(successRes._id, res, '7d');
-        
-        await session.commitTransaction();
-
-        res.json({ status: true, success: 'User Registered Successfully' , _id: newUser._id, token: token});
+        res.json({ status: true, success: "User Registered Successfully" , _id: newUser._id, token: token});
     } catch (error) {
-        await session.commitTransaction();
+        console.log("Error occurred:", error);
 
         // Log specific errors
-        if (error.message === 'Email already exists' || error.message === 'Username already exists') {
-            console.error('Registration error:', error.message);
+        if (error.message === "Email already exists" || error.message === "Username already exists") {
+            console.error("Registration error:", error.message);
             return res.status(400).json({ status: false, error: error.message });
         }
 
         // Log any other errors
-        console.error('Error during registration:', error);
+        console.error("Error during registration:", error);
 
         // Send a generic error response
-        res.status(500).json({ status: false, error: 'Internal Server Error' });
-    } finally {
-        session.endSession();
-    }
+        res.status(500).json({ status: false, error: "Internal Server Error" });
+    } 
 };
 
 
@@ -427,9 +432,13 @@ exports.logout = async (req, res) => {
 
     const newTokens = tokens.filter(t => t.token !== token);
 
-    await User.findByIdAndUpdate(req.user._id, { tokens: newTokens });
+    await User.updateOne({ _id: req.user._id }, { $pull: { tokens: { token } } });
     console.log("Signout Successful");
-    res.json({ status: true, message: 'Sign out successfully!' });
+
+    res.cookie('jwt', '', { maxAge: 0 });
+    console.log('Cookie reset!');
+
+    res.json({ status: true, message: 'Log out successfully!' });
   }
 };
 
