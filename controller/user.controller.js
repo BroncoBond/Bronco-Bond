@@ -1,4 +1,5 @@
 const UserService = require("../services/user.services");
+const generateToken = require("../utils/generateToken");
 const bcrypt = require("bcrypt");
 const User = require("../model/user.model");
 const jwt = require('jsonwebtoken');
@@ -10,12 +11,12 @@ exports.register = async (req, res, next) => {
     try {
         const { email, username, password } = req.body;
 
-        const successRes = await UserService.registerUser(email, username, password);
-
+        const newUser = await UserService.registerUser(email, username, password);
+        generateToken.generateTokenAndSetCookie(newUser._id,res);
         // Log the success response
-        console.log('User registered successfully:', successRes);
+        console.log('User registered successfully:', newUser);
 
-        res.json({ status: true, success: 'User Registered Successfully' , _id: successRes._id});
+        res.json({ status: true, success: 'User Registered Successfully' , _id: newUser._id});
     } catch (error) {
         // Log specific errors
         if (error.message === 'Email already exists' || error.message === 'Username already exists') {
@@ -38,16 +39,11 @@ exports.login = async(req,res,next)=>{
     try {
         // Extract the email and password from the request body
         const {email,password} = req.body;
-        const{staySignedIn} = req.body;
+        const {staySignedIn} = req.body;
         console.log(staySignedIn);
-        // Log the password for debugging purposes (note: this is generally not a good practice for production code due to security reasons)
-        console.log("Pass: ",password);
 
         // Try to find a user with the given email
         const user = await UserService.checkuser(email);
-
-        // Log the user for debugging purposes
-        console.log("|--User--|\n",user);
 
         // If no user is found, throw an error
         if (!user || !user._id) {
@@ -72,11 +68,12 @@ exports.login = async(req,res,next)=>{
         // Generate the token
         if (!staySignedIn)
         {
-            token = await UserService.generateToken(tokenData, process.env.JWT_KEY, '10m')
+            token = await generateToken.generateTokenAndSetCookie(tokenData, res, '10s');
         } else {
-            token = await UserService.generateToken(tokenData, process.env.JWT_KEY)
+            token = await generateToken.generateTokenAndSetCookie(tokenData, res);
         }
         // Replace the user's existing tokens with new token
+        console.log("token: " + token);
         await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
 
         // If the token was successfully generated, return a 200 status with the token
@@ -407,22 +404,21 @@ exports.makeAdmin = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-  if (req.headers && req.headers.authorization) {
-    const token = req.headers.authorization.split(' ')[1];
-    if (!token) {
-      return res
-        .status(401)
-        .json({ status: false, message: 'Authorization fail!' });
+    try {
+        // Remove the token from the user's document in the database
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token.token !== req.token;
+        });
+        await req.user.save();
+
+        // Remove the cookie
+        res.cookie("jwt", "", { maxAge: 0 });
+
+        res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+        console.log("Error in logout controller", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-
-    const tokens = req.user.tokens;
-
-    const newTokens = tokens.filter(t => t.token !== token);
-
-    await User.findByIdAndUpdate(req.user._id, { tokens: newTokens });
-    console.log("Signout Successful");
-    res.json({ status: true, message: 'Sign out successfully!' });
-  }
 };
 
 
