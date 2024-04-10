@@ -4,10 +4,13 @@ const bcrypt = require("bcrypt");
 const User = require("../model/user.model");
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const generateToken = require('../utils/generateToken');
 require('dotenv').config();
 
 
 exports.register = async (req, res, next) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         const { email, username, password } = req.body;
 
@@ -16,8 +19,14 @@ exports.register = async (req, res, next) => {
         // Log the success response
         console.log('User registered successfully:', newUser);
 
-        res.json({ status: true, success: 'User Registered Successfully' , _id: newUser._id});
+        const token = await generateToken.generateTokenAndSetCookie(successRes._id, res, '7d');
+        
+        await session.commitTransaction();
+
+        res.json({ status: true, success: 'User Registered Successfully' , _id: newUser._id, token: token});
     } catch (error) {
+        await session.commitTransaction();
+
         // Log specific errors
         if (error.message === 'Email already exists' || error.message === 'Username already exists') {
             console.error('Registration error:', error.message);
@@ -29,6 +38,8 @@ exports.register = async (req, res, next) => {
 
         // Send a generic error response
         res.status(500).json({ status: false, error: 'Internal Server Error' });
+    } finally {
+        session.endSession();
     }
 };
 
@@ -68,9 +79,9 @@ exports.login = async(req,res,next)=>{
         // Generate the token
         if (!staySignedIn)
         {
-            token = await generateToken.generateTokenAndSetCookie(tokenData, res, '10s');
+            token = await UserService.generateToken(tokenData, process.env.JWT_KEY, '10m')
         } else {
-            token = await generateToken.generateTokenAndSetCookie(tokenData, res);
+            token = await UserService.generateToken(tokenData, process.env.JWT_KEY)
         }
         // Replace the user's existing tokens with new token
         console.log("token: " + token);
@@ -404,21 +415,22 @@ exports.makeAdmin = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-    try {
-        // Remove the token from the user's document in the database
-        req.user.tokens = req.user.tokens.filter((token) => {
-            return token.token !== req.token;
-        });
-        await req.user.save();
-
-        // Remove the cookie
-        res.cookie("jwt", "", { maxAge: 0 });
-
-        res.status(200).json({ message: "Logged out successfully" });
-    } catch (error) {
-        console.log("Error in logout controller", error.message);
-        res.status(500).json({ error: "Internal Server Error" });
+  if (req.headers && req.headers.authorization) {
+    const token = req.headers.authorization.split(' ')[1];
+    if (!token) {
+      return res
+        .status(401)
+        .json({ status: false, message: 'Authorization fail!' });
     }
+
+    const tokens = req.user.tokens;
+
+    const newTokens = tokens.filter(t => t.token !== token);
+
+    await User.findByIdAndUpdate(req.user._id, { tokens: newTokens });
+    console.log("Signout Successful");
+    res.json({ status: true, message: 'Sign out successfully!' });
+  }
 };
 
 
