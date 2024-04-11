@@ -1,10 +1,13 @@
 import 'package:bronco_bond/src/config.dart';
+import 'package:bronco_bond/src/school_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
 
 class EditProfile extends StatefulWidget {
   final userID;
@@ -106,7 +109,66 @@ class EditProfilePageState extends State<EditProfile> {
     }
   }
 
-  void editPfp() async {}
+  void editPfp(String userID) async {
+    String base64Image = '';
+    if (_imageFile != null) {
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      base64Image = base64Encode(imageBytes);
+    }
+
+    var regBody = {
+      "_id": userID,
+      "profilePicture": _imageFile != null
+          ? {"data": base64Image, "contentType": "image/jpeg"}
+          : null
+    };
+
+    try {
+      var response = await http.put(Uri.parse('$updateUser/$userID'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(regBody));
+
+      print('Response body: ${response.body}');
+      var jsonResponse = jsonDecode(response.body);
+
+      print("http request made");
+      print(jsonResponse['status']);
+
+      if (jsonResponse['status']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Profile picture uploaded successfully!"),
+              duration: Duration(seconds: 2),
+              backgroundColor: Color(0xff3B5F43)),
+        );
+
+        if (_imageFile != null) {
+          setState(() {
+            profilePictureData = List<int>.from(base64.decode(base64Image));
+            profilePictureContentType = "image/jpeg";
+            pfp = Uint8List.fromList(profilePictureData);
+          });
+        }
+      } else {
+        print("Something went wrong");
+      }
+    } catch (e) {
+      print('Error during HTTP request: $e');
+    }
+  }
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+
+      editPfp(widget.userID);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,9 +243,9 @@ class EditProfilePageState extends State<EditProfile> {
                             child: Container(
                               width: 30,
                               height: 30,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: const Color(0xff3B5F43),
+                                color: Color(0xff3B5F43),
                                 //border:
                                 //Border.all(color: Colors.white, width: 3.0),
                               ),
@@ -193,7 +255,7 @@ class EditProfilePageState extends State<EditProfile> {
                                   icon: const Icon(Icons.edit,
                                       color: Colors.white),
                                   onPressed: () {
-                                    // Edit pfp
+                                    pickImage();
                                   },
                                 ),
                               ),
@@ -404,11 +466,21 @@ class EditableRow extends StatefulWidget {
 class _EditableRowState extends State<EditableRow> {
   bool isEditing = false;
   late TextEditingController textController;
+  String? _selectedMajor;
+  String? _selectedMinor;
+  String? _selectedGradDate;
 
   @override
   void initState() {
     super.initState();
     textController = TextEditingController(text: widget.initialValue);
+    if (widget.label == 'Major') {
+      _selectedMajor = widget.initialValue;
+    } else if (widget.label == 'Minor') {
+      _selectedMinor = widget.initialValue;
+    } else {
+      _selectedGradDate = widget.initialValue;
+    }
   }
 
   @override
@@ -450,13 +522,13 @@ class _EditableRowState extends State<EditableRow> {
         regBody["prefName"] = textController.text;
         break;
       case 'Major':
-        regBody["descriptionMajor"] = textController.text;
+        regBody["descriptionMajor"] = _selectedMajor!;
         break;
       case 'Minor':
-        regBody["descriptionMinor"] = textController.text;
+        regBody["descriptionMinor"] = _selectedMinor!;
         break;
       case 'Graduation Date':
-        regBody["graduationDate"] = textController.text;
+        regBody["graduationDate"] = _selectedGradDate!;
         break;
       case 'Bio':
         regBody["descriptionBio"] = textController.text;
@@ -507,29 +579,58 @@ class _EditableRowState extends State<EditableRow> {
             flex: 3,
             child: Stack(
               children: [
-                TextFormField(
-                  readOnly: !isEditing,
-                  //initialValue: widget.initialValue,
-                  controller: textController,
-                  style: const TextStyle(fontSize: 14),
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.all(10.0),
-                    border: isEditing
-                        ? OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide:
-                                const BorderSide(color: Color(0xff3B5F43)),
-                          )
-                        : InputBorder.none,
-                    focusedBorder: isEditing
-                        ? OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: const BorderSide(
-                                color: Color(0xff3B5F43), width: 1),
-                          )
-                        : InputBorder.none,
+                if (widget.label == 'Major' ||
+                    widget.label == 'Minor' ||
+                    widget.label == 'Graduation Date')
+                  buildDropDown(
+                    widget.label == 'Major'
+                        ? majors
+                        : widget.label == 'Minor'
+                            ? minors
+                            : years,
+                    widget.label == 'Major'
+                        ? _selectedMajor
+                        : widget.label == 'Minor'
+                            ? _selectedMinor
+                            : _selectedGradDate,
+                    (newValue) {
+                      setState(() {
+                        if (widget.label == 'Major') {
+                          _selectedMajor = newValue;
+                        } else if (widget.label == 'Minor') {
+                          _selectedMinor = newValue;
+                        } else {
+                          _selectedGradDate = newValue;
+                        }
+                      });
+                    },
                   ),
-                ),
+                if (!isEditing &&
+                    !(widget.label == 'Major' ||
+                        widget.label == 'Minor' ||
+                        widget.label == 'Graduation Date'))
+                  TextFormField(
+                    readOnly: !isEditing,
+                    controller: textController,
+                    style: const TextStyle(fontSize: 14),
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(10.0),
+                      border: isEditing
+                          ? OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide:
+                                  const BorderSide(color: Color(0xff3B5F43)),
+                            )
+                          : InputBorder.none,
+                      focusedBorder: isEditing
+                          ? OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(
+                                  color: Color(0xff3B5F43), width: 1),
+                            )
+                          : InputBorder.none,
+                    ),
+                  ),
                 if (isEditing)
                   Positioned(
                     right: 0,
@@ -552,6 +653,58 @@ class _EditableRowState extends State<EditableRow> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buildDropDown(
+      List<String> items, String? selectedValue, Function(String?) onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 170,
+          height: 43,
+          child: DropdownButton<String>(
+            isExpanded: true,
+            value: selectedValue, // Set default value
+            underline: Container(
+              height: 1,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: const Color(0xFFABABAB),
+                  // width: 2, can't seem to get an outline to appear in the dropdown button
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            iconEnabledColor: const Color(0xFFABABAB),
+            items: items.map((String value) {
+              return buildDropDownItem(value);
+            }).toList(),
+            onChanged: onChanged,
+          ),
+        ),
+      ],
+    );
+  }
+
+  DropdownMenuItem<String> buildDropDownItem(String value) {
+    return DropdownMenuItem<String>(
+      value: value,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        width: 300,
+        child: Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
+          textAlign: TextAlign.start,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
     );
   }
