@@ -213,7 +213,7 @@ exports.updateUserInfo = async (req, res) => {
     }
 };
 
-exports.updateUserInterets = async (req, res) => {
+exports.updateUserInterests = async (req, res) => {
     if (req.body._id === req.params.id || req.body.isAdmin) {
         try {
                 const uniqueInterests = [...new Set(req.body.interests.map(interest => interest.toLowerCase()))];
@@ -259,8 +259,8 @@ exports.deleteAccount = async (req, res) => {
 exports.sendBondRequest = async (req, res) => {
     if (req.body._id !== req.params.id) {
         try {
-            const recipient = await User.findById(req.params.id);
-            const sender = await User.findById(req.body._id);
+            const recipient = await User.findById(req.body._id);
+            const sender = await User.findById(req.params.id);
 
             if (recipient.bonds.includes(sender.id) && sender.bonds.includes(recipient.id)) {
                 return res.status(403).json("Users are already friended");
@@ -356,9 +356,9 @@ exports.declineBondRequest = async(req, res) => {
 
 exports.revokeBondRequest = async (req, res) => {
     try {
-        const sender = await User.findById(req.params.id);
         const recipient = await User.findById(req.body._id);
-
+        const sender = await User.findById(req.params.id);
+        
         if (!recipient || !sender) {
             return res.status(404).json("User not found");
         }
