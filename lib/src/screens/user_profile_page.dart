@@ -442,7 +442,7 @@ class UserProfileState extends State<UserProfile>
             child: Column(
               children: [
                 CircleAvatar(
-                  radius: 37.5,
+                  radius: 40,
                   backgroundColor: Colors.white,
                   backgroundImage: profilePictureData.isNotEmpty
                       ? MemoryImage(pfp)
@@ -542,15 +542,14 @@ class UserProfileState extends State<UserProfile>
 
   Widget buildInfoBar() {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 16),
+      //margin: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 20.0),
+            padding: const EdgeInsets.only(left: 20.0, bottom: 15.0),
             child: Text(descriptionBio),
           ),
-          const SizedBox(height: 10.0),
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: Row(
@@ -563,7 +562,7 @@ class UserProfileState extends State<UserProfile>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+            padding: const EdgeInsets.all(10.0),
             child: Row(
               children: [
                 const SizedBox(width: 10),
