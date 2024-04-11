@@ -30,7 +30,7 @@ exports.register = async (req, res, next) => {
         // Log the success response
         console.log("User registered successfully:", newUser);
 
-        res.json({ status: true, success: "User Registered Successfully" , _id: newUser._id, token: token});
+        res.json({ status: true, success: "User Registered Successfully"});
     } catch (error) {
         console.log("Error occurred:", error);
 
@@ -84,16 +84,16 @@ exports.login = async(req,res,next)=>{
         // Generate the token
         if (!staySignedIn)
         {
-            token = await UserService.generateToken(tokenData, process.env.JWT_KEY, '10m')
+            token = await generateToken.generateTokenAndSetCookie(tokenData, res, '10m')
         } else {
-            token = await UserService.generateToken(tokenData, process.env.JWT_KEY)
+            token = await generateToken.generateTokenAndSetCookie(tokenData, res)
         }
         // Replace the user's existing tokens with new token
         console.log("token: " + token);
         await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
 
         // If the token was successfully generated, return a 200 status with the token
-        res.status(200).json({status:true, token:token})
+        res.status(200).json({status:true, userId: user._id})
 
     } catch (error) {
         // If there's an error during login, log the error and pass it to the next middleware
