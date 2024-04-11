@@ -26,7 +26,7 @@ app.set('view engine', 'ejs');
 
 // Routes
 app.use(requestDurationLogger);
-app.use('/api', userRouter);
+app.use('/api/user', userRouter);
 
 // Error Handler
 app.use(errorHandler);
