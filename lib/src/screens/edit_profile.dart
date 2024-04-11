@@ -607,10 +607,9 @@ class _EditableRowState extends State<EditableRow> {
                       });
                     },
                   ),
-                if (!isEditing &&
-                    !(widget.label == 'Major' ||
-                        widget.label == 'Minor' ||
-                        widget.label == 'Graduation Date'))
+                if (!(widget.label == 'Major' ||
+                    widget.label == 'Minor' ||
+                    widget.label == 'Graduation Date'))
                   TextFormField(
                     readOnly: !isEditing,
                     controller: textController,
