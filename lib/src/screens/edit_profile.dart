@@ -474,12 +474,14 @@ class _EditableRowState extends State<EditableRow> {
   void initState() {
     super.initState();
     textController = TextEditingController(text: widget.initialValue);
-    if (widget.label == 'Major') {
-      _selectedMajor = widget.initialValue;
-    } else if (widget.label == 'Minor') {
-      _selectedMinor = widget.initialValue;
-    } else {
-      _selectedGradDate = widget.initialValue;
+    if (widget.initialValue != "Unknown") {
+      if (widget.label == 'Major') {
+        _selectedMajor = widget.initialValue;
+      } else if (widget.label == 'Minor') {
+        _selectedMinor = widget.initialValue;
+      } else {
+        _selectedGradDate = widget.initialValue;
+      }
     }
   }
 

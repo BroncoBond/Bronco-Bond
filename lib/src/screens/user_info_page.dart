@@ -82,6 +82,8 @@ class UserInfoPageState extends State<UserInfoPage> {
       }
     } else {
       print('Major or Grad date is empty');
+      LoginPageState.buildDialog(
+          context, "Registration failed!", "Major & Grad Date are required!");
     }
   }
 
@@ -104,7 +106,15 @@ class UserInfoPageState extends State<UserInfoPage> {
           icon: const Icon(Icons.arrow_back_ios_rounded),
           color: Colors.black,
           onPressed: () {
-            Navigator.of(context).pop();
+            if (_selectedMajor != null &&
+                _selectedMajor!.isNotEmpty &&
+                _selectedGradDate != null &&
+                _selectedMajor!.isNotEmpty) {
+              Navigator.of(context).pop();
+            } else {
+              LoginPageState.buildDialog(context, "Registration failed!",
+                  "Major & Grad Date are required!");
+            }
           },
         ),
         title: Text(
