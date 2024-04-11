@@ -273,6 +273,14 @@ exports.sendBondRequest = async (req, res) => {
             if (!sender) {
                 return res.status(404).json("Sender user not found");
             }
+
+            if(sender.bondRequestsSent.includes(recipient.id)) {
+                return res.status(403).json("Sender already sent request to Recipient");
+            }
+
+            if(recipient.bondRequestsReceived.includes(sender.id)) {
+                return res.status(403).json("Recipient already has request from Sender");
+            }
             
             await sender.updateOne({ $push: { bondRequestsSent: recipient.id } });
             await recipient.updateOne({ $push: { bondRequestsReceived: sender.id } });
