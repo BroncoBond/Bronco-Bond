@@ -450,26 +450,26 @@ exports.makeAdmin = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-  if (req.headers && req.headers.authorization) {
-    const token = req.headers.authorization.split(' ')[1];
-    if (!token) {
-      return res
-        .status(401)
-        .json({ status: false, message: 'Authorization fail!' });
+    try {
+      if (req.headers && req.headers.authorization) {
+        const token = req.headers.authorization.split(' ')[1];
+        if (!token) {
+          return res
+            .status(401)
+            .json({ status: false, message: 'Authorization fail!' });
+        }
+  
+        // Remove the token from the user's tokens in the database
+        await User.updateOne({ _id: req.user._id }, { $pull: { tokens: { token } } });
+  
+        // Reset the cookie by setting maxAge to 0
+        res.cookie("jwt", "", { maxAge: 0 });
+  
+        res.json({ status: true, message: 'Log out successfully!' });
+      }
+    } catch (error) {
+      res.status(500).json({ status: false, message: 'Logout failed!' });
     }
-
-    const tokens = req.user.tokens;
-
-    const newTokens = tokens.filter(t => t.token !== token);
-
-    await User.updateOne({ _id: req.user._id }, { $pull: { tokens: { token } } });
-    console.log("Signout Successful");
-
-    res.cookie('jwt', '', { maxAge: 0 });
-    console.log('Cookie reset!');
-
-    res.json({ status: true, message: 'Log out successfully!' });
-  }
-};
+  };
 
 

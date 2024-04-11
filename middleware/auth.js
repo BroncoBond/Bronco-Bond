@@ -2,15 +2,15 @@ const jwt = require('jsonwebtoken');
 const User = require('../model/user.model');
 
 exports.isAuth = async (req, res, next) => {
-  if (req.headers && req.headers.authorization) {
-    const token = req.cookies.jwt;
-    console.log('Token:', token);
-    
+  const token = req.cookies.jwt;
+  console.log('Token:', token);
+  
+  if (token) {
     try {
       const decode = jwt.verify(token, process.env.JWT_KEY);
       console.log('Decoded:', decode);
 
-      const user = await User.findById(decode._id);
+      const user = await User.findById(decode.data._id);
       console.log('User:', user);
 
       if (!user) {
@@ -26,7 +26,7 @@ exports.isAuth = async (req, res, next) => {
       if (error.name === 'TokenExpiredError') {
         return res.json({
           status: false,
-          message: 'sesson expired try sign in!',
+          message: 'session expired, try sign in again!',
         });
       }
 

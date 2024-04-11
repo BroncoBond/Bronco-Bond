@@ -11,6 +11,8 @@ const userRouter = require('./routers/user.router');
 const errorHandler = require('./middleware/errorHandler');
 const durationLogger = require('./middleware/durationLogger');
 const requestDurationLogger = require('./middleware/durationLogger');
+const cookieParser = require('cookie-parser');
+
 
 const app = express();
 const port = process.env.WEBSITES_PORT
@@ -20,6 +22,7 @@ app.use(express.json({ limit: process.env.JSON_LIMIT || '50mb' }));
 app.use(helmet());
 app.use(morgan("common"));
 app.use(express.static('public'));
+app.use(cookieParser());
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
