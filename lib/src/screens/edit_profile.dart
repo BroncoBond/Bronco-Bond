@@ -682,7 +682,7 @@ class _EditableRowState extends State<EditableRow> {
             items: items.map((String value) {
               return buildDropDownItem(value);
             }).toList(),
-            onChanged: onChanged,
+            onChanged: isEditing ? onChanged : null,
           ),
         ),
       ],
