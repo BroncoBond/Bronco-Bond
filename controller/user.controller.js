@@ -254,8 +254,38 @@ exports.deleteAccount = async (req, res) => {
     // Check if the user is authorized to delete the account
     if (req.body._id === req.params.id || req.body.isAdmin) {
         try {
+            const userId = req.params.id;
             // Try to delete the user with the given ID
-            await User.findByIdAndDelete(req.params.id);
+            await User.findByIdAndDelete(userId);
+
+            const allUsers = await User.find();
+            
+            allUsers.forEach(async (user) => {
+                let modified = false;
+
+                const bondIndex = user.bonds.indexOf(userId);
+                if (bondIndex !== -1) {
+                    user.bonds.splice(bondIndex, 1);
+                    modified = true;
+                }
+
+                const receivedIndex = user.bondRequestsReceived.indexOf(userId);
+                if (receivedIndex !== -1) {
+                    user.bondRequestsReceived.splice(receivedIndex, 1);
+                    modified = true;
+                }
+
+                const sentIndex = user.bondRequestsSent.indexOf(userId);
+                if (sentIndex !== -1) {
+                    user.bondRequestsSent.splice(sentIndex, 1);
+                    modified = true;
+                }
+
+                if (modified) {
+                    await user.save();
+                }
+            });
+
             // If the user was successfully deleted, return a 200 status with a success message
             res.status(200).json("Account has been deleted");
         } catch (err) {
