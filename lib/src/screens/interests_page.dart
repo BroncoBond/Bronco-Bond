@@ -266,7 +266,7 @@ class InterestsPageState extends State<InterestsPage> {
                   textEditingController.clear();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text("Interests added successfully"),
+                      content: Text("Interests added successfully!"),
                       duration: Duration(seconds: 2),
                       backgroundColor: Color(0xff3B5F43),
                     ),
