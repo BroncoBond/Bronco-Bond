@@ -134,10 +134,10 @@ exports.searchUserByUsername = async (req, res) => {
 };
 
 exports.getById = async (req, res) => {
-    const _id = req.params.id; // changed from const { _id } = req.params.id;
+    const _id = req.user._id; 
     let user;
     try {
-        user = await User.findById(_id).select('-email -password'); // changed from findById({_id});
+        user = await User.findById(_id).select('-email -password');
     } catch (error) {
         return res.status(500).json({message: error.message});
     }
@@ -171,7 +171,7 @@ exports.getAllUserData = async (req, res) => {
 // This function is used to update a user's information
 exports.updateUserInfo = async (req, res) => {
     // Check if the user is authorized to update the account
-    if (req.body._id === req.params.id || req.body.isAdmin) {
+    if (req.body._id === req.user._id.toString() || req.body.isAdmin) {
         // If a new password is provided, hash it before storing it
         if (req.body.password) {
             try {
@@ -205,7 +205,7 @@ exports.updateUserInfo = async (req, res) => {
             console.log('Updating user with data:', req.body);
             
             // Try to update the user with the given ID and data
-            const updatedUser = await User.findByIdAndUpdate(req.params.id, {
+            const updatedUser = await User.findByIdAndUpdate(req.user._id, { 
                 $set: { username, password, profilePicture, graduationDate, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName},
             }, { new: true }); // Add { new: true } to return the updated user
 
@@ -227,11 +227,11 @@ exports.updateUserInfo = async (req, res) => {
 };
 
 exports.updateUserInterets = async (req, res) => {
-    if (req.body._id === req.params.id || req.body.isAdmin) {
+    if (req.body._id === req.user._id.toString() || req.body.isAdmin) {
         try {
                 const uniqueInterests = [...new Set(req.body.interests.map(interest => interest.toLowerCase()))];
 
-                const user = await User.findByIdAndUpdate(req.params.id, {
+                const user = await User.findByIdAndUpdate(req.user._id, {
                     $set: { interests: uniqueInterests }
                 }, { new: true });
 
@@ -252,9 +252,9 @@ exports.updateUserInterets = async (req, res) => {
 // This function is used to delete a user's account
 exports.deleteAccount = async (req, res) => {
     // Check if the user is authorized to delete the account
-    if (req.body._id === req.params.id || req.body.isAdmin) {
+    if (req.body._id === req.user._id || req.body.isAdmin) {
         try {
-            const userId = req.params.id;
+            const userId = req.user._id;
             // Try to delete the user with the given ID
             await User.findByIdAndDelete(userId);
 
@@ -300,9 +300,9 @@ exports.deleteAccount = async (req, res) => {
 
 // This function is used to send a request to recipient
 exports.sendBondRequest = async (req, res) => {
-    if (req.body._id !== req.params.id) {
+    if (req.body._id !== req.user._id) {
         try {
-            const recipient = await User.findById(req.params.id);
+            const recipient = await User.findById(req.user._id);
             const sender = await User.findById(req.body._id);
 
             if (recipient.bonds.includes(sender.id) && sender.bonds.includes(recipient.id)) {
@@ -330,9 +330,9 @@ exports.sendBondRequest = async (req, res) => {
 }
 
 exports.acceptBondRequest = async(req, res) => {
-    if (req.params.id !== req.body._id) {
+    if (req.user._id !== req.body._id) {
         try {
-            const recipient = await User.findById(req.params.id);
+            const recipient = await User.findById(req.user._id);
             const sender = await User.findById(req.body._id);
 
             if (!recipient || !sender) {
@@ -356,9 +356,9 @@ exports.acceptBondRequest = async(req, res) => {
 }
 
 exports.declineBondRequest = async(req, res) => {
-    if (req.params.id !== req.body._id) {
+    if (req.user._id !== req.body._id) {
         try {
-            const recipient = await User.findById(req.params.id);
+            const recipient = await User.findById(req.user._id);
             const sender = await User.findById(req.body._id);
 
             if (!recipient || !sender) {
@@ -369,15 +369,15 @@ exports.declineBondRequest = async(req, res) => {
                 return res.status(400).json("Sender ID not found in Recipient Data [bondRequestsReceived]");
             }
 
-            if (!sender.bondRequestsSent.includes(req.params.id)) {
+            if (!sender.bondRequestsSent.includes(req.user._id)) {
                 return res.status(400).json("Recipient ID not found in Sender Data [bondRequestsSent]");
             }
 
-            await User.findByIdAndUpdate(req.params.id, {
+            await User.findByIdAndUpdate(req.user._id, {
                 $pull: { bondRequestsReceived: req.body._id}
             }, {new: true});
             await User.findByIdAndUpdate(req.body._id, {
-                $pull: { bondRequestsSent: req.params.id}
+                $pull: { bondRequestsSent: req.user._id}
             }, {new: true});
 
             return res.status(200).json("Bond Request Declined");
@@ -391,7 +391,7 @@ exports.declineBondRequest = async(req, res) => {
 
 exports.revokeBondRequest = async (req, res) => {
     try {
-        const sender = await User.findById(req.params.id);
+        const sender = await User.findById(req.user._id);
         const recipient = await User.findById(req.body._id);
 
         if (!recipient || !sender) {
@@ -418,15 +418,15 @@ exports.revokeBondRequest = async (req, res) => {
 // This function is used to unfriend another user's account
 exports.unBondUser = async (req, res) => {
     try {
-        if (req.body._id !== req.params.id) {
-            const user = await User.findById(req.params.id);
+        if (req.body._id !== req.user._id) {
+            const user = await User.findById(req.user._id);
             const currentUser = await User.findById(req.body._id);
             console.log(typeof req.body._id); // Log the type of req.body._id
-            console.log(typeof req.params.id); // Log the type of req.params.id
+            console.log(typeof req.user._id); // Log the type of req.user._id
             console.log(user.bonds.map(bond => typeof bond)); // Log the types of the elements of user.bonds
             if (user.bonds.map(bond => bond.toString()).includes(req.body._id)) {
                 await user.updateOne({ $pull: { bonds: req.body._id }, $inc: { numOfBonds: -1 } });
-                await currentUser.updateOne({ $pull: { bonds: req.params.id }, $inc: { numOfBonds: -1 } });
+                await currentUser.updateOne({ $pull: { bonds: req.user._id }, $inc: { numOfBonds: -1 } });
                 console.log('User bonds after:', user.bonds);
                 console.log('Current user bonds after:', currentUser.bonds);
                 return res.status(200).json("User has been unfriended");

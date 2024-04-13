@@ -8,6 +8,7 @@ const morgan = require("morgan");
 const db = require('./config/db');
 const UserModel = require('./model/user.model');
 const userRouter = require('./routers/user.router');
+const messageRouter = require('./routers/message.router');
 const errorHandler = require('./middleware/errorHandler');
 const durationLogger = require('./middleware/durationLogger');
 const requestDurationLogger = require('./middleware/durationLogger');
@@ -30,6 +31,7 @@ app.set('view engine', 'ejs');
 // Routes
 app.use(requestDurationLogger);
 app.use('/api/user', userRouter);
+app.use('/api/message',messageRouter);
 
 // Error Handler
 app.use(errorHandler);

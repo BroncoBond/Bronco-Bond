@@ -85,8 +85,7 @@ const userSchema = new Schema({
             default: new Date().getFullYear()
         },
         tokens: [{ type: Object }]
-    },
-    {timestamps:true}
+    }, {timestamps:true} 
 );
 
 userSchema.pre('save', async function(next) {
