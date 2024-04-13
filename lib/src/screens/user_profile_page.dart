@@ -58,7 +58,7 @@ class UserProfileState extends State<UserProfile>
       fetchDataUsingUserID(widget.userID, currentUserID);
       // Timer to fetch data periodically (commented out so backend isn't constantly running during testing)
       /*timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-        fetchDataUsingUserID(widget.userID, currentUserID);
+        fetchDataUsingUserID(widget.userID, currentUserID);.
       });*/
     });
     print('UserID: ${widget.userID}');
