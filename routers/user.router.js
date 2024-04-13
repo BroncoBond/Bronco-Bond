@@ -6,7 +6,7 @@ const protectRouter = require("../middleware/protectRouter");
 //register User
 router.post('/register', userController.register);
 
-//login User
+//Login User
 router.post('/login', userController.login);
 
 //Search User by Username
