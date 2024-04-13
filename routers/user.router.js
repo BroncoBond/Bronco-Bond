@@ -42,7 +42,7 @@ router.put("/declineBondRequest/:id", protectRouter.protectRoute, userController
 //Decline Bond Request from User
 router.put("/revokeBondRequest/:id", protectRouter.protectRoute, userController.revokeBondRequest);
 
-//unfriend User
+//Unfriend User
 router.delete("/unBond/:id", protectRouter.protectRoute, userController.unBondUser);
 
 //Logout User
