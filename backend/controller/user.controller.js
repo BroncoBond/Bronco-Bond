@@ -252,7 +252,7 @@ exports.updateUserInterets = async (req, res) => {
 // This function is used to delete a user's account
 exports.deleteAccount = async (req, res) => {
     // Check if the user is authorized to delete the account
-    if (req.body._id === req.user._id || req.body.isAdmin) {
+    if (req.body._id === req.user._id.toString() || req.body.isAdmin) {
         try {
             const userId = req.user._id;
             // Try to delete the user with the given ID
@@ -286,6 +286,7 @@ exports.deleteAccount = async (req, res) => {
                 }
             });
 
+            res.cookie("jwt", "", { maxAge: 0 });
             // If the user was successfully deleted, return a 200 status with a success message
             res.status(200).json("Account has been deleted");
         } catch (err) {
@@ -300,14 +301,13 @@ exports.deleteAccount = async (req, res) => {
 
 // This function is used to send a request to recipient
 exports.sendBondRequest = async (req, res) => {
-    if (req.body._id !== req.user._id) {
-        try {
-            const recipient = await User.findById(req.user._id);
-            const sender = await User.findById(req.body._id);
+    const senderId = req.user._id.toString();
+    const recipientId = req.body._id;
 
-            if (recipient.bonds.includes(sender.id) && sender.bonds.includes(recipient.id)) {
-                return res.status(403).json("Users are already friended");
-            }
+    if (recipientId !== senderId) {
+        try {
+            const sender = await User.findById(senderId);
+            const recipient = await User.findById(recipientId);
 
             if (!recipient) {
                 return res.status(404).json("Recipient user not found");
@@ -315,6 +315,10 @@ exports.sendBondRequest = async (req, res) => {
 
             if (!sender) {
                 return res.status(404).json("Sender user not found");
+            }
+
+            if (recipient.bonds.includes(sender.id) && sender.bonds.includes(recipient.id)) {
+                return res.status(403).json("Users are already friended");
             }
             
             await sender.updateOne({ $push: { bondRequestsSent: recipient.id } });
@@ -330,10 +334,13 @@ exports.sendBondRequest = async (req, res) => {
 }
 
 exports.acceptBondRequest = async(req, res) => {
-    if (req.user._id !== req.body._id) {
+    const recipientId = req.user._id.toString();
+    const senderId = req.body._id;
+
+    if (senderId !== recipientId) {
         try {
-            const recipient = await User.findById(req.user._id);
-            const sender = await User.findById(req.body._id);
+            const recipient = await User.findById(recipientId);
+            const sender = await User.findById(senderId);
 
             if (!recipient || !sender) {
                 return res.status(404).json("User not found");
@@ -356,28 +363,31 @@ exports.acceptBondRequest = async(req, res) => {
 }
 
 exports.declineBondRequest = async(req, res) => {
-    if (req.user._id !== req.body._id) {
+    const recipientId = req.user._id.toString();
+    const senderId = req.body._id;
+
+    if (recipientId !== senderId) {
         try {
-            const recipient = await User.findById(req.user._id);
-            const sender = await User.findById(req.body._id);
+            const recipient = await User.findById(recipientId);
+            const sender = await User.findById(senderId);
 
             if (!recipient || !sender) {
                 return res.status(404).json("User not found");
             }
 
-            if (!recipient.bondRequestsReceived.includes(req.body._id)) {
+            if (!recipient.bondRequestsReceived.includes(senderId)) {
                 return res.status(400).json("Sender ID not found in Recipient Data [bondRequestsReceived]");
             }
 
-            if (!sender.bondRequestsSent.includes(req.user._id)) {
+            if (!sender.bondRequestsSent.includes(recipientId)) {
                 return res.status(400).json("Recipient ID not found in Sender Data [bondRequestsSent]");
             }
 
-            await User.findByIdAndUpdate(req.user._id, {
-                $pull: { bondRequestsReceived: req.body._id}
+            await User.findByIdAndUpdate(recipientId, {
+                $pull: { bondRequestsReceived: senderId}
             }, {new: true});
-            await User.findByIdAndUpdate(req.body._id, {
-                $pull: { bondRequestsSent: req.user._id}
+            await User.findByIdAndUpdate(senderId, {
+                $pull: { bondRequestsSent: recipientId}
             }, {new: true});
 
             return res.status(200).json("Bond Request Declined");
@@ -417,18 +427,17 @@ exports.revokeBondRequest = async (req, res) => {
 
 // This function is used to unfriend another user's account
 exports.unBondUser = async (req, res) => {
+    const currentUserId = req.user._id.toString();
+    const targetUserId = req.body._id;
+
     try {
-        if (req.body._id !== req.user._id) {
-            const user = await User.findById(req.user._id);
-            const currentUser = await User.findById(req.body._id);
-            console.log(typeof req.body._id); // Log the type of req.body._id
-            console.log(typeof req.user._id); // Log the type of req.user._id
-            console.log(user.bonds.map(bond => typeof bond)); // Log the types of the elements of user.bonds
-            if (user.bonds.map(bond => bond.toString()).includes(req.body._id)) {
-                await user.updateOne({ $pull: { bonds: req.body._id }, $inc: { numOfBonds: -1 } });
-                await currentUser.updateOne({ $pull: { bonds: req.user._id }, $inc: { numOfBonds: -1 } });
-                console.log('User bonds after:', user.bonds);
-                console.log('Current user bonds after:', currentUser.bonds);
+        if (targetUserId !== currentUserId) {
+            const targetUser = await User.findById(targetUserId);
+            const currentUser = await User.findById(currentUserId);
+            if (currentUser.bonds.map(bond => bond.toString()).includes(targetUserId)) {
+                await currentUser.updateOne({ $pull: { bonds: targetUserId }, $inc: { numOfBonds: -1 } });
+                await targetUser.updateOne({ $pull: { bonds: currentUserId }, $inc: { numOfBonds: -1 } });
+
                 return res.status(200).json("User has been unfriended");
             } else {
                 return res.status(403).json("You are not friends with this user");

@@ -25,25 +25,25 @@ router.get('/ids', userController.getAllUserIds);
 router.get("/data",userController.getAllUserData);
 
 //Get User by Id
-router.get("/:id", protectRouter.protectRoute, userController.getById);
+router.get("/", protectRouter.protectRoute, userController.getById);
 
 //Delete User
-router.delete("/:id",protectRouter.protectRoute, userController.deleteAccount);
+router.delete("/",protectRouter.protectRoute, userController.deleteAccount);
 
 //Send Bond Request to User
-router.put("/sendBondRequest/:id", protectRouter.protectRoute, userController.sendBondRequest);
+router.put("/sendBondRequest", protectRouter.protectRoute, userController.sendBondRequest);
 
 //Accept Bond Request from User
-router.put("/acceptBondRequest/:id", protectRouter.protectRoute, userController.acceptBondRequest);
+router.put("/acceptBondRequest", protectRouter.protectRoute, userController.acceptBondRequest);
 
 //Decline Bond Request from User
-router.put("/declineBondRequest/:id", protectRouter.protectRoute, userController.declineBondRequest);
+router.put("/declineBondRequest", protectRouter.protectRoute, userController.declineBondRequest);
 
 //Decline Bond Request from User
-router.put("/revokeBondRequest/:id", protectRouter.protectRoute, userController.revokeBondRequest);
+router.put("/revokeBondRequest", protectRouter.protectRoute, userController.revokeBondRequest);
 
 //Unfriend User
-router.delete("/unBond/:id", protectRouter.protectRoute, userController.unBondUser);
+router.delete("/unBond", protectRouter.protectRoute, userController.unBondUser);
 
 //Logout User
 router.post("/logout", protectRouter.protectRoute, userController.logout);
