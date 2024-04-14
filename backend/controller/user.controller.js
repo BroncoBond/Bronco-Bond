@@ -10,18 +10,18 @@ require('dotenv').config();
 exports.register = async (req, res, next) => {
     try {
         const { email, username, password } = req.body;
-        console.log('Received registration data:', email, username, password);
+        console.log('Received registration data');
 
         const newUser = await UserService.registerUser(email, username, password);
-        console.log('User created:', newUser);
+        console.log('User created:');
 
         let token;
 
         try {
             token = await generateToken.generateTokenAndSetCookie(newUser._id,res, '7d');
-            console.log("Token generated and cookie set:" + token);
+            console.log("Token generated and cookie set");
         } catch (err) {
-            console.log("Error generating token:", err);
+            console.log("Error generating token");
             // If generating the token fails, delete the user
             await newUser.findByIdAndDelete(newUser._id);
             throw err;
@@ -32,7 +32,7 @@ exports.register = async (req, res, next) => {
 
         res.json({ status: true, success: "User Registered Successfully"});
     } catch (error) {
-        console.log("Error occurred:", error);
+        console.log("Error occurred");
 
         // Log specific errors
         if (error.message === "Email already exists" || error.message === "Username already exists") {
@@ -41,7 +41,7 @@ exports.register = async (req, res, next) => {
         }
 
         // Log any other errors
-        console.error("Error during registration:", error);
+        console.error("Error during registration");
 
         // Send a generic error response
         res.status(500).json({ status: false, error: "Internal Server Error" });
@@ -69,9 +69,7 @@ exports.login = async(req,res,next)=>{
         }
 
         // Check if the provided password matches the user's password
-        console.log("User Password: " + user.password);
         const isMatch = await user.comparePassword(password);
-        console.log("isMatch: " + isMatch);
         // If the passwords don't match, throw an error
         if (isMatch === false) {
             throw new Error('Password Invalid');
@@ -89,7 +87,6 @@ exports.login = async(req,res,next)=>{
             token = await generateToken.generateTokenAndSetCookie(tokenData, res)
         }
         // Replace the user's existing tokens with new token
-        console.log("token: " + token);
         await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
 
         // If the token was successfully generated, return a 200 status with the token
@@ -202,7 +199,7 @@ exports.updateUserInfo = async (req, res) => {
             const { username, password, profilePicture, graduationDate, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName} = req.body;
 
             // Log the data that will be used to update the user
-            console.log('Updating user with data:', req.body);
+            console.log('Updating user with data');
             
             // Try to update the user with the given ID and data
             const updatedUser = await User.findByIdAndUpdate(req.user._id, { 
@@ -354,7 +351,7 @@ exports.acceptBondRequest = async(req, res) => {
             
             return res.status(result.status).json(result.message);
         } catch (error) {
-            console.log(error);
+            console.log("Error accepting request");
             return res.status(500).json({ error: error.message });
         }
     } else {
@@ -463,13 +460,16 @@ exports.logout = async (req, res) => {
       if (req.headers && req.headers.authorization) {
         const token = req.headers.authorization.split(' ')[1];
         if (!token) {
-          return res
-            .status(401)
-            .json({ status: false, message: 'Authorization fail!' });
+          return res.status(401).json({ status: false, message: 'Authorization fail!' });
         }
-  
+
+        const user = await User.findOne({ _id: req.user._id, tokens: { $elemMatch: { token: token } } });
+
+        if (!user) {
+            return res.status(400).json({ status: false, message: 'Tokens do not match!' });
+        }
         // Remove the token from the user's tokens in the database
-        await User.updateOne({ _id: req.user._id }, { $pull: { tokens: { token } } });
+        await User.updateOne({ _id: req.user._id.toString() }, { $pull: { tokens: { token } } });
   
         // Reset the cookie by setting maxAge to 0
         res.cookie("jwt", "", { maxAge: 0 });
