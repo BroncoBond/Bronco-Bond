@@ -3,7 +3,7 @@ document.getElementById('clickMeButton').addEventListener('click', function() {
     fetch('https://broncobond.com/api/website/incrementTotalClick', {
       method: 'POST', 
     })
-    .then(() => fetch('http://localhost:8080/api/website/getTotalClick'))
+    .then(() => fetch('https://broncobond.com/api/website/getTotalClick'))
     .then(response => response.json())
     .then(data => {
       document.getElementById('totalClicks').textContent = 'Global Click Count: ' + data.totalClickCount;
