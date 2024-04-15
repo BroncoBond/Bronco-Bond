@@ -20,6 +20,8 @@ app.use(express.json({ limit: process.env.JSON_LIMIT || '50mb' }));
 app.use(helmet());
 app.use(morgan("common"));
 app.use(express.static('public'));
+app.use(express.static('views'));
+
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
