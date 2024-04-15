@@ -12,6 +12,9 @@ router.post('/login', userController.login);
 //Search User by Username
 router.get('/search', protectRouter.protectRoute, userController.searchUserByUsername);
 
+//Get all User Bonds
+router.get('/friendList', protectRouter.protectRoute, userController.getBondList);
+
 //Update User Info
 router.put("/updateUserInfo", protectRouter.protectRoute, userController.updateUserInfo);
 
@@ -19,10 +22,10 @@ router.put("/updateUserInfo", protectRouter.protectRoute, userController.updateU
 router.put("/updateUserInterest", protectRouter.protectRoute, userController.updateUserInterets);
 
 //Get all User ID
-router.get('/ids', userController.getAllUserIds);
+router.get('/ids', userController.getAllUserIds); //Remove during production
 
 //Get all User Data
-router.get("/data",userController.getAllUserData);
+router.get("/data",userController.getAllUserData); //Remove during production
 
 //Get User by Id
 router.get("/", protectRouter.protectRoute, userController.getById);

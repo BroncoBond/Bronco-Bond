@@ -4,4 +4,6 @@ const protectRouter = require("../middleware/protectRouter");
 
 router.post("/sendMessage",protectRouter.protectRoute, messageController.sendMessage);
 
+router.get("/getMessage",protectRouter.protectRoute, messageController.getMessage);
+
 module.exports = router;

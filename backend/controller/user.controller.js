@@ -130,8 +130,19 @@ exports.searchUserByUsername = async (req, res) => {
     }
 };
 
+exports.getBondList = async (req, res) => {
+    try {
+        const currentUserId = req.user._id;
+        const currentUserBonds = await User.findById(currentUserId).select('bonds');
+        return res.status(200).json({ bonds: currentUserBonds.bonds });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'An error occurred while fetching the friend list' });
+    }
+}
+
 exports.getById = async (req, res) => {
-    const _id = req.user._id; 
+    const {_id} = req.body; 
     let user;
     try {
         user = await User.findById(_id).select('-email -password');
@@ -144,6 +155,7 @@ exports.getById = async (req, res) => {
     return res.status(200).json({user});
 }
 
+// comment out during production
 exports.getAllUserIds = async (req, res) => {
     try {
         const users = await User.find({}, '_id'); // fetch only the _id field for all users
@@ -155,9 +167,10 @@ exports.getAllUserIds = async (req, res) => {
     }
 }
 
+// comment out during production
 exports.getAllUserData = async (req, res) => {
     try {
-        const users = await User.find({}).select('-password -email -profilePicture'); // fetch the user data for all users
+        const users = await User.find({}).select('-password -profilePicture'); // fetch the user data for all users
         return res.status(200).json(users); // return the array of user data
     } catch (error) {
         console.error('Error fetching user IDs:', error);
