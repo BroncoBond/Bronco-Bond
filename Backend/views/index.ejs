@@ -8,15 +8,91 @@
       background-color: #3B5F43; /* Change this to your desired color */
       color: #FED053 ;
       display: flex;
+      font-family: Helvetica;
+      flex-direction: column;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start; /* Aligns items to the start of the cross axis, which is the left side in this case */
       height: 100vh; /* Full height of the viewport */
       margin: 0; /* Remove default margin */
+    }
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .image-text {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+    @keyframes animate {
+      0%, 20% {
+        transform: translateY(0) rotate(0deg);
+      }
+      30% {
+        transform: translateY(-50px) rotate(360deg);
+      }
+      50% {
+        transform: translateY(0);
+      }
+      70% {
+        transform: translateY(50px) rotate(360deg);
+      }
+      90%, 100% {
+        transform: translateY(0) rotate(360deg);
+      }
+    }
+
+    img {
+      animation: animate 16s linear infinite; /* added animation */
+    }
+    button {
+      width: 50px; 
+      height: 50px;
+      margin-top: -210px; /* Adjust this value to move the button up or down */
+      margin-left: 450px;
+      background-color: #FED053;
+      color: #3B5F43;
+      font-size: 15px;
+      font-family: cursive;
+      border-radius: 50%;
+      border-radius: 50%;
+      border: 2px solid #FED053;
+      transition: transform 0.3s ease-in-out; /* Add a transition effect */
+    }
+    button:hover {
+      background-color: #3B5F43; /* Change the button's color when it's hovered */
+      color: #FED053;
+    }
+    button:active {
+      transform: rotate(360deg); /* Scale the button down to 90% when it's clicked */
+      background-color:#3B5F43;
+    }
+    #totalClicks {
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; /* Change the font */
+    font-size: 20px; /* Increase the font size */
+    color: #FED053; /* Change the text color */
+    font-weight: bold; /* Make the text bold */
+    position: absolute; /* Position the element absolutely within the nearest positioned ancestor */
+    top: 0; /* Position it at the top of the ancestor */
+    right: 0; /* Position it at the right of the ancestor */
+    margin: 10px; /* Add some margin to move it away from the edge of the page */
     }
   </style>
 </head>
 <body>
-  <img src="/BroncoBondCircle.png" alt="BroncoBond Logo">
-  <h1><%= message %></h1>
+  <div class="content">
+    <div class="image-text">
+      <img src="/BroncoBondCircle.png" alt="BroncoBond Logo">
+      <h1><%= message %></h1>
+    </div>
+    <button id="clickMeButton" type="button">Click Me!</button>
+    <p id="totalClicks">Global Click Count: </p>
+  </div>
+
+  <script src="script.js"></script>
+  
 </body>
 </html>
