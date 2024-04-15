@@ -9,6 +9,7 @@ const db = require('./config/db');
 const UserModel = require('./model/user.model');
 const userRouter = require('./routers/user.router');
 const messageRouter = require('./routers/message.router');
+const websiteRouter = require('./routers/website.router');
 const errorHandler = require('./middleware/errorHandler');
 const durationLogger = require('./middleware/durationLogger');
 const requestDurationLogger = require('./middleware/durationLogger');
@@ -23,6 +24,7 @@ app.use(express.json({ limit: process.env.JSON_LIMIT || '50mb' }));
 app.use(helmet());
 app.use(morgan("common"));
 app.use(express.static('public'));
+app.use(express.static('views'));
 app.use(cookieParser());
 
 // Set EJS as the view engine
@@ -32,7 +34,7 @@ app.set('view engine', 'ejs');
 app.use(requestDurationLogger);
 app.use('/api/user', userRouter);
 app.use('/api/message',messageRouter);
-
+app.use('/api/website', websiteRouter);
 // Error Handler
 app.use(errorHandler);
 

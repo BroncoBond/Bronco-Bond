@@ -27,17 +27,26 @@
       align-items: center;
       justify-content: center;
     }
-    @keyframes rotate {
-      from {
-        transform: rotate(0deg);
+    @keyframes animate {
+      0%, 20% {
+        transform: translateY(0) rotate(0deg);
       }
-      to {
-        transform: rotate(360deg);
+      30% {
+        transform: translateY(-50px) rotate(360deg);
+      }
+      50% {
+        transform: translateY(0);
+      }
+      70% {
+        transform: translateY(50px) rotate(360deg);
+      }
+      90%, 100% {
+        transform: translateY(0) rotate(360deg);
       }
     }
 
     img {
-      animation: rotate 2s linear 5s; /* added animation */
+      animation: animate 16s linear infinite; /* added animation */
     }
     button {
       width: 50px; 
@@ -61,6 +70,16 @@
       transform: rotate(360deg); /* Scale the button down to 90% when it's clicked */
       background-color:#3B5F43;
     }
+    #totalClicks {
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; /* Change the font */
+    font-size: 20px; /* Increase the font size */
+    color: #FED053; /* Change the text color */
+    font-weight: bold; /* Make the text bold */
+    position: absolute; /* Position the element absolutely within the nearest positioned ancestor */
+    top: 0; /* Position it at the top of the ancestor */
+    right: 0; /* Position it at the right of the ancestor */
+    margin: 10px; /* Add some margin to move it away from the edge of the page */
+    }
   </style>
 </head>
 <body>
@@ -69,7 +88,11 @@
       <img src="/BroncoBondCircle.png" alt="BroncoBond Logo">
       <h1><%= message %></h1>
     </div>
-    <button onclick="location.href='/api/user/data'" type="button">Click Me!</button>
+    <button id="clickMeButton" type="button">Click Me!</button>
+    <p id="totalClicks">Global Click Count: </p>
   </div>
+
+  <script src="script.js"></script>
+  
 </body>
 </html>
