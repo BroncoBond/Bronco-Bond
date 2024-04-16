@@ -494,7 +494,7 @@ exports.logout = async (req, res) => {
             }
 
             // Remove the token from the user's tokens in the database
-            await User.updateOne({ _id: decoded._id }, { $pull: { tokens: { token } } });
+            await User.updateOne({ _id: user._id }, { $pull: { tokens: { token } } });
 
             res.json({ status: true, message: 'Log out successfully!' });
         }
