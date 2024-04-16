@@ -1,11 +1,27 @@
 const UserService = require("../services/user.services");
-const generateToken = require("../utils/generateToken");
+const generater = require("../utils/generateToken");
+const decoder = require("../utils/decodeToken");
 const bcrypt = require("bcrypt");
 const User = require("../model/user.model");
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+async function extractAndDecodeToken(req) {
+    const token = req.headers.authorization.split(' ')[1];
+  
+    if (!token) {
+      throw new Error('Authorization fail!');
+    }
+  
+    const decoded = await decoder.decodeToken(token);
+  
+    if (!decoded) {
+      throw new Error('Invalid token!');
+    }
+  
+    return decoded;
+  }
 
 exports.register = async (req, res, next) => {
     try {
@@ -18,7 +34,7 @@ exports.register = async (req, res, next) => {
         let token;
 
         try {
-            token = await generateToken.generateTokenAndSetCookie(newUser._id,res, '7d');
+            token = await generater.generateToken(newUser._id,res, '7d');
             console.log("Token generated and cookie set");
         } catch (err) {
             console.log("Error generating token");
@@ -82,9 +98,9 @@ exports.login = async(req,res,next)=>{
         // Generate the token
         if (!staySignedIn)
         {
-            token = await generateToken.generateToken(tokenData, res, '10m')
+            token = await generater.generateToken(tokenData, res, '10m')
         } else {
-            token = await generateToken.generateToken(tokenData, res)
+            token = await generater.generateToken(tokenData, res)
         }
         // Replace the user's existing tokens with new token
         console.log(token);
@@ -102,39 +118,45 @@ exports.login = async(req,res,next)=>{
 
 // This function is used to search for a user by their username
 exports.searchUserByUsername = async (req, res) => {
-    // Extract the username from the request query
-    const { username } = req.query;
-    const currentUser = req.user;
     
-    // Check if a username was provided
-    if (!username) {
-        return res.status(400).json({ error: 'You must provide a username to search.' });
-    }
-
+    // Extract the username from the request query
     try {
-        // Create a case-insensitive regular expression to search for usernames that contain the given input
-        const regex = new RegExp(username, 'i');
+        const currentUserId = (await extractAndDecodeToken(req)).data._id;
+        const { username } = req.query;
 
-        // Try to find users whose username matches the regular expression
-        const users = await User.find({ username: { $regex: regex }, _id: { $ne: currentUser._id }}).select('-password -email');
-
-        // If users are found, return the users data
-        if (users.length > 0) {
-            return res.status(200).json(users);
+        // Check if a username was provided
+        if (!username) {
+            return res.status(400).json({ error: 'You must provide a username to search.' });
         }
 
-        // If no users are found, return a 404 status with an error message
-        return res.status(404).json({ error: 'No users found' });
-    } catch (err) {
-        // If there's an error searching for the users, return a 500 status with the error
-        console.error('Error searching for users:', err);
-        return res.status(500).json({ error: 'An error occurred while searching for users.' });
+        try {
+            // Create a case-insensitive regular expression to search for usernames that contain the given input
+            const regex = new RegExp(username, 'i');
+
+            // Try to find users whose username matches the regular expression
+            const users = await User.find({ username: { $regex: regex }, _id: { $ne: currentUserId }}).select('-password -email -profilePicture');
+
+            // If users are found, return the users data
+            if (users.length > 0) {
+                return res.status(200).json(users);
+            }
+
+            // If no users are found, return a 404 status with an error message
+            return res.status(404).json({ error: 'No users found' });
+        } catch (err) {
+            // If there's an error searching for the users, return a 500 status with the error
+            console.error('Error searching for users:', err);
+            return res.status(500).json({ error: 'An error occurred while searching for users.' });
+        }
+    } catch (error) {
+        console.error('Error during token extraction and decoding: ', error);
+        return res.status(401).json({ status: false, message: error.message });
     }
 };
 
 exports.getBondList = async (req, res) => {
     try {
-        const currentUserId = req.user._id;
+        const currentUserId = (await extractAndDecodeToken(req)).data._id;
         const currentUserBonds = await User.findById(currentUserId).select('bonds');
         return res.status(200).json({ bonds: currentUserBonds.bonds });
     } catch (error) {
@@ -144,10 +166,10 @@ exports.getBondList = async (req, res) => {
 }
 
 exports.getById = async (req, res) => {
-    const {_id} = req.body; 
+    const currentUserId = (await extractAndDecodeToken(req)).data._id;
     let user;
     try {
-        user = await User.findById(_id).select('-email -password');
+        user = await User.findById(currentUserId).select('-email -password');
     } catch (error) {
         return res.status(500).json({message: error.message});
     }
@@ -157,7 +179,7 @@ exports.getById = async (req, res) => {
     return res.status(200).json({user});
 }
 
-// comment out during production
+// COMMENT OUT DURING PRODUCTION
 exports.getAllUserIds = async (req, res) => {
     try {
         const users = await User.find({}, '_id'); // fetch only the _id field for all users
@@ -169,7 +191,7 @@ exports.getAllUserIds = async (req, res) => {
     }
 }
 
-// comment out during production
+// COMMENT OUT DURING PRODUCTION
 exports.getAllUserData = async (req, res) => {
     try {
         const users = await User.find({}).select('-password -profilePicture'); // fetch the user data for all users
@@ -182,26 +204,24 @@ exports.getAllUserData = async (req, res) => {
 
 // This function is used to update a user's information
 exports.updateUserInfo = async (req, res) => {
-    // Check if the user is authorized to update the account
-    if (req.body._id === req.user._id.toString() || req.body.isAdmin) {
-        // If a new password is provided, hash it before storing it
-        if (req.body.password) {
-            try {
-                const salt = await bcrypt.genSalt(10);
-                req.body.password = await bcrypt.hash(req.body.password, salt);
-            } catch (err) {
-                // If there's an error hashing the password, return a 500 status with a detailed error message
-                return res.status(500).json({ error: 'Error hashing password', details: err });
-            }
-        }
-        try {
-            // Try to find the user with the given ID
-            const user = await User.findById(req.body._id);
-            if (!user) {
-                // If no user is found, return a 404 status with an error message
-                return res.status(404).json({ error: 'User not found' });
-            }
+    try {
+        const currentUser = await extractAndDecodeToken(req);
+        const tokenUserId = currentUser.data._id;
+        const givenUserId = req.body._id;
 
+        const tokenUser = await User.findById(tokenUserId).select("isAdmin");
+        const isAdmin = tokenUser.isAdmin;
+
+        // Fetch the user
+        const user = await User.findById(givenUserId);
+
+        // Check if the user is authorized to update the account
+        if (givenUserId === tokenUserId || isAdmin) {
+            // If a new password is provided, hash it before storing it
+            if (req.body.password) {
+                    const salt = await bcrypt.genSalt(10);
+                    req.body.password = await bcrypt.hash(req.body.password, salt);
+            }
             // If a new username is provided in the request body
             if (req.body.username) {
                 // Try to find a user with the new username
@@ -217,7 +237,7 @@ exports.updateUserInfo = async (req, res) => {
             console.log('Updating user with data');
             
             // Try to update the user with the given ID and data
-            const updatedUser = await User.findByIdAndUpdate(req.user._id, { 
+            const updatedUser = await User.findByIdAndUpdate(givenUserId, { 
                 $set: { username, password, profilePicture, graduationDate, descriptionMajor, descriptionMinor, descriptionBio, fullName, prefName},
             }, { new: true }); // Add { new: true } to return the updated user
 
@@ -225,16 +245,15 @@ exports.updateUserInfo = async (req, res) => {
                 // If no user was updated, return a 404 status with an error message
                 return res.status(404).json({ error: 'Error updating user, user not found' });
             }
-        } catch (err) {
-            // If there's an error updating the user, log the error and return a 500 status with a detailed error message
-            console.error('Error updating user:', err);
-            return res.status(500).json({ error: 'Error updating user', details: err });
+            // If the user was successfully updated, return a 200 status with a success message
+            res.status(200).json({ status: true, success: 'User Update Successfully'});
+        } else {
+            // If the user is not authorized to update the account, return a 403 status with an error message
+            return res.status(403).json("You can update only your account!");
         }
-        // If the user was successfully updated, return a 200 status with a success message
-        res.status(200).json({ status: true, success: 'User Update Successfully'});
-    } else {
-        // If the user is not authorized to update the account, return a 403 status with an error message
-        return res.status(403).json("You can update only your account!");
+    } catch (error) {
+        console.error('Error updating user:', error);
+        return res.status(500).json({ error: 'Error updating user', details: error });
     }
 };
 
@@ -480,9 +499,9 @@ exports.logout = async (req, res) => {
             }
 
             // Verify the token and get the user's ID
-            const decoded = jwt.verify(token, process.env.JWT_KEY);
+            const decoded = await decoder.decodeToken(token);
 
-            if (!decoded) {
+            if (!decoded ) {
                 return res.status(401).json({ status: false, message: 'Invalid token!' });
             }
 
