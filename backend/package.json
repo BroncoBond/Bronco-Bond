@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index",
-    "start": "node index"
+    "start": "node index",
+    "build": "npm install i --save && npm init -y"
   },
   "repository": {
     "type": "git",
@@ -37,5 +37,6 @@
     "socket.io": "^4.7.4"
   },
   "description": "BroncoBond",
-  "keywords": []
+  "keywords": [],
+  "devDependencies": {}
 }
