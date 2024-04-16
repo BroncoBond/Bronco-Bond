@@ -29,11 +29,10 @@ exports.sendMessage = async (senderId, receiverId, messageContent) => {
 
         await Promise.all([conversation.save(), newMessage.save()]);
 
-        res.status(201).json(newMessage);
-
+        return newMessage;
     } catch (err) {
         console.log("Error in sendMessage controller: ", err.message);
-        res.status(500).json({ error: "Internal server error"});
+        throw err;
     }
 }
 

@@ -82,15 +82,16 @@ exports.login = async(req,res,next)=>{
         // Generate the token
         if (!staySignedIn)
         {
-            token = await generateToken.generateTokenAndSetCookie(tokenData, res, '10m')
+            token = await generateToken.generateToken(tokenData, res, '10m')
         } else {
-            token = await generateToken.generateTokenAndSetCookie(tokenData, res)
+            token = await generateToken.generateToken(tokenData, res)
         }
         // Replace the user's existing tokens with new token
+        console.log(token);
         await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
 
         // If the token was successfully generated, return a 200 status with the token
-        res.status(200).json({status:true, userId: user._id})
+        res.status(200).json({status:true, token: token})
 
     } catch (error) {
         // If there's an error during login, log the error and pass it to the next middleware
@@ -237,7 +238,7 @@ exports.updateUserInfo = async (req, res) => {
     }
 };
 
-exports.updateUserInterets = async (req, res) => {
+exports.updateUserInterests = async (req, res) => {
     if (req.body._id === req.user._id.toString() || req.body.isAdmin) {
         try {
                 const uniqueInterests = [...new Set(req.body.interests.map(interest => interest.toLowerCase()))];
@@ -471,28 +472,36 @@ exports.makeAdmin = async (req, res) => {
 
 exports.logout = async (req, res) => {
     try {
-      if (req.headers && req.headers.authorization) {
-        const token = req.headers.authorization.split(' ')[1];
-        if (!token) {
-          return res.status(401).json({ status: false, message: 'Authorization fail!' });
-        }
+        if (req.headers && req.headers.authorization) {
+            const token = req.headers.authorization.split(' ')[1];
 
-        const user = await User.findOne({ _id: req.user._id, tokens: { $elemMatch: { token: token } } });
+            if (!token) {
+                return res.status(401).json({ status: false, message: 'Authorization fail!' });
+            }
 
-        if (!user) {
-            return res.status(400).json({ status: false, message: 'Tokens do not match!' });
+            // Verify the token and get the user's ID
+            const decoded = jwt.verify(token, process.env.JWT_KEY);
+
+            if (!decoded) {
+                return res.status(401).json({ status: false, message: 'Invalid token!' });
+            }
+
+            // Find the user in the database
+            const user = await User.findOne({ _id: decoded.data._id, tokens: { $elemMatch: { token: token } } });
+
+            if (!user) {
+                return res.status(400).json({ status: false, message: 'Tokens do not match!' });
+            }
+
+            // Remove the token from the user's tokens in the database
+            await User.updateOne({ _id: decoded._id }, { $pull: { tokens: { token } } });
+
+            res.json({ status: true, message: 'Log out successfully!' });
         }
-        // Remove the token from the user's tokens in the database
-        await User.updateOne({ _id: req.user._id.toString() }, { $pull: { tokens: { token } } });
-  
-        // Reset the cookie by setting maxAge to 0
-        res.cookie("jwt", "", { maxAge: 0 });
-  
-        res.json({ status: true, message: 'Log out successfully!' });
-      }
     } catch (error) {
-      res.status(500).json({ status: false, message: 'Logout failed!' });
+        console.log(error);
+        res.status(500).json({ status: false, message: 'Logout failed!' });
     }
-  };
+};
 
 

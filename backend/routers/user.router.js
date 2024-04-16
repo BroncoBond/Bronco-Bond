@@ -19,7 +19,7 @@ router.get('/friendList', protectRouter.protectRoute, userController.getBondList
 router.put("/updateUserInfo", protectRouter.protectRoute, userController.updateUserInfo);
 
 //Update User Interests
-router.put("/updateUserInterest", protectRouter.protectRoute, userController.updateUserInterets);
+router.put("/updateUserInterest", protectRouter.protectRoute, userController.updateUserInterests);
 
 //Get all User ID
 router.get('/ids', userController.getAllUserIds); //Remove during production
@@ -49,6 +49,6 @@ router.put("/revokeBondRequest", protectRouter.protectRoute, userController.revo
 router.delete("/unBond", protectRouter.protectRoute, userController.unBondUser);
 
 //Logout User
-router.post("/logout", protectRouter.protectRoute, userController.logout);
+router.post("/logout", userController.logout);
 
 module.exports = router;

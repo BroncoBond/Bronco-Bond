@@ -38,5 +38,9 @@
   },
   "description": "BroncoBond",
   "keywords": [],
-  "devDependencies": {}
+  "devDependencies": {
+    "chai": "^5.1.0",
+    "mocha": "^10.4.0",
+    "socket.io-client": "^4.7.5"
+  }
 }
