@@ -2,10 +2,8 @@ const Message = require("../model/message.model");
 const Conversation = require("../model/conversation.model");
 const { getReceiverSocketId, io } = require("../socket/socket");
 
-exports.sendMessage = async (req, res) => {
+exports.sendMessage = async (senderId, receiverId, messageContent) => {
     try {
-        const {message, receiverId} = req.body;
-        const senderId = req.user._id;
         
         let conversation = await Conversation.findOne({
             participants: {
@@ -22,7 +20,7 @@ exports.sendMessage = async (req, res) => {
         const newMessage = new Message({
             senderId,
             receiverId,
-            message
+            message: messageContent
         });
 
         if(newMessage) {
@@ -31,11 +29,6 @@ exports.sendMessage = async (req, res) => {
 
         await Promise.all([conversation.save(), newMessage.save()]);
 
-        const receiverSocketId = getReceiverSocketId(receiverId);
-        if(receiverId) {
-            io.to(receiverSocketId).emit("newMessage",newMessage);
-        }
-
         res.status(201).json(newMessage);
 
     } catch (err) {
@@ -43,6 +36,43 @@ exports.sendMessage = async (req, res) => {
         res.status(500).json({ error: "Internal server error"});
     }
 }
+
+// exports.sendMessage = async (req, res) => {
+//     try {
+//         const {message, receiverId} = req.body;
+//         const senderId = req.user._id;
+        
+//         let conversation = await Conversation.findOne({
+//             participants: {
+//                 $all: [senderId, receiverId]
+//             }
+//         })
+
+//         if(!conversation) {
+//             conversation = await Conversation.create({
+//                 participants: [senderId, receiverId],
+//             })
+//         }
+
+//         const newMessage = new Message({
+//             senderId,
+//             receiverId,
+//             message
+//         });
+
+//         if(newMessage) {
+//             conversation.messages.push(newMessage._id);
+//         }
+
+//         await Promise.all([conversation.save(), newMessage.save()]);
+
+//         res.status(201).json(newMessage);
+
+//     } catch (err) {
+//         console.log("Error in sendMessage controller: ", err.message);
+//         res.status(500).json({ error: "Internal server error"});
+//     }
+// }
 
 exports.getMessage = async (req, res) => {
     try {
