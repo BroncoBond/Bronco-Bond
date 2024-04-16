@@ -2,7 +2,7 @@ const { Server } = require("socket.io");
 const http = require("http");
 const express = require("express");
 const Message = require('../model/message.model');
-const { sendMessage } = require('../controller/message.controller');
+const messageController = require('../controller/message.controller');
 
 const app = express();
 
@@ -37,7 +37,7 @@ io.on("connection", (socket)=> {
         const senderId = socket.userId;
 
         try {
-            const newMessage = await sendMessage(senderId, receiverId, messageContent);
+            const newMessage = await messageController.sendMessage(senderId, receiverId, messageContent);
 
             const receiverSocketId = getReceiverSocketId(receiverId);
             if (receiverSocketId) {
