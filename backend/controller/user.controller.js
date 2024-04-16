@@ -252,87 +252,114 @@ exports.updateUserInfo = async (req, res) => {
             return res.status(403).json("You can update only your account!");
         }
     } catch (error) {
-        console.error('Error updating user:', error);
-        return res.status(500).json({ error: 'Error updating user', details: error });
+        console.error('Error updating user info:', error);
+        return res.status(500).json({ error: 'Error updating user info', details: error });
     }
 };
 
 exports.updateUserInterests = async (req, res) => {
-    if (req.body._id === req.user._id.toString() || req.body.isAdmin) {
-        try {
-                const uniqueInterests = [...new Set(req.body.interests.map(interest => interest.toLowerCase()))];
+    try {
+        const currentUser = await extractAndDecodeToken(req);
+        const tokenUserId = currentUser.data._id;
+        const givenUserId = req.body._id;
 
-                const user = await User.findByIdAndUpdate(req.user._id, {
-                    $set: { interests: uniqueInterests }
-                }, { new: true });
+        const tokenUser = await User.findById(tokenUserId).select("isAdmin");
+        const isAdmin = tokenUser.isAdmin;
 
-                if (!user) {
-                    return res.status(404).json({ error: 'Error updating user, user not found' });
-                }
+        // Fetch the user
+        const user = await User.findById(givenUserId);
 
-                res.status(200).json({ status: true, success: 'User interests updated successfully'});
-            } catch (err) {
-                console.error('Error updating user:', err);
-                return res.status(500).json({ error: 'Error updating user', details: err });
+        if (givenUserId === tokenUserId || isAdmin) {
+            try {
+                    const uniqueInterests = [...new Set(req.body.interests.map(interest => interest.toLowerCase()))];
+
+                    const user = await User.findByIdAndUpdate(givenUserId, {
+                        $set: { interests: uniqueInterests }
+                    }, { new: true });
+
+                    if (!user) {
+                        return res.status(404).json({ error: 'Error updating user, user not found' });
+                    }
+
+                    res.status(200).json({ status: true, success: 'User interests updated successfully'});
+                } catch (err) {
+                    console.error('Error updating user:', err);
+                    return res.status(500).json({ error: 'Error updating user', details: err });
+            }
+        } else {
+            return res.status(403).json("You can update only your account!");
         }
-    } else {
-        return res.status(403).json("You can update only your account!");
-    }
+    } catch(error) {
+        console.error('Error updating user interests:', error);
+        return res.status(500).json({ error: 'Error updating user interests', details: error });
+    } 
 }
 
 // This function is used to delete a user's account
 exports.deleteAccount = async (req, res) => {
-    // Check if the user is authorized to delete the account
-    if (req.body._id === req.user._id.toString() || req.body.isAdmin) {
-        try {
-            const userId = req.user._id;
-            // Try to delete the user with the given ID
-            await User.findByIdAndDelete(userId);
+    try {
+        const currentUser = await extractAndDecodeToken(req);
+        const tokenUserId = currentUser.data._id;
+        const givenUserId = req.body._id;
 
-            const allUsers = await User.find();
-            
-            allUsers.forEach(async (user) => {
-                let modified = false;
+        const tokenUser = await User.findById(tokenUserId).select("isAdmin");
+        const isAdmin = tokenUser.isAdmin;
 
-                const bondIndex = user.bonds.indexOf(userId);
-                if (bondIndex !== -1) {
-                    user.bonds.splice(bondIndex, 1);
-                    modified = true;
-                }
+        // Check if the user is authorized to delete the account
+        if (givenUserId === tokenUserId || isAdmin) {
+            try {
+                const userId = req.user._id;
+                // Try to delete the user with the given ID
+                await User.findByIdAndDelete(givenUserId);
 
-                const receivedIndex = user.bondRequestsReceived.indexOf(userId);
-                if (receivedIndex !== -1) {
-                    user.bondRequestsReceived.splice(receivedIndex, 1);
-                    modified = true;
-                }
+                const allUsers = await User.find();
+                
+                allUsers.forEach(async (user) => {
+                    let modified = false;
 
-                const sentIndex = user.bondRequestsSent.indexOf(userId);
-                if (sentIndex !== -1) {
-                    user.bondRequestsSent.splice(sentIndex, 1);
-                    modified = true;
-                }
+                    const bondIndex = user.bonds.indexOf(givenUserId);
+                    if (bondIndex !== -1) {
+                        user.bonds.splice(bondIndex, 1);
+                        modified = true;
+                    }
 
-                if (modified) {
-                    await user.save();
-                }
-            });
+                    const receivedIndex = user.bondRequestsReceived.indexOf(givenUserId);
+                    if (receivedIndex !== -1) {
+                        user.bondRequestsReceived.splice(receivedIndex, 1);
+                        modified = true;
+                    }
 
-            res.cookie("jwt", "", { maxAge: 0 });
-            // If the user was successfully deleted, return a 200 status with a success message
-            res.status(200).json("Account has been deleted");
-        } catch (err) {
-            // If there's an error deleting the user, return a 500 status with the error
-            return res.status(500).json(err);
+                    const sentIndex = user.bondRequestsSent.indexOf(givenUserId);
+                    if (sentIndex !== -1) {
+                        user.bondRequestsSent.splice(sentIndex, 1);
+                        modified = true;
+                    }
+
+                    if (modified) {
+                        await user.save();
+                    }
+                });
+
+                res.cookie("jwt", "", { maxAge: 0 });
+                // If the user was successfully deleted, return a 200 status with a success message
+                res.status(200).json("Account has been deleted");
+            } catch (err) {
+                // If there's an error deleting the user, return a 500 status with the error
+                return res.status(500).json(err);
+            }
+        } else {
+            // If the user is not authorized to delete the account, return a 403 status with an error message
+            return res.status(403).json("You can delete only your account!");
         }
-    } else {
-        // If the user is not authorized to delete the account, return a 403 status with an error message
-        return res.status(403).json("You can delete only your account!");
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        return res.status(500).json({ error: 'Error deleting user', details: error });
     }
 };
 
 // This function is used to send a request to recipient
 exports.sendBondRequest = async (req, res) => {
-    const senderId = req.user._id.toString();
+    const senderId = (await extractAndDecodeToken(req)).data._id;
     const recipientId = req.body._id;
 
     if (recipientId !== senderId) {
@@ -365,7 +392,7 @@ exports.sendBondRequest = async (req, res) => {
 }
 
 exports.acceptBondRequest = async(req, res) => {
-    const recipientId = req.user._id.toString();
+    const recipientId = (await extractAndDecodeToken(req)).data._id;
     const senderId = req.body._id;
 
     if (senderId !== recipientId) {
@@ -394,7 +421,7 @@ exports.acceptBondRequest = async(req, res) => {
 }
 
 exports.declineBondRequest = async(req, res) => {
-    const recipientId = req.user._id.toString();
+    const recipientId = (await extractAndDecodeToken(req)).data._id;
     const senderId = req.body._id;
 
     if (recipientId !== senderId) {
@@ -432,7 +459,8 @@ exports.declineBondRequest = async(req, res) => {
 
 exports.revokeBondRequest = async (req, res) => {
     try {
-        const sender = await User.findById(req.user._id);
+        const senderId = (await extractAndDecodeToken(req)).data._id;
+        const sender = await User.findById(senderId);
         const recipient = await User.findById(req.body._id);
 
         if (!recipient || !sender) {
@@ -458,7 +486,7 @@ exports.revokeBondRequest = async (req, res) => {
 
 // This function is used to unfriend another user's account
 exports.unBondUser = async (req, res) => {
-    const currentUserId = req.user._id.toString();
+    const currentUserId = (await extractAndDecodeToken(req)).data._id;
     const targetUserId = req.body._id;
 
     try {
