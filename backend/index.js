@@ -16,7 +16,8 @@ const requestDurationLogger = require('./middleware/durationLogger');
 const cookieParser = require('cookie-parser');
 
 
-const app = express();
+// const app = express();
+const { app, server }  = require('./socket/socket.js');
 const port = process.env.WEBSITES_PORT
 
 // Middleware
@@ -47,18 +48,18 @@ app.get('/', (req, res) => {
 startServer(port);
 
 function startServer(port) {
-    const server = app.listen(port, () => {
+    const serverIndex = server.listen(port, () => {
         console.log(`Server is running on port ${port}`);
     });
 
-    server.on('error', (error) => {
+    serverIndex.on('error', (error) => {
         console.error('Error starting server:', error.message);
         process.exit(1);
     });
 
     // Handle shutdown gracefully (optional)
     process.on('SIGINT', () => {
-        server.close(() => {
+        serverIndex.close(() => {
             console.log('Server is shutting down');
             process.exit(0);
         });
@@ -68,10 +69,7 @@ function startServer(port) {
 /*
 
     Dev Notes:
-Step 1: In terminal [npm install i --save]
-Step 2: In terminal if asked do [npm fund]
-Step 3: In terminal [npm init -y]
-Step 4: To start server [node index.js] or [npm run dev]
-Step 5: Check Frontend IP
+Step 1: npm run build
+Step 2: npm run dev
 
 */
