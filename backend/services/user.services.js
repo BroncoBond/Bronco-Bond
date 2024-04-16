@@ -78,44 +78,6 @@ class UserService{
             return { status: 500, message: error };
         }
     }
-
-/*     static async searchUserByUsername(username, jwtKey, jwt_expre) {
-    try {
-        const user = await User.findOne({ username });
-
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        const tokenData = {
-            _id: user._id,
-            email: user.email,
-            username: user.username
-        };
-
-        const token = jwt.sign(tokenData, jwtKey, { expiresIn: jwt_expre });
-
-        return { user, token };
-    } catch (error) {
-        throw error;
-    }
-} */
-
-    static async generateToken(data,jwtKey, jwt_expre) {
-        try {
-            return jwt.sign(data, jwtKey, {expiresIn:jwt_expre});
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    static async generateToken(data, jwtKey) {
-        try {
-            return jwt.sign(data, jwtKey, {expiresIn:'10d'});
-        } catch (error) {
-            throw error;
-        }
-    }
 }
 
 class CustomError extends Error {
