@@ -103,6 +103,7 @@ exports.login = async(req,res,next)=>{
 exports.searchUserByUsername = async (req, res) => {
     // Extract the username from the request query
     const { username } = req.query;
+    const currentUser = req.user;
     
     // Check if a username was provided
     if (!username) {
@@ -114,7 +115,7 @@ exports.searchUserByUsername = async (req, res) => {
         const regex = new RegExp(username, 'i');
 
         // Try to find users whose username matches the regular expression
-        const users = await User.find({ username: { $regex: regex } }).select('-password -email');
+        const users = await User.find({ username: { $regex: regex }, _id: { $ne: currentUser._id }}).select('-password -email');
 
         // If users are found, return the users data
         if (users.length > 0) {
