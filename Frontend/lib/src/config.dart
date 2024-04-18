@@ -1,16 +1,16 @@
-const String url = 'https://broncobondwebservice.onrender.com';
-const String register = '$url/user/register';
-const String login = '$url/user/login';
-const String search = '$url/user/search';
-const String logout = '$url/user/logout';
+const String url = 'http://192.168.1.9:8080';
+//'https://broncobondwebservice.onrender.com';
+const String register = '$url/api/user/register';
+const String login = '$url/api/user/login';
+const String search = '$url/api/user/search';
+const String logout = '$url/api/user/logout';
 const String updateUser =
-    '$url/user/updateUserInfo'; // replace :id with user's ID
-const String updateInterests = '$url/user/updateUserInterests';
-const String deleteUser = '$url/user';
-const String getUserByID = '$url/user';
-const String sendBondRequest = '$url/user/sendBondRequest';
-const String revokeRequest = '$url/user/revokeBondRequest';
-const String unbondUser = '$url/user/unbond';
-const String acceptBondRequest = '$url/user/acceptBondRequest';
-const String declineBondRequest = '$url/user/declineBondRequest';
-	
+    '$url/api/user/updateUserInfo'; // replace :id with user's ID
+const String updateInterests = '$url/api/user/updateUserInterests';
+const String deleteUser = '$url/api/user';
+const String getUserByID = '$url/api/user';
+const String sendBondRequest = '$url/api/user/sendBondRequest';
+const String revokeRequest = '$url/api/user/revokeBondRequest';
+const String unbondUser = '$url/api/user/unbond';
+const String acceptBondRequest = '$url/api/user/acceptBondRequest';
+const String declineBondRequest = '$url/api/user/declineBondRequest';
