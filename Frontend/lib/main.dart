@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
 /*
   Dev Notes (set up emulator first):
     Step 1: In terminal [flutter pub get]
-    Step 2: In terminal [flutter crearte .]
+    Step 2: In terminal [flutter create .]
     Step 3: In terminal [flutter pub run flutter_launcher_icons]
     Step 4: In terminal [dart run flutter_native_splash:create]
 */
