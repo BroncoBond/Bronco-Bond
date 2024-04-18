@@ -8,6 +8,7 @@ const morgan = require("morgan");
 const db = require('./config/db');
 const UserModel = require('./model/user.model');
 const userRouter = require('./routers/user.router');
+const websiteRouter = require('./routers/website.router');
 const errorHandler = require('./middleware/errorHandler');
 const durationLogger = require('./middleware/durationLogger');
 const requestDurationLogger = require('./middleware/durationLogger');
@@ -20,6 +21,8 @@ app.use(express.json({ limit: process.env.JSON_LIMIT || '50mb' }));
 app.use(helmet());
 app.use(morgan("common"));
 app.use(express.static('public'));
+app.use(express.static('views'));
+
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
@@ -27,6 +30,8 @@ app.set('view engine', 'ejs');
 // Routes
 app.use(requestDurationLogger);
 app.use('/user', userRouter);
+app.use('/api/website', websiteRouter);
+
 
 // Error Handler
 app.use(errorHandler);
