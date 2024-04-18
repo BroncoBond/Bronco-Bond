@@ -8,6 +8,7 @@ import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfile extends StatefulWidget {
   final userID;
@@ -19,7 +20,9 @@ class EditProfile extends StatefulWidget {
 }
 
 class EditProfilePageState extends State<EditProfile> {
-  late Future<void> _dataFuture;
+  late SharedPreferences prefs;
+  late Future<SharedPreferences> prefsFuture;
+  Future<void>? _dataFuture;
   late String username = '';
   late String fullName = '';
   late String prefName = '';
@@ -48,12 +51,12 @@ class EditProfilePageState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
+    prefsFuture = initSharedPref();
+
     pfp = Uint8List(0);
     profilePictureData = [];
 
-    _dataFuture = fetchDataUsingUserID(widget.userID);
-    _clubController = TextEditingController();
-    _textController = TextEditingController();
+    _initData();
   }
 
   @override
@@ -63,9 +66,31 @@ class EditProfilePageState extends State<EditProfile> {
     super.dispose();
   }
 
+  Future<void> _initData() async {
+    prefs = await prefsFuture;
+    await fetchDataUsingUserID(widget.userID);
+
+    _dataFuture = fetchDataUsingUserID(widget.userID);
+    _clubController = TextEditingController();
+    _textController = TextEditingController();
+  }
+
+  Future<SharedPreferences> initSharedPref() async {
+    return await SharedPreferences.getInstance();
+  }
+
   Future<void> fetchDataUsingUserID(String userID) async {
+    String? token = prefs.getString('token');
+    var regBody = {"_id": userID};
     try {
-      final response = await http.get(Uri.parse('$getUserByID/$userID'));
+      final response = await http.post(
+        Uri.parse(getUserByID),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: jsonEncode(regBody),
+      );
 
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
@@ -111,6 +136,8 @@ class EditProfilePageState extends State<EditProfile> {
 
   void editPfp(String userID) async {
     String base64Image = '';
+    String? token = prefs.getString('token');
+
     if (_imageFile != null) {
       List<int> imageBytes = await _imageFile!.readAsBytes();
       base64Image = base64Encode(imageBytes);
@@ -124,8 +151,11 @@ class EditProfilePageState extends State<EditProfile> {
     };
 
     try {
-      var response = await http.put(Uri.parse('$updateUser/$userID'),
-          headers: {"Content-Type": "application/json"},
+      var response = await http.put(Uri.parse(updateUser),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token"
+          },
           body: jsonEncode(regBody));
 
       print('Response body: ${response.body}');
@@ -194,7 +224,7 @@ class EditProfilePageState extends State<EditProfile> {
       ),
       backgroundColor: Colors.white,
       body: FutureBuilder<void>(
-          future: _dataFuture,
+          future: _dataFuture ?? Future.value(null),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -469,10 +499,12 @@ class _EditableRowState extends State<EditableRow> {
   String? _selectedMajor;
   String? _selectedMinor;
   String? _selectedGradDate;
+  late SharedPreferences prefs;
 
   @override
   void initState() {
     super.initState();
+    initSharedPref();
     textController = TextEditingController(text: widget.initialValue);
     if (widget.initialValue != "Unknown") {
       if (widget.label == 'Major') {
@@ -491,6 +523,10 @@ class _EditableRowState extends State<EditableRow> {
     super.dispose();
   }
 
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
   void _toggleEdit() {
     setState(() {
       isEditing = !isEditing;
@@ -498,6 +534,7 @@ class _EditableRowState extends State<EditableRow> {
   }
 
   void _saveChanges() async {
+    String? token = prefs.getString('token');
     var regBody = {
       "_id": widget.userID,
     };
@@ -540,8 +577,11 @@ class _EditableRowState extends State<EditableRow> {
     print(regBody);
 
     try {
-      var response = await http.put(Uri.parse('$updateUser/${widget.userID}'),
-          headers: {"Content-Type": "application/json"},
+      var response = await http.put(Uri.parse(updateUser),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token"
+          },
           body: jsonEncode(regBody));
 
       print('Response body: ${response.body}');

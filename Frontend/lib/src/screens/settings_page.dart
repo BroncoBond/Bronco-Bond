@@ -226,6 +226,12 @@ class SettingsPageState extends State<SettingsPage> {
               //create dump for all user info
               // Navigate to the login screen or clear user session
               logoutUser(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginPage(),
+                ),
+              );
             },
             child: Text('Log Out',
                 style: GoogleFonts.raleway(

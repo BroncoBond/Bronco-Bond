@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/config.dart';
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class FriendsListPage extends StatefulWidget {
   final userID;
 
@@ -16,6 +18,8 @@ class FriendsListPage extends StatefulWidget {
 }
 
 class FriendsListPageState extends State<FriendsListPage> {
+  late Future<SharedPreferences> prefsFuture;
+  late SharedPreferences prefs;
   late String username = '';
   late List<dynamic> bonds = [];
   late List<dynamic> bondRequestsSent = [];
@@ -29,7 +33,17 @@ class FriendsListPageState extends State<FriendsListPage> {
   @override
   void initState() {
     super.initState();
-    // fetchDataUsingUserID(widget.userID);
+
+    prefsFuture = initSharedPref();
+    prefsFuture.then((value) {
+      prefs = value;
+      // Get user data using the userID
+      fetchDataUsingUserID(widget.userID);
+    });
+  }
+
+  Future<SharedPreferences> initSharedPref() async {
+    return await SharedPreferences.getInstance();
   }
 
   @override
@@ -38,8 +52,17 @@ class FriendsListPageState extends State<FriendsListPage> {
   }
 
   Future<void> fetchDataUsingUserID(String userID) async {
+    String? token = prefs.getString('token');
+    var regBody = {"_id": userID};
     try {
-      final response = await http.get(Uri.parse('$getUserByID/$userID'));
+      final response = await http.post(
+        Uri.parse(getUserByID),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+        body: jsonEncode(regBody),
+      );
 
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
@@ -63,8 +86,17 @@ class FriendsListPageState extends State<FriendsListPage> {
   }
 
   Future<Map<String, dynamic>> fetchBondUsernames(String userID) async {
+    String? token = prefs.getString('token');
+    var regBody = {"_id": userID};
     try {
-      final response = await http.get(Uri.parse('$getUserByID/$userID'));
+      final response = await http.post(
+        Uri.parse(getUserByID),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+        body: jsonEncode(regBody),
+      );
 
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
@@ -81,12 +113,15 @@ class FriendsListPageState extends State<FriendsListPage> {
   }
 
   void acceptRequest(String userID) async {
+    String? token = prefs.getString('token');
     var regBody = {"_id": userID};
 
     try {
-      var response = await http.put(
-          Uri.parse('$acceptBondRequest/${widget.userID}'),
-          headers: {"Content-Type": "application/json"},
+      var response = await http.put(Uri.parse(acceptBondRequest),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token"
+          },
           body: jsonEncode(regBody));
 
       print(response.body);
@@ -96,12 +131,16 @@ class FriendsListPageState extends State<FriendsListPage> {
   }
 
   void declineRequest(String userID) async {
+    String? token = prefs.getString('token');
     var regBody = {"_id": userID};
 
     try {
       var response = await http.put(
           Uri.parse('$declineBondRequest/${widget.userID}'),
-          headers: {"Content-Type": "application/json"},
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token"
+          },
           body: jsonEncode(regBody));
 
       print(response.body);
@@ -112,10 +151,17 @@ class FriendsListPageState extends State<FriendsListPage> {
 
   // Searches database by username, returns user, then uses the user's id to send a bond request
   void sendRequest() async {
+    String? token = prefs.getString('token');
     final query = searchController.text;
 
     try {
-      final response = await http.get(Uri.parse('$search?username=$query'));
+      final response = await http.get(
+        Uri.parse('$search?username=$query'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
 
       if (response.statusCode == 200) {
         final List<dynamic> users = json.decode(response.body);
@@ -131,9 +177,11 @@ class FriendsListPageState extends State<FriendsListPage> {
           try {
             var regBody = {"_id": userID};
 
-            var response = await http.put(
-                Uri.parse('$sendBondRequest/${widget.userID}'),
-                headers: {"Content-Type": "application/json"},
+            var response = await http.put(Uri.parse(sendBondRequest),
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": "Bearer $token"
+                },
                 body: jsonEncode(regBody));
 
             // Display success message

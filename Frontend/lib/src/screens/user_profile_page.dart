@@ -61,7 +61,7 @@ class UserProfileState extends State<UserProfile>
         fetchDataUsingUserID(widget.userID, currentUserID);.
       });*/
     });
-    print('UserID: ${widget.userID}');
+    // print('UserID: ${widget.userID}');
   }
 
   Future<SharedPreferences> initSharedPref() async {
@@ -77,12 +77,19 @@ class UserProfileState extends State<UserProfile>
 
   Future<void> fetchDataUsingUserID(
       String userID, String? currentUserID) async {
+    String? token = prefs.getString('token');
+    var regBody = {"_id": userID};
     try {
-      final response = await http.get(Uri.parse('$getUserByID/$userID'));
-
+      final response = await http.post(
+        Uri.parse(getUserByID),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: jsonEncode(regBody),
+      );
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
-
         if (mounted) {
           setState(() {
             username = userData['user']['username'] ?? 'Unknown';
@@ -116,7 +123,7 @@ class UserProfileState extends State<UserProfile>
         }
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
-        print('Response body: ${response.body}');
+        //print('Response body: ${response.body}');
       }
     } catch (e) {
       print('Error fetching user data: $e');
@@ -124,13 +131,16 @@ class UserProfileState extends State<UserProfile>
   }
 
   void sendRequest(String userID, String? currentUserID) async {
+    String? token = prefs.getString('token');
     // User id of the person you want to follow in the body
     var regBody = {"_id": userID};
 
     try {
-      var response = await http.put(
-          Uri.parse('$sendBondRequest/$currentUserID'),
-          headers: {"Content-Type": "application/json"},
+      var response = await http.put(Uri.parse(sendBondRequest),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token"
+          },
           body: jsonEncode(regBody));
 
       print(response.body);
@@ -145,16 +155,16 @@ class UserProfileState extends State<UserProfile>
   }
 
   void unbond(String userID, String? currentUserID) async {
+    String? token = prefs.getString('token');
     // User id of the person you want to follow in the body
     var regBody = {"_id": userID};
 
     try {
-      // Current user id is in route
-      print('Current User: $currentUserID');
-      print('User you want to follow: $userID');
-
-      var response = await http.delete(Uri.parse('$unbondUser/$currentUserID'),
-          headers: {"Content-Type": "application/json"},
+      var response = await http.delete(Uri.parse(unbondUser),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token"
+          },
           body: jsonEncode(regBody));
 
       print(response.body);

@@ -50,6 +50,7 @@ const List<String> majors = [
   "Sociology",
   "Spanish",
   "Theatre",
+  "Undeclared",
   "Urban and Regional Planning",
   "Visual Communication Design",
 ]; // List of majors (implement later)

@@ -16,10 +16,24 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   late String username = '';
   late SharedPreferences prefs;
+  late Future<SharedPreferences> prefsFuture;
 
   Future<void> fetchDataUsingUserID(String userID) async {
+    String? token = prefs.getString('token');
+    var regBody = {"_id": userID};
+
     try {
-      final response = await http.get(Uri.parse('$getUserByID/$userID'));
+      final response = await http.post(
+        Uri.parse(getUserByID),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: jsonEncode(regBody),
+      );
+
+      // print('Request URL: ${Uri.parse('$getUserByID/$userID')}'); // Debug URL
+      // print('Token used: $token'); // Debug token
 
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
@@ -39,12 +53,16 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    initSharedPref();
-    fetchDataUsingUserID(widget.userID);
+    prefsFuture = initSharedPref();
+    prefsFuture.then((value) {
+      prefs = value;
+      // Get user data using the userID
+      fetchDataUsingUserID(widget.userID);
+    });
   }
 
-  void initSharedPref() async {
-    prefs = await SharedPreferences.getInstance();
+  Future<SharedPreferences> initSharedPref() async {
+    return await SharedPreferences.getInstance();
   }
 
   @override

@@ -6,10 +6,9 @@ import 'package:bronco_bond/src/screens/events_page.dart';
 import 'package:bronco_bond/src/screens/user_profile_page.dart';
 
 class BottomNavBar extends StatefulWidget {
-  final String token;
   final String userID;
 
-  const BottomNavBar({super.key, required this.token, required this.userID});
+  const BottomNavBar({super.key, required this.userID});
 
   @override
   BottomNavBarState createState() => BottomNavBarState();

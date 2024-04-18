@@ -25,10 +25,17 @@ class SearchPageState extends State<SearchPage> {
   int selectedResultIndex = -1;
 
   void performSearch() async {
+    String? token = prefs.getString('token');
     final query = searchController.text;
 
     try {
-      final response = await http.get(Uri.parse('$search?username=$query'));
+      final response = await http.get(
+        Uri.parse('$search?username=$query'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
 
       if (response.statusCode == 200) {
         final users =

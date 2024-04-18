@@ -51,6 +51,7 @@ class LoginPageState extends State<LoginPage> {
         // print(response.body);
         if (response.statusCode == 200) {
           Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+          print(jsonResponse);
           if (jsonResponse['status']) {
             var myToken = jsonResponse['token'];
             var myUserID = getUserIDFromToken(myToken);
@@ -58,12 +59,10 @@ class LoginPageState extends State<LoginPage> {
             prefs.setString('token', myToken);
             prefs.setString('userID', myUserID);
 
-            // print('This is the current user\'s ID: $myUserID');
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    BottomNavBar(token: myToken, userID: myUserID),
+                builder: (context) => BottomNavBar(userID: myUserID),
               ),
             );
           } else {
@@ -93,7 +92,7 @@ class LoginPageState extends State<LoginPage> {
   String getUserIDFromToken(String token) {
     try {
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-      return decodedToken['_id'];
+      return decodedToken['data']['_id'];
     } catch (e) {
       print('Error decoding token: $e');
       return '';
