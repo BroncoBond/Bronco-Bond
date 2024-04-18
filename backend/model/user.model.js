@@ -81,8 +81,12 @@ const userSchema = new Schema({
             default:"Im new BroncoBond!"
         },
         graduationDate: {
-            type: String,
-            default: new Date().getFullYear()
+            type: Date,
+            default: (() => {
+            let futureDate = new Date();
+            futureDate.setFullYear(futureDate.getFullYear() + 4);
+            return futureDate;
+            })()
         },
         tokens: [{ type: Object }]
     }, {timestamps:true} 
