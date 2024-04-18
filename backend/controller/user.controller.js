@@ -167,9 +167,10 @@ exports.getBondList = async (req, res) => {
 
 exports.getById = async (req, res) => {
     const currentUserId = (await extractAndDecodeToken(req)).data._id;
+    const bodyId = req.body._id;
     let user;
     try {
-        user = await User.findById(currentUserId).select('-email -password');
+        user = await User.findById(bodyId).select('-email -password');
     } catch (error) {
         return res.status(500).json({message: error.message});
     }

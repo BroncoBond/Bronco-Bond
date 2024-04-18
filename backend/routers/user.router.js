@@ -28,7 +28,7 @@ router.get('/ids', userController.getAllUserIds); //Remove during production
 router.get("/data",userController.getAllUserData); //Remove during production
 
 //Get User by Id
-router.get("/", protectRouter.protectRoute, userController.getById);
+router.post("/", protectRouter.protectRoute, userController.getById);
 
 //Delete User
 router.delete("/",protectRouter.protectRoute, userController.deleteAccount);
@@ -49,6 +49,6 @@ router.put("/revokeBondRequest", protectRouter.protectRoute, userController.revo
 router.delete("/unBond", protectRouter.protectRoute, userController.unBondUser);
 
 //Logout User
-router.post("/logout", userController.logout);
+router.post("/logout", protectRouter.protectRoute, userController.logout);
 
 module.exports = router;
