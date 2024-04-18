@@ -36,9 +36,8 @@ class MyApp extends StatelessWidget {
         initialRoute: '/', // Initial route
         routes: {
           '/': (context) =>
-              (token != null && JwtDecoder.isExpired(token) == false)
+              (token != null || JwtDecoder.isExpired(token) == false)
                   ? BottomNavBar(
-                      token: token,
                       userID: userID,
                     )
                   : const SigninPage(),
