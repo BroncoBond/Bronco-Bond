@@ -34,8 +34,6 @@ exports.register = async (req, res, next) => {
         const newUser = await UserService.registerUser(email, username, password);
         console.log('User created:');
 
-        let token;
-
         try {
             token = await generater.generateToken(newUser._id,res, '7d');
             console.log("Token generated and cookie set");
@@ -54,9 +52,9 @@ exports.register = async (req, res, next) => {
         console.log("Error occurred: " + error.message);
 
         // Log specific errors
-        if (error.message === "Email already exists" || error.message === "Username already exists") {
+        if (error.message.includes("E11000")) {
             console.error("Error Duplicate Email/Username:", error.message);
-            return res.status(400).json({ status: false, error: error.message });
+            return res.status(400).json({ status: false, error: "Duplicate email/username" });
         }
 
         // Log any other errors
