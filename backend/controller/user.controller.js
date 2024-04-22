@@ -14,13 +14,16 @@ async function extractAndDecodeToken(req) {
       throw new Error('Authorization fail!');
     }
   
-    const decoded = await decoder.decodeToken(token);
-  
-    if (!decoded) {
-      throw new Error('Invalid token!');
+    try {
+        const decoded = await decoder.decodeToken(token);
+        return decoded;
+    } catch (err) {
+        if (err instanceof jwt.TokenExpiredError) {
+            throw new Error('Token expired!');
+        } else {
+            throw new Error('Invalid token!');
+        }
     }
-  
-    return decoded;
   }
 
 exports.register = async (req, res, next) => {
@@ -121,7 +124,9 @@ exports.searchUserByUsername = async (req, res) => {
     
     // Extract the username from the request query
     try {
-        const currentUserId = (await extractAndDecodeToken(req)).data._id;
+        const extractedToken = await extractAndDecodeToken(req);
+        const currentUserId = extractedToken.data._id;
+        console.log(currentUserId);
         const { username } = req.query;
 
         // Check if a username was provided
@@ -134,7 +139,7 @@ exports.searchUserByUsername = async (req, res) => {
             const regex = new RegExp(username, 'i');
 
             // Try to find users whose username matches the regular expression
-            const users = await User.find({ username: { $regex: regex }, _id: { $ne: currentUserId }}).select('-password -email -profilePicture');
+            const users = await User.find({ username: { $regex: regex }, _id: { $ne: currentUserId }}).select('-password -email');
 
             // If users are found, return the users data
             if (users.length > 0) {

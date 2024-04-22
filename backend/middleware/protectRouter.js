@@ -17,7 +17,7 @@ exports.protectRoute = async (req, res, next) => {
             return res.status(401).json({ error: "Unauthorized - Invalid Token" });
         }
 
-        const user = await User.findById(decoded.data._id).select("-password");
+                const user = await User.findOne({ _id: decoded.data._id, tokens: { $elemMatch: { token: token } } }).select("-password");
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
