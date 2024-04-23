@@ -1,4 +1,4 @@
-const String url = 'http://your-ip';
+const String url = 'http://192.168.1.158:8080';
 //'https://broncobondwebservice.onrender.com';
 const String register = '$url/api/user/register';
 const String login = '$url/api/user/login';
@@ -6,7 +6,7 @@ const String search = '$url/api/user/search';
 const String logout = '$url/api/user/logout';
 const String updateUser =
     '$url/api/user/updateUserInfo'; // replace :id with user's ID
-const String updateInterests = '$url/api/user/updateUserInterests';
+const String updateInterests = '$url/api/user/updateUserInterest';
 const String deleteUser = '$url/api/user';
 const String getUserByID = '$url/api/user';
 const String sendBondRequest = '$url/api/user/sendBondRequest';

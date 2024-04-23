@@ -37,7 +37,8 @@ class RegisterPageState extends State<RegisterPage> {
 
           var response = await http.post(Uri.parse(register),
               headers: {"Content-Type": "application/json"},
-              body: jsonEncode(regBody));
+              body: jsonEncode(regBody)
+          );
 
           if (response.body.isNotEmpty) {
             var jsonResponse = jsonDecode(response.body);
@@ -46,12 +47,15 @@ class RegisterPageState extends State<RegisterPage> {
             print('Response body: ${response.body}');
 
             if (jsonResponse['status']) {
+              var token = jsonResponse['token'];
               var userID = jsonResponse['_id'];
               print('User ID: $userID');
+              print('Token: $token');
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => UserInfoPage(userID: userID)));
+                      builder: (context) =>
+                          UserInfoPage(token: token, userID: userID)));
             } else {
               LoginPageState.buildDialog(context, "Registration failed!",
                   "Account with this email or username already exists.");

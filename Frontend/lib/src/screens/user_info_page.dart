@@ -11,8 +11,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 /// Displays detailed information about a SampleItem.
 class UserInfoPage extends StatefulWidget {
+  final String token;
   final String userID;
-  const UserInfoPage({Key? key, required this.userID}) : super(key: key);
+  const UserInfoPage({Key? key, required this.token, required this.userID})
+      : super(key: key);
 
   @override
   UserInfoPageState createState() => UserInfoPageState();
@@ -29,9 +31,11 @@ class UserInfoPageState extends State<UserInfoPage> {
   String? _selectedGradDate;
   File? _imageFile;
 
-  void addInfoToUser(BuildContext context, String userID) async {
+  void addInfoToUser(BuildContext context, String token, String userID) async {
+    
     print('User ID: $userID');
-
+    print('Token: $token');
+    
     // Check if an image is uploaded and handle accordingly
     String base64Image = '';
     if (_imageFile != null) {
@@ -56,12 +60,17 @@ class UserInfoPageState extends State<UserInfoPage> {
             : null
       };
       print("major selected and body created");
-      print(regBody);
+      print("Regbody: $regBody");
 
       try {
-        var response = await http.put(Uri.parse('$updateUser/$userID'),
-            headers: {"Content-Type": "application/json"},
-            body: jsonEncode(regBody));
+        var response = await http.put(
+        Uri.parse('$updateUser'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: jsonEncode(regBody)
+      );
 
         print('Response body: ${response.body}');
         var jsonResponse = jsonDecode(response.body);
@@ -73,7 +82,7 @@ class UserInfoPageState extends State<UserInfoPage> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => InterestsPage(userID: userID)));
+                  builder: (context) => InterestsPage(token: token, userID: userID)));
         } else {
           print("Something went wrong");
         }
@@ -166,7 +175,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             buildTextArea(),
             LoginPageState.buildMainButton("Next", context,
                 (BuildContext context) {
-              addInfoToUser(context, widget.userID);
+              addInfoToUser(context, widget.token, widget.userID);
             }),
           ],
         ),

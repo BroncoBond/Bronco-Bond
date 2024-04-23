@@ -54,7 +54,9 @@ const List<String> interests = [
 
 class InterestsPage extends StatefulWidget {
   final String userID;
-  const InterestsPage({Key? key, required this.userID}) : super(key: key);
+  final String token;
+  const InterestsPage({Key? key, required this.token, required this.userID})
+      : super(key: key);
 
   @override
   InterestsPageState createState() => InterestsPageState();
@@ -64,12 +66,16 @@ class InterestsPageState extends State<InterestsPage> {
   List<String> userInterests = [];
   TextEditingController interestsController = TextEditingController();
 
-  void addInterestsToUser(BuildContext context, String userID) async {
+  void addInterestsToUser(
+      BuildContext context, String token, String userID) async {
     var regBody = {"_id": userID, "interests": userInterests};
 
     try {
-      var response = await http.put(Uri.parse('$updateInterests/$userID'),
-          headers: {"Content-Type": "application/json"},
+      var response = await http.put(Uri.parse('$updateInterests'),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
           body: jsonEncode(regBody));
 
       print('Response body: ${response.body}');
@@ -80,8 +86,8 @@ class InterestsPageState extends State<InterestsPage> {
 
       if (jsonResponse['status']) {
         print('Added interests: $regBody');
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const LoginPage()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const LoginPage()));
       } else {
         print("Something went wrong");
       }
@@ -167,7 +173,7 @@ class InterestsPageState extends State<InterestsPage> {
             buildCustomInterest(interestsController),
             LoginPageState.buildMainButton("Next", context,
                 (BuildContext context) {
-              addInterestsToUser(context, widget.userID);
+              addInterestsToUser(context, widget.token, widget.userID);
             }),
           ], //column children
         ),
