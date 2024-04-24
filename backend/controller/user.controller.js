@@ -47,7 +47,7 @@ exports.register = async (req, res, next) => {
         // Log the success response
         console.log("User registered successfully:", newUser);
 
-        res.json({ status: true, success: "User Registered Successfully"});
+        res.json({ status: true, success: "User Registered Successfully", _id: newUser._id, token: token});
     } catch (error) {
         console.log("Error occurred: " + error.message);
 
@@ -123,7 +123,7 @@ exports.searchUserByUsername = async (req, res) => {
     // Extract the username from the request query
     try {
         const extractedToken = await extractAndDecodeToken(req);
-        const currentUserId = extractedToken.data._id;
+        const currentUserId = extractedToken.data;
         console.log(currentUserId);
         const { username } = req.query;
 
@@ -159,7 +159,7 @@ exports.searchUserByUsername = async (req, res) => {
 
 exports.getBondList = async (req, res) => {
     try {
-        const currentUserId = (await extractAndDecodeToken(req)).data._id;
+        const currentUserId = (await extractAndDecodeToken(req)).data;
         const currentUserBonds = await User.findById(currentUserId).select('bonds');
         return res.status(200).json({ bonds: currentUserBonds.bonds });
     } catch (error) {
@@ -169,7 +169,7 @@ exports.getBondList = async (req, res) => {
 }
 
 exports.getById = async (req, res) => {
-    const currentUserId = (await extractAndDecodeToken(req)).data._id;
+    const currentUserId = (await extractAndDecodeToken(req)).data;
     const bodyId = req.body._id;
     let user;
     try {
@@ -210,7 +210,7 @@ exports.getAllUserData = async (req, res) => {
 exports.updateUserInfo = async (req, res) => {
     try {
         const currentUser = await extractAndDecodeToken(req);
-        const tokenUserId = currentUser.data._id;
+        const tokenUserId = currentUser.data;
         const givenUserId = req.body._id;
 
         const tokenUser = await User.findById(tokenUserId).select("isAdmin");
@@ -264,7 +264,7 @@ exports.updateUserInfo = async (req, res) => {
 exports.updateUserInterests = async (req, res) => {
     try {
         const currentUser = await extractAndDecodeToken(req);
-        const tokenUserId = currentUser.data._id;
+        const tokenUserId = currentUser.data;
         const givenUserId = req.body._id;
 
         const tokenUser = await User.findById(tokenUserId).select("isAdmin");
@@ -303,7 +303,7 @@ exports.updateUserInterests = async (req, res) => {
 exports.deleteAccount = async (req, res) => {
     try {
         const currentUser = await extractAndDecodeToken(req);
-        const tokenUserId = currentUser.data._id;
+        const tokenUserId = currentUser.data;
         const givenUserId = req.body._id;
 
         const tokenUser = await User.findById(tokenUserId).select("isAdmin");
@@ -363,7 +363,7 @@ exports.deleteAccount = async (req, res) => {
 
 // This function is used to send a request to recipient
 exports.sendBondRequest = async (req, res) => {
-    const senderId = (await extractAndDecodeToken(req)).data._id;
+    const senderId = (await extractAndDecodeToken(req)).data;
     const recipientId = req.body._id;
 
     if (recipientId !== senderId) {
@@ -396,7 +396,7 @@ exports.sendBondRequest = async (req, res) => {
 }
 
 exports.acceptBondRequest = async(req, res) => {
-    const recipientId = (await extractAndDecodeToken(req)).data._id;
+    const recipientId = (await extractAndDecodeToken(req)).data;
     const senderId = req.body._id;
 
     if (senderId !== recipientId) {
@@ -425,7 +425,7 @@ exports.acceptBondRequest = async(req, res) => {
 }
 
 exports.declineBondRequest = async(req, res) => {
-    const recipientId = (await extractAndDecodeToken(req)).data._id;
+    const recipientId = (await extractAndDecodeToken(req)).data;
     const senderId = req.body._id;
 
     if (recipientId !== senderId) {
@@ -463,7 +463,7 @@ exports.declineBondRequest = async(req, res) => {
 
 exports.revokeBondRequest = async (req, res) => {
     try {
-        const senderId = (await extractAndDecodeToken(req)).data._id;
+        const senderId = (await extractAndDecodeToken(req)).data;
         const sender = await User.findById(senderId);
         const recipient = await User.findById(req.body._id);
 
@@ -490,7 +490,7 @@ exports.revokeBondRequest = async (req, res) => {
 
 // This function is used to unfriend another user's account
 exports.unBondUser = async (req, res) => {
-    const currentUserId = (await extractAndDecodeToken(req)).data._id;
+    const currentUserId = (await extractAndDecodeToken(req)).data;
     const targetUserId = req.body._id;
 
     try {
@@ -538,7 +538,7 @@ exports.logout = async (req, res) => {
             }
 
             // Find the user in the database
-            const user = await User.findOne({ _id: decoded.data._id, tokens: { $elemMatch: { token: token } } });
+            const user = await User.findOne({ _id: decoded.data, tokens: { $elemMatch: { token: token } } });
 
             if (!user) {
                 return res.status(400).json({ status: false, message: 'Tokens do not match!' });
