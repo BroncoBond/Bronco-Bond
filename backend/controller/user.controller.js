@@ -36,7 +36,8 @@ exports.register = async (req, res, next) => {
 
         try {
             token = await generater.generateToken(newUser._id,res, '7d');
-            console.log("Token generated and cookie set");
+            await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
+            console.log("Token generated and Stored");
         } catch (err) {
             console.log("Error generating token");
             // If generating the token fails, delete the user
@@ -104,7 +105,7 @@ exports.login = async(req,res,next)=>{
             token = await generater.generateToken(tokenData, res)
         }
         // Replace the user's existing tokens with new token
-        console.log(token);
+        console.log(token.data);
         await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
 
         // If the token was successfully generated, return a 200 status with the token
@@ -122,6 +123,7 @@ exports.searchUserByUsername = async (req, res) => {
     
     // Extract the username from the request query
     try {
+
         const extractedToken = await extractAndDecodeToken(req);
         const currentUserId = extractedToken.data;
         console.log(currentUserId);
