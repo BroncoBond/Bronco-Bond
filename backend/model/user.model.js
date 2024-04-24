@@ -80,6 +80,10 @@ const userSchema = new Schema({
             max: 50,
             default:"Im new BroncoBond!"
         },
+        clubList: {
+            type: [String],
+            default:[]
+        },
         graduationDate: {
             type: Date,
             default: (() => {
@@ -87,6 +91,10 @@ const userSchema = new Schema({
             futureDate.setFullYear(futureDate.getFullYear() + 4);
             return futureDate;
             })()
+        },
+        is_online: {
+            type: String,
+            defualt: '0'
         },
         tokens: [{ type: Object }]
     }, {timestamps:true} 
