@@ -1,60 +1,16 @@
+import 'package:bronco_bond/src/school_data.dart';
 import 'package:bronco_bond/src/screens/login_page.dart';
+import 'package:bronco_bond/src/screens/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:bronco_bond/src/config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const List<String> interests = [
-  "Engineering",
-  "Biology",
-  "English",
-  "Math",
-  "Chemistry",
-  "Physics",
-  "Information Technology",
-  "Sociology",
-  "Psychology",
-  "Computer Science",
-  "Hospitality",
-  "Animal Science",
-  "Education",
-  "Football",
-  "Soccer",
-  "Swimming",
-  "Baseball",
-  "Basketball",
-  "Esports",
-  "Snow Sports",
-  "Badminton",
-  "Volleyball",
-  "Tennis",
-  "Rowing",
-  "Drawing",
-  "Singing",
-  "Gardening",
-  "Gym",
-  "Fraternity",
-  "Sorority",
-  "Digital Art",
-  "Archery",
-  "Cooking",
-  "Baking",
-  "Eating",
-  "Gaming",
-  "Movies",
-  "Studying",
-  "Watching TV",
-  "Anime",
-  "Chinese",
-  "German",
-  "Spanish",
-  "Korean",
-];
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InterestsPage extends StatefulWidget {
-  final String userID;
-  const InterestsPage({Key? key, required this.userID}) : super(key: key);
+  const InterestsPage({super.key});
 
   @override
   InterestsPageState createState() => InterestsPageState();
@@ -63,16 +19,33 @@ class InterestsPage extends StatefulWidget {
 class InterestsPageState extends State<InterestsPage> {
   List<String> userInterests = [];
   TextEditingController interestsController = TextEditingController();
+  late SharedPreferences prefs;
 
-  void addInterestsToUser(BuildContext context, String userID) async {
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  void addInterestsToUser(BuildContext context) async {
+    String? token = prefs.getString('token');
+    print('user token: $token');
+    var userID = getUserIDFromToken(token!);
+
     var regBody = {"_id": userID, "interests": userInterests};
 
     try {
-      var response = await http.put(Uri.parse('$updateInterests/$userID'),
-          headers: {"Content-Type": "application/json"},
+      var response = await http.put(Uri.parse(updateInterests),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
           body: jsonEncode(regBody));
 
-      print('Response body: ${response.body}');
       var jsonResponse = jsonDecode(response.body);
 
       print("http request made");
@@ -80,8 +53,8 @@ class InterestsPageState extends State<InterestsPage> {
 
       if (jsonResponse['status']) {
         print('Added interests: $regBody');
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const LoginPage()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const LoginPage()));
       } else {
         print("Something went wrong");
       }
@@ -167,7 +140,7 @@ class InterestsPageState extends State<InterestsPage> {
             buildCustomInterest(interestsController),
             LoginPageState.buildMainButton("Next", context,
                 (BuildContext context) {
-              addInterestsToUser(context, widget.userID);
+              addInterestsToUser(context);
             }),
           ], //column children
         ),
