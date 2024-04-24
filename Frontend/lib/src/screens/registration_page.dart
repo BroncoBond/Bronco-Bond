@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Displays detailed information about a SampleItem.
 class RegisterPage extends StatefulWidget {
@@ -21,6 +22,17 @@ class RegisterPageState extends State<RegisterPage> {
   TextEditingController confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  late SharedPreferences prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
 
   void registerUser(BuildContext context) async {
     if (emailController.text.isNotEmpty &&
@@ -41,17 +53,13 @@ class RegisterPageState extends State<RegisterPage> {
 
           if (response.body.isNotEmpty) {
             var jsonResponse = jsonDecode(response.body);
-
-            print(jsonResponse['status']);
-            print('Response body: ${response.body}');
-
+            print(jsonResponse);
             if (jsonResponse['status']) {
-              var userID = jsonResponse['_id'];
-              print('User ID: $userID');
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => UserInfoPage(userID: userID)));
+              var token = jsonResponse['token'];
+              prefs.setString('token', token);
+
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => UserInfoPage()));
             } else {
               LoginPageState.buildDialog(context, "Registration failed!",
                   "Account with this email or username already exists.");

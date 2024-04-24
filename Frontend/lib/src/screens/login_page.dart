@@ -1,5 +1,6 @@
 import 'package:bronco_bond/src/screens/forgot_password.dart';
 import 'package:bronco_bond/src/screens/registration_page.dart';
+import 'package:bronco_bond/src/screens/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
@@ -53,16 +54,16 @@ class LoginPageState extends State<LoginPage> {
           Map<String, dynamic> jsonResponse = jsonDecode(response.body);
           print(jsonResponse);
           if (jsonResponse['status']) {
-            var myToken = jsonResponse['token'];
-            var myUserID = getUserIDFromToken(myToken);
+            var token = jsonResponse['token'];
+            var userID = getUserIDFromToken(token);
 
-            prefs.setString('token', myToken);
-            prefs.setString('userID', myUserID);
+            prefs.setString('token', token);
+            prefs.setString('userID', userID);
 
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => BottomNavBar(userID: myUserID),
+                builder: (context) => BottomNavBar(userID: userID),
               ),
             );
           } else {
@@ -88,17 +89,7 @@ class LoginPageState extends State<LoginPage> {
           "Email or password is empty. Please try again.");
     }
   }
-
-  String getUserIDFromToken(String token) {
-    try {
-      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-      return decodedToken['data']['_id'];
-    } catch (e) {
-      print('Error decoding token: $e');
-      return '';
-    }
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
