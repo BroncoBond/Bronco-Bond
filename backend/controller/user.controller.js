@@ -36,7 +36,7 @@ exports.register = async (req, res, next) => {
 
         try {
             token = await generater.generateToken(newUser._id,res, '7d');
-            await User.findByIdAndUpdate(user._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
+            await User.findByIdAndUpdate(newUser._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
             console.log("Token generated and Stored");
         } catch (err) {
             console.log("Error generating token");
