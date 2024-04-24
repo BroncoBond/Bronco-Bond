@@ -36,7 +36,7 @@ exports.register = async (req, res, next) => {
         
         try {
             let tokenData = {_id:newUser._id};
-            token = await generater.generateToken(newUser._id,res, '7d');
+            token = await generater.generateToken(newUser._id,res, '10m');
             await User.findByIdAndUpdate(tokenData, {tokens: [{ token, signedAt: Date.now().toString() }]});
             console.log("Token generated and Stored");
         } catch (err) {
@@ -101,7 +101,7 @@ exports.login = async(req,res,next)=>{
         // Generate the token
         if (!staySignedIn)
         {
-            token = await generater.generateToken(tokenData, res, '10m')
+            token = await generater.generateToken(tokenData, res, '1h')
         } else {
             token = await generater.generateToken(tokenData, res)
         }
