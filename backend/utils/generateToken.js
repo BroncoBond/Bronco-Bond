@@ -1,7 +1,7 @@
 const jwt = require(`jsonwebtoken`);
 
 class generateToken {
-    static async generateToken(data, res, expiresIn = "15d") {
+    static async generateToken(data, res, expiresIn = "7d") {
         try {
             const token = jwt.sign({ data }, process.env.JWT_KEY, {
                 expiresIn,
