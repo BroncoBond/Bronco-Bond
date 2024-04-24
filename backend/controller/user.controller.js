@@ -36,9 +36,9 @@ exports.register = async (req, res, next) => {
         
         try {
             let tokenData = {_id:newUser._id};
-            token = await generater.generateToken(newUser._id,res, '10m');
+            token = await generater.generateToken(tokenData,res, '10m');
             await User.findByIdAndUpdate(tokenData, {tokens: [{ token, signedAt: Date.now().toString() }]});
-            console.log("Token generated and Stored");
+
         } catch (err) {
             console.log("Error generating token");
             // If generating the token fails, delete the user
