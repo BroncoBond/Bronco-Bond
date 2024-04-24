@@ -130,7 +130,7 @@ class UserProfileState extends State<UserProfile>
     }
   }
 
-  void sendRequest(String userID, String? currentUserID) async {
+  void sendRequest(String userID) async {
     String? token = prefs.getString('token');
     // User id of the person you want to follow in the body
     var regBody = {"_id": userID};
@@ -154,7 +154,7 @@ class UserProfileState extends State<UserProfile>
     }
   }
 
-  void unbond(String userID, String? currentUserID) async {
+  void unbond(String userID) async {
     String? token = prefs.getString('token');
     // User id of the person you want to follow in the body
     var regBody = {"_id": userID};
@@ -172,6 +172,30 @@ class UserProfileState extends State<UserProfile>
       print('Unfollowed user: $userID');
       setState(() {
         isBonded = false;
+        isRequested = false;
+      });
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+  }
+
+  void revokeRequest(String userID) async {
+    String? token = prefs.getString('token');
+    // User id of the person you want to follow in the body
+    var regBody = {"_id": userID};
+
+    try {
+      var response = await http.put(Uri.parse(revokeBondRequest),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token"
+          },
+          body: jsonEncode(regBody));
+
+      print(response.body);
+
+      print('Revoked bond request to user: $userID');
+      setState(() {
         isRequested = false;
       });
     } catch (e) {
@@ -667,13 +691,11 @@ class UserProfileState extends State<UserProfile>
       child: ElevatedButton(
         onPressed: () {
           if (isBonded) {
-            unbond(userID, currentUserID);
+            unbond(userID);
           } else if (isRequested) {
-            setState(() {
-              isRequested = false;
-            });
+            revokeRequest(userID);
           } else {
-            sendRequest(userID, currentUserID);
+            sendRequest(userID);
           }
         },
         style: ElevatedButton.styleFrom(
