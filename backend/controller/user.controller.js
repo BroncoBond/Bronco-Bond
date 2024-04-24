@@ -33,10 +33,11 @@ exports.register = async (req, res, next) => {
 
         const newUser = await UserService.registerUser(email, username, password);
         console.log('User created:');
-
+        
         try {
+            let tokenData = {_id:newUser._id};
             token = await generater.generateToken(newUser._id,res, '7d');
-            await User.findByIdAndUpdate(newUser._id, {tokens: [{ token, signedAt: Date.now().toString() }]});
+            await User.findByIdAndUpdate(tokenData, {tokens: [{ token, signedAt: Date.now().toString() }]});
             console.log("Token generated and Stored");
         } catch (err) {
             console.log("Error generating token");
