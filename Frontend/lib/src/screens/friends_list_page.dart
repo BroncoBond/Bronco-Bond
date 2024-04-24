@@ -228,6 +228,38 @@ class FriendsListPageState extends State<FriendsListPage> {
     }
   }
 
+  void revokeRequest(String userID) async {
+    String? token = prefs.getString('token');
+    // User id of the person you want to follow in the body
+    var regBody = {"_id": userID};
+
+    try {
+      var response = await http.put(Uri.parse(revokeBondRequest),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token"
+          },
+          body: jsonEncode(regBody));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Bond request revoked.'),
+          duration: const Duration(seconds: 2),
+          backgroundColor: const Color(0xff3B5F43),
+        ),
+      );
+      print('Revoked bond request to user: $userID');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error revoking request.'),
+          duration: const Duration(seconds: 2),
+          backgroundColor: const Color(0xff3B5F43),
+        ),
+      );
+      print('Error fetching user data: $e');
+    }
+  }
+
   void navigateToUserProfile(String userID) {
     Navigator.push(
       context,
@@ -535,6 +567,7 @@ class FriendsListPageState extends State<FriendsListPage> {
               final userData = snapshot.data![index];
               final profilePicture = userData['user']['profilePicture'];
               final username = userData['user']['username'];
+              final userID = userData['user']['_id'];
               return MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: InkWell(
@@ -559,6 +592,13 @@ class FriendsListPageState extends State<FriendsListPage> {
                                 as ImageProvider,
                       ),
                       title: Text(username ?? 'Unknown'),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        color: Colors.black,
+                        onPressed: () {
+                          revokeRequest(userID);
+                        },
+                      ),
                     ),
                   ),
                 ),
