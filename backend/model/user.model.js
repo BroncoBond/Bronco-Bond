@@ -85,11 +85,10 @@ const userSchema = new Schema({
             default:[]
         },
         graduationDate: {
-            type: Date,
+            type: Number,
             default: (() => {
-            let futureDate = new Date();
-            futureDate.setFullYear(futureDate.getFullYear() + 4);
-            return futureDate;
+                let currentYear = new Date().getFullYear();
+                return currentYear + 4;
             })()
         },
         is_online: {
