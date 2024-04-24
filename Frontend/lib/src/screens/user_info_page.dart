@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:bronco_bond/src/screens/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:bronco_bond/src/config.dart';
 import 'package:http/http.dart' as http;
@@ -8,11 +9,12 @@ import 'package:bronco_bond/src/screens/login_page.dart';
 import 'package:bronco_bond/src/school_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Displays detailed information about a SampleItem.
 class UserInfoPage extends StatefulWidget {
-  final String userID;
-  const UserInfoPage({Key? key, required this.userID}) : super(key: key);
+  const UserInfoPage({super.key});
 
   @override
   UserInfoPageState createState() => UserInfoPageState();
@@ -28,9 +30,21 @@ class UserInfoPageState extends State<UserInfoPage> {
   String? _selectedMinor;
   String? _selectedGradDate;
   File? _imageFile;
+  late SharedPreferences prefs;
 
-  void addInfoToUser(BuildContext context, String userID) async {
-    print('User ID: $userID');
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  void addInfoToUser(BuildContext context) async {
+    String? token = prefs.getString('token');
+    var userID = getUserIDFromToken(token!);
 
     // Check if an image is uploaded and handle accordingly
     String base64Image = '';
@@ -59,21 +73,21 @@ class UserInfoPageState extends State<UserInfoPage> {
       print(regBody);
 
       try {
-        var response = await http.put(Uri.parse('$updateUser/$userID'),
-            headers: {"Content-Type": "application/json"},
+        var response = await http.put(Uri.parse(updateUser),
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer $token",
+            },
             body: jsonEncode(regBody));
 
         print('Response body: ${response.body}');
         var jsonResponse = jsonDecode(response.body);
 
         print("http request made");
-        print(jsonResponse['status']);
 
         if (jsonResponse['status']) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => InterestsPage(userID: userID)));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => InterestsPage()));
         } else {
           print("Something went wrong");
         }
@@ -166,7 +180,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             buildTextArea(),
             LoginPageState.buildMainButton("Next", context,
                 (BuildContext context) {
-              addInfoToUser(context, widget.userID);
+              addInfoToUser(context);
             }),
           ],
         ),

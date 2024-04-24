@@ -33,11 +33,9 @@ class InterestsPageState extends State<InterestsPage> {
 
   void addInterestsToUser(BuildContext context) async {
     String? token = prefs.getString('token');
-    print('user token: $token');
     var userID = getUserIDFromToken(token!);
 
     var regBody = {"_id": userID, "interests": userInterests};
-
     try {
       var response = await http.put(Uri.parse(updateInterests),
           headers: {
@@ -49,7 +47,7 @@ class InterestsPageState extends State<InterestsPage> {
       var jsonResponse = jsonDecode(response.body);
 
       print("http request made");
-      print(jsonResponse['status']);
+      print(jsonResponse);
 
       if (jsonResponse['status']) {
         print('Added interests: $regBody');
