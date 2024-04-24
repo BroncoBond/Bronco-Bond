@@ -70,7 +70,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             : null
       };
       print("major selected and body created");
-      print(regBody);
+      print("Regbody: $regBody");
 
       try {
         var response = await http.put(Uri.parse(updateUser),
