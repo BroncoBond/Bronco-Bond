@@ -146,7 +146,27 @@ class HomePageState extends State<HomePage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text('Welcome $username!'),
+              child: RichText(
+                text: TextSpan(
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Welcome ',
+                      style: TextStyle(
+                        fontSize: 17.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                    TextSpan(
+                      text: '$username!',
+                      style: TextStyle(
+                        fontSize: 17.0,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF3B5F43),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             Expanded(
               child: TabBarView(
