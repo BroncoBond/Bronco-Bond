@@ -142,7 +142,7 @@ class HomePageState extends State<HomePage> {
             unselectedLabelColor: Colors.white,
             indicatorWeight: 3,
             tabs: [
-              Tab(text: 'Communities'),
+              Tab(text: 'For You'),
               Tab(text: 'My Bonds'),
             ],
           ),
@@ -177,7 +177,7 @@ class HomePageState extends State<HomePage> {
             Expanded(
               child: TabBarView(
                 children: [
-                  buildTabContent('Tab 1'),
+                  buildTabContentForYou('Tab 1'),
                   buildBondsTab(bonds),
                 ],
               ),
@@ -211,6 +211,92 @@ class HomePageState extends State<HomePage> {
         },
       ),
     );
+  }
+
+    Widget buildTabContentForYou(String tabName) {
+    return ListView(
+      children: [
+        buildCardForYou(
+            tabName,
+            'Study Abroad 101',
+            'Office of Study Abroad',
+            'Thursday, April 25 2024 at 12:00',
+            'Online',
+            'assets/images/Abroad.png'),
+        buildCardForYou(
+            tabName,
+            'Library Therapy Dogs',
+            'University Library',
+            'Thursday, April 25 2024 at 3:00 PM',
+            'University Library, 2nd Floor, Bronco Community Zone',
+            'assets/images/Dog.png'),
+        buildCardForYou(
+            tabName,
+            'eSports Tournament feat. Rocket League',
+            'Associated Students Incorparated',
+            'Friday, April 26 2024 at 1:00 PM PDT',
+            'Games Room Etc.',
+            'assets/images/Esport.png'),
+        // Add more cards as needed
+      ],
+    );
+  }
+
+    Widget buildCardForYou(String tabName, String cardName, String Organization, String Date,
+      String location, String assetPath) {
+      return Card(
+        margin: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Container(
+              width: 500.0, // set width
+              height: 200.0, // set height
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 1),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15.0),
+                  topRight: Radius.circular(15.0),
+                ),// set border color and width
+              ),
+              child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12.0),
+                topRight: Radius.circular(12.0),
+              ),
+                child: Image.asset(assetPath, fit: BoxFit.cover),
+              ),
+            ),
+            ListTile(
+              title: RichText(
+                text: TextSpan(
+                  text: cardName,
+                  style: DefaultTextStyle.of(context)
+                      .style
+                      .copyWith(fontWeight: FontWeight.bold),
+                  children: <TextSpan>[
+                    TextSpan(
+                        text: '\nOrganization: ',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextSpan(text: '$Organization', style: TextStyle(fontWeight: FontWeight.normal)),
+                    TextSpan(
+                        text: '\nDate: ',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextSpan(text: '$Date', style: TextStyle(fontWeight: FontWeight.normal)),
+                    TextSpan(
+                        text: '\nLocation: ',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextSpan(text: location, style: TextStyle(fontWeight: FontWeight.normal)),
+                  ],
+                ),
+              ),
+              onTap: () {
+                // Handle card tap
+                print('Tapped on $cardName in $tabName');
+              },
+            ),
+          ],
+        ),
+      );
   }
 
   Widget buildBondsTab(List<dynamic> bonds) {
