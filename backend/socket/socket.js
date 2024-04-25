@@ -32,9 +32,9 @@ io.on("connection", (socket)=> {
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
 
-    socket.on("sendMessage", async (data, callback) => {
-        const { receiverId, messageContent } = data;
-        const senderId = socket.userId;
+    socket.on("sendMessage", async (data) => {
+        const { senderId, receiverId, messageContent } = data;
+        // const senderId = socket.userId;
 
         try {
             const newMessage = await messageController.sendMessage(senderId, receiverId, messageContent);
@@ -44,9 +44,9 @@ io.on("connection", (socket)=> {
                 io.to(receiverSocketId).emit("newMessage", newMessage);
             }
 
-            callback(null, newMessage);
+            socket.emit('sendMessageResponse', { status: 'sent' });
         } catch (err) {
-            callback(err);
+            socket.emit('sendMessageResponse', { status: 'failed', error: err.message });
         }
     });
 
