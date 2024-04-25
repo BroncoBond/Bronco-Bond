@@ -1,12 +1,12 @@
-const User = require('../model/user.model')
-const jwt = require(`jsonwebtoken`);
+const User = require("../model/user.model")
+const jwt = require('jsonwebtoken');
+const generateToken = require("../utils/generateToken");
 
 class UserService{
     static async registerUser(email, username, password) {
         const createUser = new User({ email, username, password });
         try {
             const newUser = await createUser.save();
-
             // Log the newly created user
             console.log('User registered:', newUser);
 
@@ -76,44 +76,6 @@ class UserService{
         } catch (error) {
             console.log(error);
             return { status: 500, message: error };
-        }
-    }
-
-/*     static async searchUserByUsername(username, secretKey, jwt_expre) {
-    try {
-        const user = await User.findOne({ username });
-
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        const tokenData = {
-            _id: user._id,
-            email: user.email,
-            username: user.username
-        };
-
-        const token = jwt.sign(tokenData, secretKey, { expiresIn: jwt_expre });
-
-        return { user, token };
-    } catch (error) {
-        throw error;
-    }
-} */
-
-    static async generateToken(data,secretKey, jwt_expre) {
-        try {
-            return jwt.sign(data, secretKey, {expiresIn:jwt_expre});
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    static async generateToken(data, secretKey) {
-        try {
-            return jwt.sign(data, secretKey, {expiresIn:'10d'});
-        } catch (error) {
-            throw error;
         }
     }
 }

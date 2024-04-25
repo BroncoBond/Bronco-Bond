@@ -1,4 +1,0 @@
-{
-    "appService.defaultWebAppToDeploy": "/subscriptions/912428f2-443f-43a9-a98d-9b8578949d34/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/BroncoBondWebApp",
-    "appService.deploySubpath": "."
-}

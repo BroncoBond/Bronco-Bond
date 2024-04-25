@@ -31,8 +31,7 @@ const userSchema = new Schema({
             default: '0'
         },
         fullName:{
-            type:String,
-            lowercase:true
+            type:String
         },
         prefName:{
             type:String
@@ -80,13 +79,23 @@ const userSchema = new Schema({
             max: 50,
             default:"Im new BroncoBond!"
         },
+        clubList: {
+            type: [String],
+            default:[]
+        },
         graduationDate: {
             type: String,
-            default: new Date().getFullYear()
+            default: (() => {
+                let currentYear = new Date().getFullYear();
+                return (currentYear + 4).toString();
+            })()
+        },
+        is_online: {
+            type: String,
+            default: '0'
         },
         tokens: [{ type: Object }]
-    },
-    {timestamps:true}
+    }, {timestamps:true} 
 );
 
 userSchema.pre('save', async function(next) {
