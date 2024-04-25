@@ -31,8 +31,7 @@ const userSchema = new Schema({
             default: '0'
         },
         fullName:{
-            type:String,
-            lowercase:true
+            type:String
         },
         prefName:{
             type:String
