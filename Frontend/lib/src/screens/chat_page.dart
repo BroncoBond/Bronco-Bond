@@ -18,8 +18,11 @@ class ChatPageState extends State<ChatPage> {
   bool isOutgoingMessage = true;
   late SharedPreferences prefs;
   late String username = '';
+  List<Map<String, dynamic>> messages = [];
   late Future<SharedPreferences> prefsFuture;
+  String? currentUserID;
   IO.Socket? socket;
+  TextEditingController messageController = TextEditingController();
 
   @override
   void initState() {
@@ -29,9 +32,10 @@ class ChatPageState extends State<ChatPage> {
       prefs = value;
       // Get user data using the userID
       fetchDataUsingUserID(widget.userID);
+      currentUserID = prefs.getString('userID');
 
       // Connect to Socket.io server
-      // connectToSocket();
+      connectToSocket();
     });
   }
 
@@ -77,9 +81,60 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void connectToSocket() {
-    socket = IO.io(
-      url,
-    );
+    socket = IO.io(url, <String, dynamic>{
+      'transports': ['websocket'],
+      'query': {'userId': widget.userID},
+    });
+
+    socket!.connect();
+
+    // Listen to the 'connect' event
+    socket!.onConnect((_) {
+      print('Connected to Socket.io server');
+      // Join a room or emit an event if needed
+      // socket!.emit('join', widget.userID);
+    });
+
+    // List to the 'chat message' event
+    socket!.on('newMessage', (data) {
+      print('Received message: $data');
+      setState(() {
+        messages.add(data);
+      });
+    });
+  }
+
+  void sendMessage(String message) {
+    String? senderID = currentUserID;
+    String receiverID = widget.userID;
+
+    print('Sending message with data: {'
+        'senderId: $senderID, '
+        'receiverId: $receiverID, '
+        'messageContent: $message'
+        '}');
+
+    if (socket != null && socket!.connected) {
+      socket!.emit('sendMessage', {
+        'senderId': senderID,
+        'receiverId': receiverID,
+        'messageContent': message,
+      });
+      // Listen for the server's acknowledgment
+      socket!.once('sendMessageAck', (data) {
+        if (data['error'] != null) {
+          print('Error sending message: ${data['error']}');
+        } else {
+          print('Message sent: $data');
+          setState(() {
+            messages.add({
+              'messageContent': message,
+              'senderId': senderID,
+            });
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -113,41 +168,61 @@ class ChatPageState extends State<ChatPage> {
         children: [
           Expanded(
             child: ListView.builder(
-                itemCount: 20,
+                itemCount: messages.length,
                 itemBuilder: (context, index) {
-                  bool isOutgoing = index % 2 == 0;
+                  bool isOutgoing =
+                      messages[index]['senderId'] == currentUserID;
                   return MessageBubble(
                     isOutgoing: isOutgoing,
-                    message: 'Message $index',
+                    message: messages[index]['message'] ?? '',
                   );
                 }),
           ),
-          buildMessageField()
+          buildMessageField(messageController)
         ],
       ),
     );
   }
 
-  Widget buildMessageField() {
+  Widget buildMessageField(TextEditingController textController) {
+    String message = '';
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
-        decoration: InputDecoration(
-          hintText: 'Message...',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Color(0xffABABAB)),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextFormField(
+              controller: textController,
+              onChanged: (value) => message = value,
+              onFieldSubmitted: (value) {
+                if (value.isNotEmpty) {
+                  sendMessage(value);
+                  messageController.clear();
+                }
+              },
+              decoration: InputDecoration(
+                hintText: 'Message...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: const BorderSide(color: Color(0xffABABAB)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: const BorderSide(color: Color(0xFF3B5F43))),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              ),
+            ),
           ),
-          focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: const BorderSide(color: Color(0xFF3B5F43))),
-          suffixIcon: IconButton(
-            onPressed: () {},
+          IconButton(
+            onPressed: () {
+              sendMessage(message);
+              messageController.clear();
+            },
             icon: const Icon(Icons.send_rounded, color: Color(0xff3B5F43)),
           ),
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-        ),
+        ],
       ),
     );
   }
@@ -158,6 +233,7 @@ class MessageBubble extends StatelessWidget {
   final String message;
 
   const MessageBubble({
+    super.key,
     required this.isOutgoing,
     required this.message,
   });
@@ -167,32 +243,24 @@ class MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Row(
+        mainAxisAlignment:
+            isOutgoing ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          Expanded(
-            child: FractionallySizedBox(
-              widthFactor: 0.6,
-              alignment:
-                  isOutgoing ? Alignment.centerRight : Alignment.centerLeft,
-              child: Container(
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: isOutgoing
-                      ? const Color(0xFF3B5F43)
-                      : const Color(0xFFD9D9D9),
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: const Color(0xFFABABAB)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      message,
-                      style: TextStyle(
-                          color: isOutgoing ? Colors.white : Colors.black),
-                    ),
-                  ],
-                ),
-              ),
+          Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.6,
+            ),
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: isOutgoing
+                  ? const Color(0xFF3B5F43)
+                  : const Color(0xFFD9D9D9),
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: const Color(0xFFABABAB)),
+            ),
+            child: Text(
+              message,
+              style: TextStyle(color: isOutgoing ? Colors.white : Colors.black),
             ),
           ),
         ],
