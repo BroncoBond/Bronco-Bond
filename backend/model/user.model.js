@@ -85,10 +85,10 @@ const userSchema = new Schema({
             default:[]
         },
         graduationDate: {
-            type: Number,
+            type: String,
             default: (() => {
                 let currentYear = new Date().getFullYear();
-                return currentYear + 4;
+                return (currentYear + 4).toString();
             })()
         },
         is_online: {
