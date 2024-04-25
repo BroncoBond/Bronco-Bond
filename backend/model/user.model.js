@@ -31,8 +31,7 @@ const userSchema = new Schema({
             default: '0'
         },
         fullName:{
-            type:String,
-            lowercase:true
+            type:String
         },
         prefName:{
             type:String
@@ -93,7 +92,7 @@ const userSchema = new Schema({
         },
         is_online: {
             type: String,
-            defualt: '0'
+            default: '0'
         },
         tokens: [{ type: Object }]
     }, {timestamps:true} 
