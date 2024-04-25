@@ -1,7 +1,7 @@
+import 'package:bronco_bond/src/screens/chat_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bronco_bond/src/screens/search_page.dart';
 import 'package:bronco_bond/src/screens/home_page.dart';
-import 'package:bronco_bond/src/screens/chat_page.dart';
 import 'package:bronco_bond/src/screens/events_page.dart';
 import 'package:bronco_bond/src/screens/user_profile_page.dart';
 
@@ -26,7 +26,7 @@ class BottomNavBarState extends State<BottomNavBar> {
           HomePage(
             userID: widget.userID,
           ),
-          const ChatPage(),
+          ChatListPage(userID: widget.userID),
           const SearchPage(),
           const EventsPage(),
           UserProfile(userID: widget.userID)
