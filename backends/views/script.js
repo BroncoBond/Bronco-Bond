@@ -1,9 +1,9 @@
 
 document.getElementById('clickMeButton').addEventListener('click', function() {
-    fetch('http://localhost:8080/api/website/incrementTotalClick', {
+    fetch('https://BroncoBond.com/api/website/incrementTotalClick', {
       method: 'POST', 
     })
-    .then(() => fetch('http://localhost:8080/api/website/getTotalClick'))
+    .then(() => fetch('https://BroncoBond.com/api/website/getTotalClick'))
     .then(response => response.json())
     .then(data => {
       document.getElementById('totalClicks').textContent = 'Global Click Count: ' + data.totalClickCount;
@@ -14,7 +14,7 @@ document.getElementById('clickMeButton').addEventListener('click', function() {
   });
 
 window.onload = function() {
-    fetch('http://localhost:8080/api/website/getTotalClick')
+    fetch('https://BroncoBond.com/api/website/getTotalClick')
       .then(response => response.json())
       .then(data => {
         document.getElementById('totalClicks').textContent += data.totalClickCount;
