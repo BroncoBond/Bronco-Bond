@@ -9,6 +9,7 @@ import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class EditProfile extends StatefulWidget {
   final userID;
@@ -700,6 +701,8 @@ class _EditableRowState extends State<EditableRow> {
 
   Widget buildDropDown(
       List<String> items, String? selectedValue, Function(String?) onChanged) {
+    String? dropdownValue =
+        selectedValue?.isEmpty ?? true ? null : selectedValue;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -708,7 +711,7 @@ class _EditableRowState extends State<EditableRow> {
           height: 43,
           child: DropdownButton<String>(
             isExpanded: true,
-            value: selectedValue, // Set default value
+            value: dropdownValue,
             underline: Container(
               height: 1,
               decoration: BoxDecoration(
