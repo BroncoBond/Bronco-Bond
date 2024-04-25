@@ -33,7 +33,6 @@ class FriendsListPageState extends State<FriendsListPage> {
   @override
   void initState() {
     super.initState();
-
     prefsFuture = initSharedPref();
     prefsFuture.then((value) {
       prefs = value;
@@ -124,7 +123,13 @@ class FriendsListPageState extends State<FriendsListPage> {
           },
           body: jsonEncode(regBody));
 
-      print(response.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Bond request accepted!'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Color(0xff3B5F43),
+        ),
+      );
     } catch (e) {
       print('Error fetching user data: $e');
     }
@@ -135,15 +140,20 @@ class FriendsListPageState extends State<FriendsListPage> {
     var regBody = {"_id": userID};
 
     try {
-      var response = await http.put(
-          Uri.parse('$declineBondRequest/${widget.userID}'),
+      var response = await http.put(Uri.parse(declineBondRequest),
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer $token"
           },
           body: jsonEncode(regBody));
 
-      print(response.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Bond request declined.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Color(0xff3B5F43),
+        ),
+      );
     } catch (e) {
       print('Error fetching user data: $e');
     }
@@ -241,19 +251,19 @@ class FriendsListPageState extends State<FriendsListPage> {
           },
           body: jsonEncode(regBody));
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Bond request revoked.'),
-          duration: const Duration(seconds: 2),
-          backgroundColor: const Color(0xff3B5F43),
+          duration: Duration(seconds: 2),
+          backgroundColor: Color(0xff3B5F43),
         ),
       );
       print('Revoked bond request to user: $userID');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Error revoking request.'),
-          duration: const Duration(seconds: 2),
-          backgroundColor: const Color(0xff3B5F43),
+          duration: Duration(seconds: 2),
+          backgroundColor: Color(0xff3B5F43),
         ),
       );
       print('Error fetching user data: $e');
@@ -403,7 +413,8 @@ class FriendsListPageState extends State<FriendsListPage> {
     return FutureBuilder(
       future: Future.wait(bonds.map((bond) => fetchBondUsernames(bond))),
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            snapshot.hasError) {
           return const Center(
             child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),

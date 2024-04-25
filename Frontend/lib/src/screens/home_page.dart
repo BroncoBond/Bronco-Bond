@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bronco_bond/src/config.dart';
+import 'package:bronco_bond/src/screens/friends_list_page.dart';
 import 'package:bronco_bond/src/screens/services.dart';
 import 'package:bronco_bond/src/screens/user_profile_page.dart';
 import 'package:flutter/material.dart';
@@ -108,6 +109,11 @@ class HomePageState extends State<HomePage> {
       // Get user data using the userID
       fetchDataUsingUserID(widget.userID);
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   Future<SharedPreferences> initSharedPref() async {
