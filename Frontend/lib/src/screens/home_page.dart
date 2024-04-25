@@ -1,4 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:bronco_bond/src/config.dart';
+import 'package:bronco_bond/src/screens/services.dart';
+import 'package:bronco_bond/src/screens/user_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,8 +19,10 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   late String username = '';
+  late List<dynamic> bonds = [];
   late SharedPreferences prefs;
   late Future<SharedPreferences> prefsFuture;
+  int selectedUserIndex = -1;
 
   Future<void> fetchDataUsingUserID(String userID) async {
     String? token = prefs.getString('token');
@@ -40,6 +46,7 @@ class HomePageState extends State<HomePage> {
 
         setState(() {
           username = userData['user']['username'] ?? 'Unknown';
+          bonds = userData['user']['bonds'] ?? [];
         });
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
@@ -48,6 +55,48 @@ class HomePageState extends State<HomePage> {
     } catch (e) {
       print('Error fetching user data: $e');
     }
+  }
+
+  Future<Map<String, dynamic>> fetchBondUsernames(String userID) async {
+    String? token = prefs.getString('token');
+    var regBody = {"_id": userID};
+    try {
+      final response = await http.post(
+        Uri.parse(getUserByID),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+        body: jsonEncode(regBody),
+      );
+
+      if (response.statusCode == 200) {
+        final userData = json.decode(response.body);
+        return userData;
+      } else {
+        print('Failed to fetch user data. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        return {};
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      return {};
+    }
+  }
+
+  Uint8List decodeProfilePicture(dynamic profilePicture) {
+    List<int> profilePictureData =
+        List<int>.from(profilePicture['data']['data']);
+    List<int> decodedImageBytes =
+        base64Decode(String.fromCharCodes(profilePictureData));
+    return Uint8List.fromList(decodedImageBytes);
+  }
+
+  void navigateToUserProfile(String userID) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => UserProfile(userID: userID)),
+    );
   }
 
   @override
@@ -103,7 +152,7 @@ class HomePageState extends State<HomePage> {
               child: TabBarView(
                 children: [
                   buildTabContent('Tab 1'),
-                  buildTabContent('Tab 2'),
+                  buildBondsTab(bonds),
                 ],
               ),
             ),
@@ -135,6 +184,65 @@ class HomePageState extends State<HomePage> {
           print('Tapped on $cardName in $tabName');
         },
       ),
+    );
+  }
+
+  Widget buildBondsTab(List<dynamic> bonds) {
+    if (bonds.isEmpty) {
+      return const Center(
+        child: Text('No bonds found'),
+      );
+    }
+    return FutureBuilder(
+      future: Future.wait(bonds.map((bond) => fetchBondUsernames(bond))),
+      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              final userData = snapshot.data![index];
+              final profilePicture = userData['user']['profilePicture'];
+              final username = userData['user']['username'];
+              return MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      selectedUserIndex = index;
+                    });
+                    navigateToUserProfile(bonds[index]);
+                  },
+                  child: Container(
+                    color: selectedUserIndex == index
+                        ? Colors.grey.withOpacity(0.5) // Grey when tapped
+                        : null, // Default background color when not tapped
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        backgroundImage: profilePicture != null &&
+                                profilePicture != ''
+                            ? MemoryImage(decodeProfilePicture(profilePicture))
+                            : const AssetImage(
+                                    'assets/images/user_profile_icon.png')
+                                as ImageProvider,
+                      ),
+                      title: Text(username ?? 'Unknown'),
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        }
+      },
     );
   }
 }
