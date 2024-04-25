@@ -19,7 +19,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  late String username = '';
+  late String fullName = '';
   late List<dynamic> bonds = [];
   late SharedPreferences prefs;
   late Future<SharedPreferences> prefsFuture;
@@ -46,7 +46,7 @@ class HomePageState extends State<HomePage> {
         final userData = json.decode(response.body);
 
         setState(() {
-          username = userData['user']['username'] ?? 'Unknown';
+          fullName = userData['user']['fullName'] ?? 'Unknown';
           bonds = userData['user']['bonds'] ?? [];
         });
       } else {
@@ -163,7 +163,7 @@ class HomePageState extends State<HomePage> {
                       ),
                     ),
                     TextSpan(
-                      text: '$username!',
+                      text: '$fullName!',
                       style: TextStyle(
                         fontSize: 17.0,
                         fontWeight: FontWeight.bold,
@@ -213,7 +213,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-    Widget buildTabContentForYou(String tabName) {
+  Widget buildTabContentForYou(String tabName) {
     return ListView(
       children: [
         buildCardForYou(
@@ -242,61 +242,67 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-    Widget buildCardForYou(String tabName, String cardName, String Organization, String Date,
-      String location, String assetPath) {
-      return Card(
-        margin: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Container(
-              width: 500.0, // set width
-              height: 200.0, // set height
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black, width: 1),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(15.0),
-                  topRight: Radius.circular(15.0),
-                ),// set border color and width
-              ),
-              child: ClipRRect(
+  Widget buildCardForYou(String tabName, String cardName, String Organization,
+      String Date, String location, String assetPath) {
+    return Card(
+      margin: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Container(
+            width: 500.0, // set width
+            height: 200.0, // set height
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black, width: 1),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0),
+              ), // set border color and width
+            ),
+            child: ClipRRect(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(12.0),
                 topRight: Radius.circular(12.0),
               ),
-                child: Image.asset(assetPath, fit: BoxFit.cover),
+              child: Image.asset(assetPath, fit: BoxFit.cover),
+            ),
+          ),
+          ListTile(
+            title: RichText(
+              text: TextSpan(
+                text: cardName,
+                style: DefaultTextStyle.of(context)
+                    .style
+                    .copyWith(fontWeight: FontWeight.bold),
+                children: <TextSpan>[
+                  TextSpan(
+                      text: '\nOrganization: ',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(
+                      text: '$Organization',
+                      style: TextStyle(fontWeight: FontWeight.normal)),
+                  TextSpan(
+                      text: '\nDate: ',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(
+                      text: '$Date',
+                      style: TextStyle(fontWeight: FontWeight.normal)),
+                  TextSpan(
+                      text: '\nLocation: ',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(
+                      text: location,
+                      style: TextStyle(fontWeight: FontWeight.normal)),
+                ],
               ),
             ),
-            ListTile(
-              title: RichText(
-                text: TextSpan(
-                  text: cardName,
-                  style: DefaultTextStyle.of(context)
-                      .style
-                      .copyWith(fontWeight: FontWeight.bold),
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: '\nOrganization: ',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(text: '$Organization', style: TextStyle(fontWeight: FontWeight.normal)),
-                    TextSpan(
-                        text: '\nDate: ',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(text: '$Date', style: TextStyle(fontWeight: FontWeight.normal)),
-                    TextSpan(
-                        text: '\nLocation: ',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(text: location, style: TextStyle(fontWeight: FontWeight.normal)),
-                  ],
-                ),
-              ),
-              onTap: () {
-                // Handle card tap
-                print('Tapped on $cardName in $tabName');
-              },
-            ),
-          ],
-        ),
-      );
+            onTap: () {
+              // Handle card tap
+              print('Tapped on $cardName in $tabName');
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Widget buildBondsTab(List<dynamic> bonds) {
