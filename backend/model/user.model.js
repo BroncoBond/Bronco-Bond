@@ -93,7 +93,7 @@ const userSchema = new Schema({
         },
         is_online: {
             type: String,
-            defualt: '0'
+            default: '0'
         },
         tokens: [{ type: Object }]
     }, {timestamps:true} 

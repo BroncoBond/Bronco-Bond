@@ -29,6 +29,9 @@ async function extractAndDecodeToken(req) {
 exports.register = async (req, res, next) => {
     try {
         const { email, username, password } = req.body;
+        if (!/@cpp\.edu\s*$/.test(email)) {
+        res.status(400).json({ status: false, error: "Invalid Cpp Email" });
+        }
         console.log('Received registration data');
 
         const newUser = await UserService.registerUser(email, username, password);
