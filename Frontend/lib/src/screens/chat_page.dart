@@ -23,6 +23,9 @@ class ChatPageState extends State<ChatPage> {
   String? currentUserID;
   IO.Socket? socket;
   TextEditingController messageController = TextEditingController();
+  ScrollController scrollController = ScrollController(
+    initialScrollOffset: 1e10,
+  );
 
   @override
   void initState() {
@@ -33,6 +36,8 @@ class ChatPageState extends State<ChatPage> {
       // Get user data using the userID
       fetchDataUsingUserID(widget.userID);
       currentUserID = prefs.getString('userID');
+
+      fetchMessageHistory(widget.userID);
 
       // Connect to Socket.io server
       connectToSocket();
@@ -80,6 +85,39 @@ class ChatPageState extends State<ChatPage> {
     }
   }
 
+  Future<void> fetchMessageHistory(String userID) async {
+    String? token = prefs.getString('token');
+    var regBody = {"userToChatId": userID};
+
+    try {
+      final response = await http.post(
+        Uri.parse(getMessage),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: jsonEncode(regBody),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> fetchedMessages = json.decode(response.body);
+        print('Fetched messages: $fetchedMessages');
+        // Convert to Iterable Map
+        final Iterable<Map<String, dynamic>> typedMessages =
+            fetchedMessages.map((message) => message as Map<String, dynamic>);
+
+        setState(() {
+          messages.clear();
+          messages.addAll(typedMessages);
+        });
+      } else {
+        print(
+            'Failed to fetch message history. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {}
+  }
+
   void connectToSocket() {
     socket = IO.io(url, <String, dynamic>{
       'transports': ['websocket'],
@@ -101,6 +139,8 @@ class ChatPageState extends State<ChatPage> {
       setState(() {
         messages.add(data);
       });
+
+      scrollToBottom();
     });
   }
 
@@ -108,33 +148,44 @@ class ChatPageState extends State<ChatPage> {
     String? senderID = currentUserID;
     String receiverID = widget.userID;
 
-    print('Sending message with data: {'
-        'senderId: $senderID, '
-        'receiverId: $receiverID, '
-        'messageContent: $message'
-        '}');
+    Map<String, dynamic> newMessage = {
+      'senderId': senderID,
+      'receiverId': receiverID,
+      'messageContent': message,
+    };
+
+    // setState(() {
+    //   messages.add(newMessage);
+    // });
 
     if (socket != null && socket!.connected) {
-      socket!.emit('sendMessage', {
-        'senderId': senderID,
-        'receiverId': receiverID,
-        'messageContent': message,
-      });
-      // Listen for the server's acknowledgment
-      socket!.once('sendMessageAck', (data) {
-        if (data['error'] != null) {
-          print('Error sending message: ${data['error']}');
+      socket!.emit(
+        'sendMessage',
+        newMessage,
+      );
+
+      // Listen for server response
+      socket!.once('sendMessageResponse', (response) {
+        if (response['status'] == 'sent') {
+          print('Message sent successfully');
+          // Handle any additional actions you want to take upon successful sending
         } else {
-          print('Message sent: $data');
-          setState(() {
-            messages.add({
-              'messageContent': message,
-              'senderId': senderID,
-            });
-          });
+          print('Failed to send message: ${response['error']}');
+          // Handle the error
         }
       });
     }
+    scrollToBottom();
+  }
+
+  void scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    });
   }
 
   @override
@@ -166,8 +217,10 @@ class ChatPageState extends State<ChatPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 10.0),
           Expanded(
             child: ListView.builder(
+                controller: scrollController,
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   bool isOutgoing =
@@ -241,7 +294,7 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
       child: Row(
         mainAxisAlignment:
             isOutgoing ? MainAxisAlignment.end : MainAxisAlignment.start,

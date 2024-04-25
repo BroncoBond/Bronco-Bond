@@ -1,4 +1,4 @@
-const String url = 'http://ipconfig:8080';
+const String url = 'http://localhost:8080';
 //'https://broncobondwebservice.onrender.com';
 const String register = '$url/api/user/register';
 const String login = '$url/api/user/login';
@@ -14,3 +14,5 @@ const String revokeBondRequest = '$url/api/user/revokeBondRequest';
 const String unbondUser = '$url/api/user/unbond';
 const String acceptBondRequest = '$url/api/user/acceptBondRequest';
 const String declineBondRequest = '$url/api/user/declineBondRequest';
+
+const String getMessage = '$url/api/message/getMessage';
