@@ -1,4 +1,4 @@
-const String url = 'http://localhost:8080';
+const String url = 'http://10.110.175.229:8080';
 //'https://broncobondwebservice.onrender.com';
 const String register = '$url/api/user/register';
 const String login = '$url/api/user/login';

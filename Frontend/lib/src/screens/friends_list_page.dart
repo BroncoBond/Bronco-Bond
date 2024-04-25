@@ -279,128 +279,144 @@ class FriendsListPageState extends State<FriendsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Check if username is empty before fetching data
-    if (username.isEmpty) {
-      fetchDataUsingUserID(widget.userID);
-    }
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_rounded),
-            color: Colors.black,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          title: Text(
-            username,
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(
-                kToolbarHeight), // Adjust the height as needed
-            child: Row(
-              children: [
-                //const SizedBox(width: 8.0),
-                const Expanded(
-                  child: TabBar(
-                    labelStyle:
-                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                    labelColor: Color(0xFF3B5F43),
-                    indicatorColor: Color(0xFF3B5F43),
-                    unselectedLabelColor: Colors.grey,
-                    unselectedLabelStyle:
-                        TextStyle(fontWeight: FontWeight.w500),
-                    indicatorWeight: 3,
-                    tabs: [
-                      Tab(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text('Bonds'),
-                        ),
-                      ),
-                      Tab(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text('Requests'),
-                        ),
-                      ),
-                      Tab(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text('Pending'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8.0),
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: ElevatedButton(
+    return FutureBuilder<SharedPreferences>(
+      future: prefsFuture,
+      builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Show a loading spinner while waiting
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}'); // Show error message if something went wrong
+        } else {
+          if (snapshot.data == null) {
+            return Text('Error: SharedPreferences not initialized'); // Show error message
+          } else {
+            prefs = snapshot.data!; // Initialize prefs with the completed Future
+            // Now you can use prefs in your widget tree
+            if (username.isEmpty) {
+              fetchDataUsingUserID(widget.userID);
+            }
+            return DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                appBar: AppBar(
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_rounded),
+                    color: Colors.black,
                     onPressed: () {
-                      setState(() {
-                        showSearchBar = !showSearchBar;
-                      });
+                      Navigator.of(context).pop();
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: showSearchBar
-                          ? const Color(0xFFABABAB)
-                          : const Color(0xff3B5F43),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: Text(
-                      "Add Bond",
-                      style: GoogleFonts.raleway(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                  ),
+                  title: Text(
+                    username,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          centerTitle: true,
-        ),
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: TabBarView(
-                children: [
-                  buildBondsTab(bonds), // Tab View for "Friends"
-                  buildRequestsTab(
-                      bondRequestsReceived), // Tab View for "Requests" (to user)
-                  buildPendingTab(
-                      bondRequestsSent), // Tab View for "Pending" (requests from user)
-                ],
-              ),
-            ),
-            if (showSearchBar)
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Material(
-                  elevation: 3,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 12.0),
-                    child: buildSearchBar(searchController),
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(
+                        kToolbarHeight), // Adjust the height as needed
+                    child: Row(
+                      children: [
+                        //const SizedBox(width: 8.0),
+                        const Expanded(
+                          child: TabBar(
+                            labelStyle:
+                                TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                            labelColor: Color(0xFF3B5F43),
+                            indicatorColor: Color(0xFF3B5F43),
+                            unselectedLabelColor: Colors.grey,
+                            unselectedLabelStyle:
+                                TextStyle(fontWeight: FontWeight.w500),
+                            indicatorWeight: 3,
+                            tabs: [
+                              Tab(
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text('Bonds'),
+                                ),
+                              ),
+                              Tab(
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text('Requests'),
+                                ),
+                              ),
+                              Tab(
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text('Pending'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8.0),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                showSearchBar = !showSearchBar;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: showSearchBar
+                                  ? const Color(0xFFABABAB)
+                                  : const Color(0xff3B5F43),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: Text(
+                              "Add Bond",
+                              style: GoogleFonts.raleway(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  centerTitle: true,
+                ),
+                body: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: TabBarView(
+                        children: [
+                          buildBondsTab(bonds), // Tab View for "Friends"
+                          buildRequestsTab(
+                              bondRequestsReceived), // Tab View for "Requests" (to user)
+                          buildPendingTab(
+                              bondRequestsSent), // Tab View for "Pending" (requests from user)
+                        ],
+                      ),
+                    ),
+                    if (showSearchBar)
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: Material(
+                          elevation: 3,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0, vertical: 12.0),
+                            child: buildSearchBar(searchController),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-          ],
-        ),
-      ),
+            );
+          }
+        }
+      },
     );
   }
 
@@ -513,7 +529,10 @@ class FriendsListPageState extends State<FriendsListPage> {
                                           'assets/images/user_profile_icon.png')
                                       as ImageProvider,
                         ),
-                        title: Text(username ?? 'Unknown'),
+                        title: Text(
+                          username ?? 'Unknown',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -523,6 +542,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xff3B5F43),
+                                foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
@@ -536,6 +556,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFABABAB),
+                                foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
