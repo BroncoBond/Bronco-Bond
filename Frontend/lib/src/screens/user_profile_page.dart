@@ -313,7 +313,7 @@ class UserProfileState extends State<UserProfile>
     bool isCurrentUserProfile = widget.userID == currentUserID;
     return Column(
       children: [
-        buildProfileHeader(isCurrentUserProfile),
+        buildProfileHeader(context, isCurrentUserProfile),
         buildInfoBar(),
         // Check if this is the current user, if not then show a follow button
         if (!isCurrentUserProfile)
@@ -465,55 +465,63 @@ class UserProfileState extends State<UserProfile>
     );
   }
 
-  Widget buildProfileHeader(bool isCurrentUserProfile) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.white,
-                  backgroundImage: profilePictureData.isNotEmpty
-                      ? MemoryImage(pfp)
-                      : const AssetImage('assets/images/user_profile_icon.png')
-                          as ImageProvider,
-                ),
-                const SizedBox(height: 12),
-                // Apply maximum width constraint and handle overflow
-                Text(
-                  username,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
+  Widget buildProfileHeader(BuildContext context, bool isCurrentUserProfile) {
+      double screenWidth = MediaQuery.of(context).size.width;
 
-          const SizedBox(width: 50),
-          // SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              buildStatColumn('Posts', 0),
-              const SizedBox(width: 20),
-              buildBondsStat(
-                  'Bonds', numOfBonds, widget.userID, isCurrentUserProfile),
-              const SizedBox(width: 20),
-              buildStatColumn('Interests', 0),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+              width: screenWidth * 0.2, // Set the width to 20% of the screen width
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.white,
+                    backgroundImage: profilePictureData.isNotEmpty
+                        ? MemoryImage(pfp)
+                        : const AssetImage('assets/images/user_profile_icon.png')
+                            as ImageProvider,
+                  ),
+                  const SizedBox(height: 12),
+                  // Apply maximum width constraint and handle overflow
+                  Text(
+                    username,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(width: screenWidth * 0.05), // Set the width to 5% of the screen width
+            // SizedBox(height: 8),
+            Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    buildStatColumn('Posts', 0),
+                    SizedBox(width: screenWidth * 0.02), // Set the width to 2% of the screen width
+                    buildBondsStat(
+                        'Bonds', numOfBonds, widget.userID, isCurrentUserProfile),
+                    SizedBox(width: screenWidth * 0.02), // Set the width to 2% of the screen width
+                    buildStatColumn('Interests', 0),
+                  ],
+                ),
+              ),
+            ),  
+          ],
+        ),
+      );
+    }
 
   Widget buildStatColumn(String label, int value) {
     return Column(
