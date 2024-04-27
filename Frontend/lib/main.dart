@@ -52,4 +52,8 @@ class MyApp extends StatelessWidget {
     Step 2: In terminal [flutter create .]
     Step 3: In terminal [dart run flutter_launcher_icons]
     Step 4: In terminal [dart run flutter_native_splash:create]
+
+    To run in ios
+    Step 1: In terminal cd into ios
+    Step 2: In termianl [pod install]
 */
