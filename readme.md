@@ -41,9 +41,11 @@ Comprehensive Information: Explore all that CPP has to offer in one convenient p
 |       |       |
 | :---: | :---: |
 <img width="50" src="https://github.com/mialmf.png"/></br>[Mia Felipe](https://github.com/mialmf) | <img width="50" src="https://github.com/Vivian-Trieu.png"/></br>[Vivian Trieu](https://github.com/Vivian-Trieu) |
+|       |       |
 
 
 ### **Backend Developers:**  
 |       |       |
 | :---: | :---: |
 | <img width="50" src="https://github.com/lancetaningco.png"/></br>[Lance Taningco](https://github.com/lancetaningco) | <img width="50" src="https://github.com/mohraielm.png"/></br>[Mohraiel Matta](https://github.com/mohraielm) |
+|       |       |
