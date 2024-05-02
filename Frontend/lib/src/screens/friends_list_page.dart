@@ -281,16 +281,20 @@ class FriendsListPageState extends State<FriendsListPage> {
   Widget build(BuildContext context) {
     return FutureBuilder<SharedPreferences>(
       future: prefsFuture,
-      builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
+      builder:
+          (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator(); // Show a loading spinner while waiting
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}'); // Show error message if something went wrong
+          return Text(
+              'Error: ${snapshot.error}'); // Show error message if something went wrong
         } else {
           if (snapshot.data == null) {
-            return Text('Error: SharedPreferences not initialized'); // Show error message
+            return Text(
+                'Error: SharedPreferences not initialized'); // Show error message
           } else {
-            prefs = snapshot.data!; // Initialize prefs with the completed Future
+            prefs =
+                snapshot.data!; // Initialize prefs with the completed Future
             // Now you can use prefs in your widget tree
             if (username.isEmpty) {
               fetchDataUsingUserID(widget.userID);
@@ -321,8 +325,8 @@ class FriendsListPageState extends State<FriendsListPage> {
                         //const SizedBox(width: 8.0),
                         const Expanded(
                           child: TabBar(
-                            labelStyle:
-                                TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                            labelStyle: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold),
                             labelColor: Color(0xFF3B5F43),
                             indicatorColor: Color(0xFF3B5F43),
                             unselectedLabelColor: Colors.grey,

@@ -136,6 +136,9 @@ class ChatPageState extends State<ChatPage> {
     // List to the 'chat message' event
     socket!.on('newMessage', (data) {
       print('Received message: $data');
+
+      fetchMessageHistory(widget.userID);
+
       setState(() {
         messages.add(data);
       });
