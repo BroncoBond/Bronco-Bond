@@ -25,20 +25,26 @@ io.on("connection", (socket)=> {
     console.log("a user connected",socket.id);
 
     const userId = socket.handshake.query.userId;
+    console.log("User ID from handshake:", userId);
+
     if (userId != "undefined") {
         userSocketMap[userId] = socket.id;
     } 
+
+    console.log("Current userSocketMap:", userSocketMap);
 
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
 
     socket.on("sendMessage", async (data) => {
         const { senderId, receiverId, messageContent } = data;
+        console.log("Received sendMessage event with data:", data);
         // const senderId = socket.userId;
 
         try {
             const newMessage = await messageController.sendMessage(senderId, receiverId, messageContent);
-
+            console.log("New message created:", newMessage);
+            
             const receiverSocketId = getReceiverSocketId(receiverId);
             if (receiverSocketId) {
                 io.to(receiverSocketId).emit("newMessage", newMessage);
