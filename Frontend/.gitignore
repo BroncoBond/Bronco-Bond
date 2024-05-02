@@ -6,7 +6,6 @@ build
 ios
 .flutter-plugins
 .flutter-plugins-dependencies
-config.dart
 ios/Runner/GeneratedPluginRegistrant.h
 android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
 android/local.properties

@@ -46,6 +46,7 @@ class ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
+    socket?.dispose();
     super.dispose();
   }
 
@@ -135,6 +136,7 @@ class ChatPageState extends State<ChatPage> {
 
     // List to the 'chat message' event
     socket!.on('newMessage', (data) {
+      print('Got new message');
       print('Received message: $data');
 
       fetchMessageHistory(widget.userID);
