@@ -19,36 +19,41 @@ const getReceiverSocketId = (receiverId) => {
 	return userSocketMap[receiverId];
 };
 
+const getSenderSocketId = (senderId) => {
+	return userSocketMap[senderId];
+};
+
 const userSocketMap = {}; //{userId: socketId}
 
 io.on("connection", (socket)=> {
     console.log("a user connected",socket.id);
 
     const userId = socket.handshake.query.userId;
-    console.log("User ID from handshake:", userId);
-
     if (userId != "undefined") {
         userSocketMap[userId] = socket.id;
     } 
 
-    console.log("Current userSocketMap:", userSocketMap);
-
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    console.log('Online Users:', Object.keys(userSocketMap)); // Log the online users
 
 
     socket.on("sendMessage", async (data) => {
         const { senderId, receiverId, messageContent } = data;
-        console.log("Received sendMessage event with data:", data);
         // const senderId = socket.userId;
 
         try {
             const newMessage = await messageController.sendMessage(senderId, receiverId, messageContent);
-            console.log("New message created:", newMessage);
-            
-            const receiverSocketId = getReceiverSocketId(receiverId);
-            if (receiverSocketId) {
-                io.to(receiverSocketId).emit("newMessage", newMessage);
+
+            // const receiverSocketId = getReceiverSocketId(receiverId);
+            // if (receiverSocketId) {
+            //     io.to(receiverSocketId).emit("newMessage", newMessage);
+            // }
+
+            const senderSocketId = getSenderSocketId(senderId);
+            if (senderSocketId) {
+                io.to(senderSocketId).emit("newMessage", newMessage);
             }
+
 
             socket.emit('sendMessageResponse', { status: 'sent' });
         } catch (err) {
@@ -63,4 +68,4 @@ io.on("connection", (socket)=> {
     });
 });
 
-module.exports = {server, app, io, getReceiverSocketId};
+module.exports = {server, app, io, getReceiverSocketId, getSenderSocketId};
