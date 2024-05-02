@@ -134,7 +134,7 @@ class ChatPageState extends State<ChatPage> {
       // socket!.emit('join', widget.userID);
     });
 
-    // List to the 'chat message' event
+    // Listen to the 'chat message' event for received messages
     socket!.on('newMessage', (data) {
       print('Got new message');
       print('Received message: $data');
@@ -173,7 +173,6 @@ class ChatPageState extends State<ChatPage> {
       socket!.once('sendMessageResponse', (response) {
         if (response['status'] == 'sent') {
           print('Message sent successfully');
-          // Handle any additional actions you want to take upon successful sending
         } else {
           print('Failed to send message: ${response['error']}');
           // Handle the error
