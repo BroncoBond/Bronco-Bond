@@ -44,10 +44,10 @@ io.on("connection", (socket)=> {
         try {
             const newMessage = await messageController.sendMessage(senderId, receiverId, messageContent);
 
-            // const receiverSocketId = getReceiverSocketId(receiverId);
-            // if (receiverSocketId) {
-            //     io.to(receiverSocketId).emit("newMessage", newMessage);
-            // }
+            const receiverSocketId = getReceiverSocketId(receiverId);
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit("newMessage", newMessage);
+            }
 
             const senderSocketId = getSenderSocketId(senderId);
             if (senderSocketId) {
