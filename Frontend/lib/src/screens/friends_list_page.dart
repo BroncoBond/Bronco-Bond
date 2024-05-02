@@ -329,6 +329,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                                 fontSize: 14, fontWeight: FontWeight.bold),
                             labelColor: Color(0xFF3B5F43),
                             indicatorColor: Color(0xFF3B5F43),
+                            indicatorSize: TabBarIndicatorSize.tab,
                             unselectedLabelColor: Colors.grey,
                             unselectedLabelStyle:
                                 TextStyle(fontWeight: FontWeight.w500),
