@@ -201,7 +201,7 @@ class SearchPageState extends State<SearchPage> {
             width: 175,
             height: 175,
             child: Card(
-              clipBehavior: Clip.hardEdge,
+              clipBehavior: Clip.none,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border.all(width: 1, color: const Color(0xff3B5F43)),

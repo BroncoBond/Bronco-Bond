@@ -102,7 +102,7 @@ class ChatPageState extends State<ChatPage> {
 
       if (response.statusCode == 200) {
         final List<dynamic> fetchedMessages = json.decode(response.body);
-        print('Fetched messages: $fetchedMessages');
+        // print('Fetched messages: $fetchedMessages');
         // Convert to Iterable Map
         final Iterable<Map<String, dynamic>> typedMessages =
             fetchedMessages.map((message) => message as Map<String, dynamic>);
