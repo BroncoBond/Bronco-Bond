@@ -129,7 +129,7 @@ class HomePageState extends State<HomePage> {
           title: Text(
             'BroncoBond',
             style: GoogleFonts.raleway(
-                textStyle: Theme.of(context).textTheme.bodyMedium,
+                textStyle: Theme.of(context).textTheme.displaySmall,
                 fontSize: 25,
                 fontWeight: FontWeight.w800,
                 color: Colors.white),

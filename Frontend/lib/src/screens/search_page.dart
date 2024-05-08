@@ -79,12 +79,14 @@ class SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("BroncoBond",
-            style: GoogleFonts.raleway(
-                textStyle: Theme.of(context).textTheme.displaySmall,
-                fontSize: 25,
-                fontWeight: FontWeight.w800,
-                color: Colors.white)),
+        title: Text(
+          "BroncoBond",
+          style: GoogleFonts.raleway(
+              textStyle: Theme.of(context).textTheme.displaySmall,
+              fontSize: 25,
+              fontWeight: FontWeight.w800,
+              color: Colors.white),
+        ),
         backgroundColor: const Color(0xFF3B5F43),
         automaticallyImplyLeading: false,
       ),
