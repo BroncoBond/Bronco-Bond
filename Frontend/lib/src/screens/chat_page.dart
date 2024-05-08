@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bronco_bond/src/config.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,6 +20,9 @@ class ChatPageState extends State<ChatPage> {
   bool isOutgoingMessage = true;
   late SharedPreferences prefs;
   late String username = '';
+  late List<int> profilePictureData;
+  late String profilePictureContentType;
+  late Uint8List pfp;
   List<Map<String, dynamic>> messages = [];
   late Future<SharedPreferences> prefsFuture;
   String? currentUserID;
@@ -31,6 +36,8 @@ class ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     prefsFuture = initSharedPref();
+    pfp = Uint8List(0);
+    profilePictureData = [];
     prefsFuture.then((value) {
       prefs = value;
       // Get user data using the userID
@@ -76,6 +83,18 @@ class ChatPageState extends State<ChatPage> {
 
         setState(() {
           username = userData['user']['username'] ?? 'Unknown';
+          // only uncomment if you want profile pictures to show
+          // late dynamic profilePicture =
+          //     userData['user']['profilePicture'] ?? '';
+          // if (profilePicture != null && profilePicture != '') {
+          //   profilePictureData = List<int>.from(profilePicture['data']['data']);
+          //   profilePictureContentType = profilePicture['contentType'];
+          //   //print('$profilePictureData');
+
+          //   //print('pfp: $pfp');
+          // } else {
+          //   pfp = Uint8List(0);
+          // }
         });
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
@@ -232,6 +251,7 @@ class ChatPageState extends State<ChatPage> {
                   return MessageBubble(
                     isOutgoing: isOutgoing,
                     message: messages[index]['message'] ?? '',
+                    // profilePictureData: profilePictureData,
                   );
                 }),
           ),
@@ -288,37 +308,58 @@ class ChatPageState extends State<ChatPage> {
 class MessageBubble extends StatelessWidget {
   final bool isOutgoing;
   final String message;
+  // final List<int> profilePictureData;
 
   const MessageBubble({
     super.key,
     required this.isOutgoing,
     required this.message,
+    // required this.profilePictureData,
   });
 
   @override
   Widget build(BuildContext context) {
+    // UNCOMMENT FOR PFP
+    // List<int> decodedImageBytes =
+    //     base64Decode(String.fromCharCodes(profilePictureData));
+    // //print('${decodedImageBytes}');
+    // Uint8List pfp = Uint8List.fromList(decodedImageBytes);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
       child: Row(
         mainAxisAlignment:
             isOutgoing ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.6,
-            ),
-            padding: const EdgeInsets.all(12.0),
-            decoration: BoxDecoration(
-              color: isOutgoing
-                  ? const Color(0xFF3B5F43)
-                  : const Color(0xFFD9D9D9),
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: const Color(0xFFABABAB)),
-            ),
-            child: Text(
-              message,
-              style: TextStyle(color: isOutgoing ? Colors.white : Colors.black),
-            ),
+          Row(
+            children: [
+              // if (!isOutgoing)
+              //   CircleAvatar(
+              //     backgroundImage: profilePictureData.isNotEmpty
+              //         ? MemoryImage(pfp)
+              //         : const AssetImage('assets/images/user_profile_icon.png')
+              //             as ImageProvider,
+              //   ),
+              // const SizedBox(width: 10.0),
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.6,
+                ),
+                padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  color: isOutgoing
+                      ? const Color(0xFF3B5F43)
+                      : const Color(0xFFD9D9D9),
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(color: const Color(0xFFABABAB)),
+                ),
+                child: Text(
+                  message,
+                  style: TextStyle(
+                      color: isOutgoing ? Colors.white : Colors.black),
+                ),
+              ),
+            ],
           ),
         ],
       ),

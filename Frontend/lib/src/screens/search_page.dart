@@ -184,7 +184,7 @@ class SearchPageState extends State<SearchPage> {
                 child: Text('Cancel',
                     style: TextStyle(
                         color: Colors.grey[600],
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.normal)),
               ),
             ),
@@ -206,6 +206,7 @@ class SearchPageState extends State<SearchPage> {
                 decoration: BoxDecoration(
                   border: Border.all(width: 1, color: const Color(0xff3B5F43)),
                   borderRadius: BorderRadius.circular(8.0),
+                  color: Colors.white,
                 ),
                 child: Icon(
                   iconData,
