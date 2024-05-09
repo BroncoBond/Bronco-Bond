@@ -89,47 +89,50 @@ class LoginPageState extends State<LoginPage> {
           "Email or password is empty. Please try again.");
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: buildTitle("Verification", 25, FontWeight.w300),
-        automaticallyImplyLeading: false,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            const SizedBox(height: 70),
-            buildTitle("BroncoBond", 50.0, FontWeight.w800),
-            const SizedBox(height: 8),
-            buildTextFieldWithIcon("Email", Icons.email_rounded,
-                "example@cpp.edu", emailController, false),
-            const SizedBox(height: 30),
-            buildTextFieldWithIcon("Password", Icons.lock_rounded, "Password",
-                passwordController, true),
-            const SizedBox(height: 30),
-            buildMainButton("Login", context, (BuildContext context) {
-              loginUser(context);
-            }),
-            buildCheckBox("Stay signed in", staySignedIn, (value) {
-              setState(() {
-                staySignedIn = value ?? false;
-              });
-            }),
-            const SizedBox(height: 70),
-            buildTextButton(
-              "Can't Sign In?",
-              context,
-              const ForgotPasswordPage(),
-            ),
-            buildTextButton(
-              "Create Account",
-              context,
-              const RegisterPage(),
-            ),
-          ],
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: buildTitle("Verification", 25, FontWeight.w300),
+          automaticallyImplyLeading: false,
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              const SizedBox(height: 70),
+              buildTitle("BroncoBond", 50.0, FontWeight.w800),
+              const SizedBox(height: 8),
+              buildTextFieldWithIcon("Email", Icons.email_rounded,
+                  "example@cpp.edu", emailController, false),
+              const SizedBox(height: 30),
+              buildTextFieldWithIcon("Password", Icons.lock_rounded, "Password",
+                  passwordController, true),
+              const SizedBox(height: 30),
+              buildMainButton("Login", context, (BuildContext context) {
+                loginUser(context);
+              }),
+              buildCheckBox("Stay signed in", staySignedIn, (value) {
+                setState(() {
+                  staySignedIn = value ?? false;
+                });
+              }),
+              const SizedBox(height: 70),
+              buildTextButton(
+                "Can't Sign In?",
+                context,
+                const ForgotPasswordPage(),
+              ),
+              buildTextButton(
+                "Create Account",
+                context,
+                const RegisterPage(),
+              ),
+            ],
+          ),
         ),
       ),
     );
