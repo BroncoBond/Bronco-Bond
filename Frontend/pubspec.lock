@@ -237,6 +237,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_week_view:
+    dependency: "direct main"
+    description:
+      name: flutter_week_view
+      sha256: "705374a1e84edcd979e92c85254d185607907c737d94e735d4a612b488d80cfd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.0"
   google_fonts:
     dependency: "direct main"
     description:
