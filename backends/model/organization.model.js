@@ -23,7 +23,6 @@ const organizationSchema = new Schema(
       max: 300,
       default: 'No description.',
     },
-    tokens: [{ type: Object }],
   },
   { timestamps: true }
 );
