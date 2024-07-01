@@ -13,3 +13,14 @@ exports.create = async (req, res) => {
     console.log('Error during organization creation: ' + error.message);
   }
 };
+
+// Function to get Organization data (Comment out during prod)
+exports.getAllOrganizationData = async (req, res) => {
+  try {
+    const organizations = await Organization.find({}).select(); // Fetch the data of all Organizations
+    return res.status(200).json(organizations); // Return the array of Organization data
+  } catch (error) {
+    console.error('Error fetching Organization IDs:', error);
+    return res.status(500).json({ message: error.message });
+  }
+};

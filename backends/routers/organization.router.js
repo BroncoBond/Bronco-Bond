@@ -8,3 +8,12 @@ router.post(
   protectRouter.protectRoute,
   organizationController.create
 );
+
+// Get all Organization data (Comment out during prod)
+router.get(
+  '/data',
+  protectRouter.protectRoute,
+  organizationController.getAllOrganizationData
+);
+
+module.exports = router;
