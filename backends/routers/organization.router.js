@@ -3,6 +3,8 @@ const organizationController = require('../controller/organization.controller');
 const protectRouter = require('../middleware/protectRouter');
 
 // Create an organization
-router.post('/createOrganization', organizationController.create);
-
-module.exports = router;
+router.post(
+  '/createOrganization',
+  protectRouter.protectRoute,
+  organizationController.create
+);
