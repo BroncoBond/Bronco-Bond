@@ -23,6 +23,22 @@ const organizationSchema = new Schema(
       max: 300,
       default: 'No description.',
     },
+    type: {
+      type: String,
+      enum: ['Club', 'Fraternities', 'Sororities'], // The type must match these hard-coded types of Organizations
+      required: true,
+    },
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: [],
+      },
+    ],
+    numOfFollowers: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
