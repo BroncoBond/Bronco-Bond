@@ -4,7 +4,6 @@ const protectRouter = require('../middleware/protectRouter');
 // Function to create an organization
 exports.create = async (req, res) => {
   const { name, logo, description } = req.body;
-  console.log(name, logo, description);
   const createOrganization = new Organization({ name, logo, description });
   try {
     console.log('Received organization creation data');
