@@ -16,4 +16,7 @@ router.get(
   organizationController.getAllOrganizationData
 );
 
+// Get Organization by ID
+router.post('/', protectRouter.protectRoute, organizationController.getById);
+
 module.exports = router;

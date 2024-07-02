@@ -14,7 +14,7 @@ exports.create = async (req, res) => {
   }
 };
 
-// Function to get Organization data (Comment out during prod)
+// (COMMENT OUT DURING PROD) Function to get Organization data
 exports.getAllOrganizationData = async (req, res) => {
   try {
     const organizations = await Organization.find({}).select(); // Fetch the data of all Organizations
@@ -23,4 +23,16 @@ exports.getAllOrganizationData = async (req, res) => {
     console.error('Error fetching Organization IDs:', error);
     return res.status(500).json({ message: error.message });
   }
+};
+
+// Function to get Organization by ID
+exports.getById = async (req, res) => {
+  const bodyId = req.body._id;
+  let organization;
+  try {
+    organization = await Organization.findById(bodyId).select(); // Selects the organization with the matching ID
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+  return res.status(200).json({ organization });
 };
