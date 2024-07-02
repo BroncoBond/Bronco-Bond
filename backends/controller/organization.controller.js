@@ -6,25 +6,51 @@ const userController = require('../controller/user.controller');
 
 // (REQUIRES ADMIN) Function to create an organization
 exports.createOrganization = async (req, res) => {
-  const { name, logo, description, type } = req.body;
-  const createOrganization = new Organization({
-    name,
-    logo,
-    description,
-    type,
-  });
   try {
-    console.log('Received organization creation data');
-    const newOrganization = await createOrganization.save(); // Saves organization to MongoDB
-    console.log('Organization created: ', newOrganization);
-  } catch (error) {
-    if (error.name === 'ValidationError') {
-      // Error if name and/or type are not provided
-      console.log('Error during organization creation: ' + error.message);
-      return res.status(400).json({ message: error.message });
+    // Grabs current user's details and their admin status
+    const currentUser = await userController.extractAndDecodeToken(req);
+    const tokenUserId = currentUser.data._id;
+
+    const tokenUser = await User.findById(tokenUserId).select('isAdmin');
+    const isAdmin = tokenUser.isAdmin;
+
+    // Grabs the given details of the organization
+    const { name, logo, description, type } = req.body;
+    const createOrganization = new Organization({
+      name,
+      logo,
+      description,
+      type,
+    });
+
+    // Check if the user is authorized to create the organization
+    if (isAdmin) {
+      try {
+        console.log('Received organization creation data');
+        const newOrganization = await createOrganization.save(); // Saves organization to MongoDB
+        console.log('Organization created: ', newOrganization);
+      } catch (error) {
+        if (error.name === 'ValidationError') {
+          // Error if name and/or type are not provided
+          console.log('Error during organization creation: ' + error.message);
+          return res.status(400).json({ message: error.message });
+        }
+        console.log('Error during organization creation: ' + error.message);
+        return res.status(500).json({ message: error.message });
+      }
+    } else {
+      // If the user is not authorized to delete the organization, return a 403 status with an error message
+      return res
+        .status(403)
+        .json(
+          'Administrative priviledges are required to create an organization!'
+        );
     }
-    console.log('Error during organization creation: ' + error.message);
-    return res.status(500).json({ message: error.message });
+  } catch (error) {
+    console.error('Error creating organization:', error);
+    return res
+      .status(500)
+      .json({ error: 'Error creating organization', details: error });
   }
 };
 
