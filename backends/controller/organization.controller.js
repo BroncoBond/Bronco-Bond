@@ -14,7 +14,19 @@ exports.create = async (req, res) => {
   }
 };
 
-// (COMMENT OUT DURING PROD) Function to get Organization data
+// (COMMENT OUT DURING PROD) Function to get all Organization IDs
+exports.getAllOrganizationIds = async (req, res) => {
+  try {
+    const organizations = await Organization.find({}, '_id'); // Fetch only the _id field for all Organizations
+    const _id = organizations.map((organization) => organization._id); // Extract the _id from each Organization
+    return res.status(200).json(_id); // Return the array of Organization IDs
+  } catch (error) {
+    console.error('Error fetching Organization IDs:', error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// (COMMENT OUT DURING PROD) Function to get all Organization data
 exports.getAllOrganizationData = async (req, res) => {
   try {
     const organizations = await Organization.find({}).select(); // Fetch the data of all Organizations

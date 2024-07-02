@@ -9,7 +9,14 @@ router.post(
   organizationController.create
 );
 
-// Get all Organization data (Comment out during prod)
+// (COMMENT OUT DURING PROD) Get all Organization IDs
+router.get(
+  '/ids',
+  protectRouter.protectRoute,
+  organizationController.getAllOrganizationIds
+);
+
+// (COMMENT OUT DURING PROD) Get all Organization data
 router.get(
   '/data',
   protectRouter.protectRoute,
