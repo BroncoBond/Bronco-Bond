@@ -9,10 +9,10 @@ const organizationSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
       min: 3,
       max: 20,
       unique: true,
+      required: true,
     },
     logo: {
       data: Buffer,
@@ -25,7 +25,7 @@ const organizationSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ['Club', 'Fraternities', 'Sororities'], // The type must match these hard-coded types of Organizations
+      enum: ['Club', 'Fraternity', 'Sorority'], // The type must match these hard-coded types of Organizations
       required: true,
     },
     followers: [
