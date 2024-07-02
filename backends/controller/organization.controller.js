@@ -1,5 +1,4 @@
 const Organization = require('../model/organization.model');
-const protectRouter = require('../middleware/protectRouter');
 
 // Function to create an organization
 exports.create = async (req, res) => {
