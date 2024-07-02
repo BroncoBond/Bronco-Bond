@@ -6,7 +6,7 @@ const protectRouter = require('../middleware/protectRouter');
 router.post(
   '/createOrganization',
   protectRouter.protectRoute,
-  organizationController.create
+  organizationController.createOrganization
 );
 
 // (COMMENT OUT DURING PROD) Get all Organization IDs

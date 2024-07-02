@@ -1,7 +1,7 @@
 const Organization = require('../model/organization.model');
 
 // Function to create an organization
-exports.create = async (req, res) => {
+exports.createOrganization = async (req, res) => {
   const { name, logo, description } = req.body;
   const createOrganization = new Organization({ name, logo, description });
   try {
