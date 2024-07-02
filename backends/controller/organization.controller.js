@@ -1,5 +1,9 @@
 const Organization = require('../model/organization.model');
 
+// Necessary for delete organization function
+const User = require('../model/user.model');
+const userController = require('../controller/user.controller');
+
 // Function to create an organization
 exports.createOrganization = async (req, res) => {
   const { name, logo, description, type } = req.body;
@@ -23,6 +27,11 @@ exports.createOrganization = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+// Function to update the Organization's description
+// exports.updateOrganizationDescription = async (req, res) => {
+
+// }
 
 // (COMMENT OUT DURING PROD) Function to get all Organization IDs
 exports.getAllOrganizationIds = async (req, res) => {
@@ -59,45 +68,43 @@ exports.getById = async (req, res) => {
   return res.status(200).json({ organization });
 };
 
-// // Function to delete Organization
-// exports.deleteOrganization = async (req, res) => {
-//   try {
-//     // Grabs current user's details and their admin status
-//     const currentUser = await extractAndDecodeToken(req);
-//     const tokenUserId = currentUser.data._id;
+// Function to delete Organization
+exports.deleteOrganization = async (req, res) => {
+  try {
+    // Grabs current user's details and their admin status
+    const currentUser = await userController.extractAndDecodeToken(req);
+    const tokenUserId = currentUser.data._id;
 
-//     const tokenUser = await User.findById(tokenUserId).select(
-//       'isAdmin'
-//     );
-//     const isAdmin = tokenUser.isAdmin;
+    const tokenUser = await User.findById(tokenUserId).select('isAdmin');
+    const isAdmin = tokenUser.isAdmin;
 
-//     // Grabs the ID of the to-be-deleted organization
-//     const givenOrganizationId = req.body._id;
+    // Grabs the ID of the to-be-deleted organization
+    const givenOrganizationId = req.body._id;
 
-//     // Check if the user is authorized to delete the organization
-//     if (isAdmin) {
-//       try {
-//         // Try to delete the Organization with the given ID
-//         await Organization.findByIdAndDelete(givenOrganizationId);
+    // Check if the user is authorized to delete the organization
+    if (isAdmin) {
+      try {
+        // Try to delete the Organization with the given ID
+        await Organization.findByIdAndDelete(givenOrganizationId);
 
-//         // If the organization was successfully deleted, return a 200 status with a success message
-//         res.status(200).json('Organization has been deleted');
-//       } catch (error) {
-//         // If there's an error deleting the organization, return a 500 status with the error
-//         return res.status(500).json(error);
-//       }
-//     } else {
-//       // If the user is not authorized to delete the organization, return a 403 status with an error message
-//       return res
-//         .status(403)
-//         .json(
-//           'Administrative priviledges are required to delete an organization!'
-//         );
-//     }
-//   } catch (error) {
-//     console.error('Error deleting organization:', error);
-//     return res
-//       .status(500)
-//       .json({ error: 'Error deleting organization', details: error });
-//   }
-// };
+        // If the organization was successfully deleted, return a 200 status with a success message
+        res.status(200).json('Organization has been deleted');
+      } catch (error) {
+        // If there's an error deleting the organization, return a 500 status with the error
+        return res.status(500).json(error);
+      }
+    } else {
+      // If the user is not authorized to delete the organization, return a 403 status with an error message
+      return res
+        .status(403)
+        .json(
+          'Administrative priviledges are required to delete an organization!'
+        );
+    }
+  } catch (error) {
+    console.error('Error deleting organization:', error);
+    return res
+      .status(500)
+      .json({ error: 'Error deleting organization', details: error });
+  }
+};

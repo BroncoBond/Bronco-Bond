@@ -9,8 +9,12 @@ router.post(
   organizationController.createOrganization
 );
 
-// // Update Organization's description
-// router.put('/updateDescription');
+// Update Organization's description
+// router.put(
+//   '/updateDescription',
+//   protectRouter.protectRoute,
+//   organizationController.updateOrganizationDescription
+// );
 
 // (COMMENT OUT DURING PROD) Get all Organization IDs
 router.get(
@@ -29,11 +33,11 @@ router.get(
 // Get Organization by ID
 router.post('/', protectRouter.protectRoute, organizationController.getById);
 
-// // // Delete an organization
-// router.deleteOrganization(
-//   '/:id',
-//   protectRouter.protectRoute,
-//   organizationController.delete
-// );
+// Delete an organization
+router.delete(
+  '/delete',
+  protectRouter.protectRoute,
+  organizationController.deleteOrganization
+);
 
 module.exports = router;
