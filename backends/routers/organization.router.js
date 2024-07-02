@@ -26,4 +26,11 @@ router.get(
 // Get Organization by ID
 router.post('/', protectRouter.protectRoute, organizationController.getById);
 
+// // Delete an organization
+// router.deleteOrganization(
+//   '/deleteOrganization',
+//   protectRouter.protectRoute,
+//   organizationController.delete
+// );
+
 module.exports = router;

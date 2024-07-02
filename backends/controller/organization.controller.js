@@ -62,55 +62,37 @@ exports.getById = async (req, res) => {
 // // Function to delete Organization
 // exports.deleteOrganization = async (req, res) => {
 //   try {
+//     // Grabs current user's details and their admin status
 //     const currentUser = await extractAndDecodeToken(req);
 //     const tokenUserId = currentUser.data._id;
-//     const givenUserId = req.body._id;
 
-//     // Check if the User is authorized to delete the Organization
-//     if (givenUserId === tokenUserId || isAdmin) {
+//     const tokenUser = await User.findById(tokenUserId).select(
+//       'isAdmin'
+//     );
+//     const isAdmin = tokenUser.isAdmin;
+
+//     // Grabs the ID of the to-be-deleted organization
+//     const givenOrganizationId = req.body._id;
+
+//     // Check if the user is authorized to delete the organization
+//     if (isAdmin) {
 //       try {
-//         const userId = req.user._id;
 //         // Try to delete the Organization with the given ID
-//         await Organization.findByIdAndDelete(givenUserId);
+//         await Organization.findByIdAndDelete(givenOrganizationId);
 
-//         const allUsers = await User.find();
-
-//         allUsers.forEach(async (user) => {
-//           let modified = false;
-
-//           const bondIndex = user.bonds.indexOf(givenUserId);
-//           if (bondIndex !== -1) {
-//             user.bonds.splice(bondIndex, 1);
-//             modified = true;
-//           }
-
-//           const receivedIndex = user.bondRequestsReceived.indexOf(givenUserId);
-//           if (receivedIndex !== -1) {
-//             user.bondRequestsReceived.splice(receivedIndex, 1);
-//             modified = true;
-//           }
-
-//           const sentIndex = user.bondRequestsSent.indexOf(givenUserId);
-//           if (sentIndex !== -1) {
-//             user.bondRequestsSent.splice(sentIndex, 1);
-//             modified = true;
-//           }
-
-//           if (modified) {
-//             await user.save();
-//           }
-//         });
-
-//         res.cookie('jwt', '', { maxAge: 0 });
-//         // If the user was successfully deleted, return a 200 status with a success message
+//         // If the organization was successfully deleted, return a 200 status with a success message
 //         res.status(200).json('Organization has been deleted');
 //       } catch (error) {
-//         // If there's an error deleting the user, return a 500 status with the error
+//         // If there's an error deleting the organization, return a 500 status with the error
 //         return res.status(500).json(error);
 //       }
 //     } else {
-//       // If the User is not authorized to delete the Organization, return a 403 status with an error message
-//       return res.status(403).json('You can delete only your organizations!');
+//       // If the user is not authorized to delete the organization, return a 403 status with an error message
+//       return res
+//         .status(403)
+//         .json(
+//           'Administrative priviledges are required to delete an organization!'
+//         );
 //     }
 //   } catch (error) {
 //     console.error('Error deleting organization:', error);
