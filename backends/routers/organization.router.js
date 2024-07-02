@@ -4,10 +4,13 @@ const protectRouter = require('../middleware/protectRouter');
 
 // Create an organization
 router.post(
-  '/createOrganization',
+  '/create',
   protectRouter.protectRoute,
   organizationController.createOrganization
 );
+
+// // Update Organization's description
+// router.put('/updateDescription');
 
 // (COMMENT OUT DURING PROD) Get all Organization IDs
 router.get(
@@ -26,9 +29,9 @@ router.get(
 // Get Organization by ID
 router.post('/', protectRouter.protectRoute, organizationController.getById);
 
-// // Delete an organization
+// // // Delete an organization
 // router.deleteOrganization(
-//   '/deleteOrganization',
+//   '/:id',
 //   protectRouter.protectRoute,
 //   organizationController.delete
 // );
