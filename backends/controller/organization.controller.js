@@ -4,7 +4,7 @@ const Organization = require('../model/organization.model');
 const User = require('../model/user.model');
 const userController = require('../controller/user.controller');
 
-// Function to create an organization
+// (REQUIRES ADMIN) Function to create an organization
 exports.createOrganization = async (req, res) => {
   const { name, logo, description, type } = req.body;
   const createOrganization = new Organization({
@@ -27,11 +27,6 @@ exports.createOrganization = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-
-// Function to update the Organization's description
-// exports.updateOrganizationDescription = async (req, res) => {
-
-// }
 
 // (COMMENT OUT DURING PROD) Function to get all Organization IDs
 exports.getAllOrganizationIds = async (req, res) => {
@@ -68,7 +63,7 @@ exports.getById = async (req, res) => {
   return res.status(200).json({ organization });
 };
 
-// Function to delete Organization
+// (REQUIRES ADMIN) Function to delete Organization
 exports.deleteOrganization = async (req, res) => {
   try {
     // Grabs current user's details and their admin status
