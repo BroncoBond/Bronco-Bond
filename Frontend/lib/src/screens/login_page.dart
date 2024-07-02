@@ -89,45 +89,75 @@ class LoginPageState extends State<LoginPage> {
           "Email or password is empty. Please try again.");
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: buildTitle("Verification", 25, FontWeight.w300),
-        automaticallyImplyLeading: false,
-      ),
+      // appBar: AppBar(
+      //   title: buildTitle("Verification", 25, FontWeight.w300),
+      //   automaticallyImplyLeading: false,
+      // ),
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+        child: Stack(
           children: [
-            const SizedBox(height: 70),
-            buildTitle("BroncoBond", 50.0, FontWeight.w800),
-            const SizedBox(height: 8),
-            buildTextFieldWithIcon("Email", Icons.email_rounded,
-                "example@cpp.edu", emailController, false),
-            const SizedBox(height: 30),
-            buildTextFieldWithIcon("Password", Icons.lock_rounded, "Password",
-                passwordController, true),
-            const SizedBox(height: 30),
-            buildMainButton("Login", context, (BuildContext context) {
-              loginUser(context);
-            }),
-            buildCheckBox("Stay signed in", staySignedIn, (value) {
-              setState(() {
-                staySignedIn = value ?? false;
-              });
-            }),
-            const SizedBox(height: 70),
-            buildTextButton(
-              "Can't Sign In?",
-              context,
-              const ForgotPasswordPage(),
-            ),
-            buildTextButton(
-              "Create Account",
-              context,
-              const RegisterPage(),
+            Positioned(
+                child: Image.asset(
+              'assets/images/bg_asset.png',
+              fit: BoxFit.cover,
+            )),
+            Container(
+              decoration: BoxDecoration(color: Color(0xFF2E4233)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const SizedBox(height: 70),
+                  buildTitle("BroncoBond", 50.0, FontWeight.w800),
+                  const SizedBox(height: 8),
+                  buildTextFieldWithIcon(
+                      Icons.email_rounded, "Email", emailController, false),
+                  const SizedBox(height: 30),
+                  buildTextFieldWithIcon(
+                      Icons.lock_rounded, "Password", passwordController, true),
+                  buildCheckBox("Stay signed in", staySignedIn, (value) {
+                    setState(() {
+                      staySignedIn = value ?? false;
+                    });
+                  }),
+                  const SizedBox(height: 30),
+                  buildMainButton("Log In", context, (BuildContext context) {
+                    loginUser(context);
+                  }),
+                  const SizedBox(height: 70),
+                  buildTextButton(
+                    "Forgot your Password?",
+                    context,
+                    const ForgotPasswordPage(),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        child: Text(
+                          "Don't have an account yet?",
+                          style: GoogleFonts.raleway(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                        ),
+                      ),
+                      buildTextButton(
+                        "Sign up",
+                        context,
+                        const RegisterPage(),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -145,7 +175,7 @@ class LoginPageState extends State<LoginPage> {
           style: GoogleFonts.raleway(
             fontSize: size,
             fontWeight: weight,
-            color: const Color(0xFF3B5F43),
+            color: Colors.white,
           ),
         ),
       ),
@@ -173,7 +203,7 @@ class LoginPageState extends State<LoginPage> {
           style: GoogleFonts.raleway(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: const Color(0xFF3B5F43),
+            color: const Color(0xFFFED154),
           ),
         ),
       ),
@@ -189,8 +219,8 @@ class LoginPageState extends State<LoginPage> {
         child: Container(
           width: 329,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            color: const Color(0xFF3B5F43),
+            borderRadius: BorderRadius.circular(50),
+            color: const Color(0xFFFED154),
           ),
           child: TextButton(
             onPressed: () {
@@ -201,7 +231,7 @@ class LoginPageState extends State<LoginPage> {
               style: GoogleFonts.raleway(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: const Color(0xFF435E49),
               ),
             ),
           ),
@@ -211,21 +241,11 @@ class LoginPageState extends State<LoginPage> {
   }
 
   // Widget for TextFields
-  Widget buildTextFieldWithIcon(String label, IconData icon, String hint,
+  Widget buildTextFieldWithIcon(IconData icon, String hint,
       TextEditingController fieldController, bool obscureText) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Text label
-        Text(
-          label,
-          style: GoogleFonts.raleway(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: Colors.black,
-          ),
-          textAlign: TextAlign.start,
-        ),
         // Text field
         SizedBox(
           width: 327,
@@ -234,22 +254,25 @@ class LoginPageState extends State<LoginPage> {
             controller: fieldController,
             keyboardType: TextInputType.text,
             obscureText: obscureText,
+            cursorColor: Color(0xFFFED154),
             decoration: InputDecoration(
-              suffixIcon: Icon(
+              prefixIcon: Icon(
                 icon,
                 size: 16,
-                color: const Color(0xFF1E1E1E),
+                color: const Color(0xFF2E4233),
               ),
               hintText: hint,
               hintStyle: const TextStyle(
-                color: Color(0xFFABABAB),
+                color: Color(0xFF2E4233),
               ),
+              filled: true,
+              fillColor: Color(0xFF55685A),
               border: OutlineInputBorder(
                 borderSide: const BorderSide(color: Color(0xFFABABAB)),
                 borderRadius: BorderRadius.circular(8.0),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Color(0xFF3B5F43)),
+                borderSide: const BorderSide(color: Color(0xFFFED154)),
                 borderRadius: BorderRadius.circular(8.0),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12),
@@ -267,20 +290,22 @@ class LoginPageState extends State<LoginPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 15, top: 0, right: 5),
+          padding: const EdgeInsets.only(left: 15, top: 0, right: 0),
           child: CheckboxListTile(
             title: Text(
               label,
               style: GoogleFonts.raleway(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
-                color: Colors.black,
+                color: Colors.white,
               ),
             ),
             value: currentVal, // Set default value of checkbox to false
             onChanged: onChanged,
             controlAffinity: ListTileControlAffinity.leading,
-            activeColor: const Color(0xFF3B5F43),
+            side: const BorderSide(color: const Color(0xFFFED154)),
+            checkColor: const Color(0xFF435E49),
+            activeColor: const Color(0xFFFED154),
           ),
         ),
         const SizedBox(height: 20),
