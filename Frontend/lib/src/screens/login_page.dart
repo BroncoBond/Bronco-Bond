@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:bronco_bond/src/config.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 /// Displays detailed information about a SampleItem.
 class LoginPage extends StatefulWidget {
@@ -97,91 +98,105 @@ class LoginPageState extends State<LoginPage> {
       canPop: false,
       child: Scaffold(
         backgroundColor: Color(0xFF435F49),
-        body: SingleChildScrollView(
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Image.asset(
-                    'assets/images/login_bg.png',
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+        body: SlidingUpPanel(
+            maxHeight: MediaQuery.of(context).size.height,
+            minHeight: MediaQuery.of(context).size.height - 495,
+            color: Colors.transparent,
+            boxShadow: null,
+            panelBuilder: (ScrollController sc) => buildLogin(sc),
+            body: Container(
+              alignment: Alignment.center,
+              color: Color(0xFF435F49),
+            )),
+      ),
+    );
+  }
+
+  Widget buildLogin(ScrollController sc) {
+    return SingleChildScrollView(
+      controller: sc,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            top: 30,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Image.asset(
+                'assets/images/login_bg.png',
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                fit: BoxFit.fill,
               ),
-              Positioned(
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
+            ),
+          ),
+          Positioned(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const SizedBox(height: 90),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 70),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          buildTitle(
-                              "Bronco", 45.0, FontWeight.w800, Colors.white),
-                          buildTitle(
-                              "Bond", 45.0, FontWeight.w800, Color(0xFFFED154)),
-                        ],
+                      buildTitle("Bronco", 45.0, FontWeight.w800, Colors.white),
+                      buildTitle(
+                          "Bond", 45.0, FontWeight.w800, Color(0xFFFED154)),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  buildTextFieldWithIcon(
+                      Icons.email_rounded, "Email", emailController, false),
+                  const SizedBox(height: 2),
+                  buildTextFieldWithIcon(
+                      Icons.lock_rounded, "Password", passwordController, true),
+                  buildCheckBox("Stay signed in", staySignedIn, (value) {
+                    setState(() {
+                      staySignedIn = value ?? false;
+                    });
+                  }),
+                  const SizedBox(height: 30),
+                  buildMainButton("Log In", context, (BuildContext context) {
+                    loginUser(context);
+                  }),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 40.0),
+                      child: buildTextButton(
+                        "Forgot your password?",
+                        context,
+                        const ForgotPasswordPage(),
                       ),
-                      const SizedBox(height: 6),
-                      buildTextFieldWithIcon(
-                          Icons.email_rounded, "Email", emailController, false),
-                      const SizedBox(height: 10),
-                      buildTextFieldWithIcon(Icons.lock_rounded, "Password",
-                          passwordController, true),
-                      buildCheckBox("Stay signed in", staySignedIn, (value) {
-                        setState(() {
-                          staySignedIn = value ?? false;
-                        });
-                      }),
-                      const SizedBox(height: 70),
-                      buildMainButton("Log In", context,
-                          (BuildContext context) {
-                        loginUser(context);
-                      }),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 40.0),
-                          child: buildTextButton(
-                            "Forgot your password?",
-                            context,
-                            const ForgotPasswordPage(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        child: Text(
+                          "Don't have an account yet?",
+                          style: GoogleFonts.raleway(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            child: Text(
-                              "Don't have an account yet?",
-                              style: GoogleFonts.raleway(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          buildTextButton(
-                            "Sign up",
-                            context,
-                            const RegisterPage(),
-                          ),
-                        ],
+                      buildTextButton(
+                        "Sign up",
+                        context,
+                        const RegisterPage(),
                       ),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 10),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -296,6 +311,7 @@ class LoginPageState extends State<LoginPage> {
                       },
                       icon: Icon(
                         hidePassword ? Icons.visibility_off : Icons.visibility,
+                        color: Color(0xFF2E4233),
                       ),
                     )
                   : null,
@@ -303,7 +319,7 @@ class LoginPageState extends State<LoginPage> {
               fillColor: Color(0xFF55685A),
               border: OutlineInputBorder(
                 borderSide: const BorderSide(color: Color(0xFFABABAB)),
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(10.0),
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide:
