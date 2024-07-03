@@ -94,10 +94,6 @@ class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: buildTitle("Verification", 25, FontWeight.w300),
-      //   automaticallyImplyLeading: false,
-      // ),
       body: SingleChildScrollView(
         child: Stack(
           children: [
@@ -123,15 +119,15 @@ class LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         buildTitle(
-                            "Bronco", 50.0, FontWeight.w800, Colors.white),
+                            "Bronco", 45.0, FontWeight.w800, Colors.white),
                         buildTitle(
-                            "Bond", 50.0, FontWeight.w800, Color(0xFFFED154)),
+                            "Bond", 45.0, FontWeight.w800, Color(0xFFFED154)),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     buildTextFieldWithIcon(
                         Icons.email_rounded, "Email", emailController, false),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 10),
                     buildTextFieldWithIcon(Icons.lock_rounded, "Password",
                         passwordController, true),
                     buildCheckBox("Stay signed in", staySignedIn, (value) {
@@ -272,11 +268,11 @@ class LoginPageState extends State<LoginPage> {
         // Text field
         SizedBox(
           width: 327,
-          height: 43,
+          height: 60,
           child: TextField(
             controller: fieldController,
             keyboardType: TextInputType.text,
-            obscureText: hidePassword,
+            obscureText: obscureText ? hidePassword : obscureText,
             cursorColor: Color(0xFFFED154),
             decoration: InputDecoration(
               prefixIcon: Icon(
@@ -305,7 +301,8 @@ class LoginPageState extends State<LoginPage> {
                 borderRadius: BorderRadius.circular(8.0),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Color(0xFFFED154)),
+                borderSide:
+                    const BorderSide(color: Color(0xFFFED154), width: 3.0),
                 borderRadius: BorderRadius.circular(8.0),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12),
@@ -336,7 +333,7 @@ class LoginPageState extends State<LoginPage> {
             value: currentVal, // Set default value of checkbox to false
             onChanged: onChanged,
             controlAffinity: ListTileControlAffinity.leading,
-            side: const BorderSide(color: const Color(0xFFFED154)),
+            side: const BorderSide(color: const Color(0xFFFED154), width: 1.5),
             checkColor: const Color(0xFF435E49),
             activeColor: const Color(0xFFFED154),
           ),
