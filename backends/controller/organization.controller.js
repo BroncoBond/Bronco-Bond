@@ -1,22 +1,19 @@
 const Organization = require('../model/organization.model');
 
-// Necessary for delete organization function
+// Used for functions that require administrative permissions
 const User = require('../model/user.model');
 const userController = require('../controller/user.controller');
 
-// (REQUIRES ADMIN) Function to create an organization
+// (REQUIRES ADMIN)
 exports.createOrganization = async (req, res) => {
   try {
-    // Grabs current user's details and their admin status
     const currentUser = await userController.extractAndDecodeToken(req);
     const tokenUserId = currentUser.data._id;
 
     const tokenUser = await User.findById(tokenUserId).select('isAdmin');
     const isAdmin = tokenUser.isAdmin;
 
-    // Check if the user is authorized to create the organization
     if (isAdmin) {
-      // Grabs the given details of the organization
       const { name, logo, description, type } = req.body;
       const createOrganization = new Organization({
         name,
@@ -27,7 +24,7 @@ exports.createOrganization = async (req, res) => {
 
       try {
         console.log('Received organization creation data');
-        const newOrganization = await createOrganization.save(); // Saves organization to MongoDB
+        const newOrganization = await createOrganization.save();
         console.log('Organization created: ', newOrganization);
       } catch (error) {
         if (error.name === 'ValidationError') {
@@ -39,7 +36,6 @@ exports.createOrganization = async (req, res) => {
         return res.status(500).json({ message: error.message });
       }
     } else {
-      // If the user is not authorized to create the organization, return a 403 status with an error message
       return res
         .status(403)
         .json(
@@ -54,68 +50,60 @@ exports.createOrganization = async (req, res) => {
   }
 };
 
-// (COMMENT OUT DURING PROD) Function to get all Organization IDs
+// (COMMENT OUT DURING PROD)
 exports.getAllOrganizationIds = async (req, res) => {
   try {
-    const organizations = await Organization.find({}, '_id'); // Fetch only the _id field for all Organizations
-    const _id = organizations.map((organization) => organization._id); // Extract the _id from each Organization
-    return res.status(200).json(_id); // Return the array of Organization IDs
+    const organizations = await Organization.find({}, '_id');
+    const _id = organizations.map((organization) => organization._id);
+    return res.status(200).json(_id);
   } catch (error) {
     console.error('Error fetching Organization IDs:', error);
     return res.status(500).json({ message: error.message });
   }
 };
 
-// (COMMENT OUT DURING PROD) Function to get all Organization data
+// (COMMENT OUT DURING PROD)
 exports.getAllOrganizationData = async (req, res) => {
   try {
-    const organizations = await Organization.find({}).select(); // Fetch the data of all Organizations
-    return res.status(200).json(organizations); // Return the array of Organization data
+    const organizations = await Organization.find({}).select();
+    return res.status(200).json(organizations);
   } catch (error) {
     console.error('Error fetching Organization IDs:', error);
     return res.status(500).json({ message: error.message });
   }
 };
 
-// Function to get Organization by ID
 exports.getById = async (req, res) => {
   const bodyId = req.body._id;
   let organization;
   try {
-    organization = await Organization.findById(bodyId).select(); // Selects the organization with the matching ID
+    organization = await Organization.findById(bodyId).select();
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
   return res.status(200).json({ organization });
 };
 
-// (REQUIRES ADMIN) Function to delete Organization
+// (REQUIRES ADMIN)
 exports.deleteOrganization = async (req, res) => {
   try {
-    // Grabs current user's details and their admin status
     const currentUser = await userController.extractAndDecodeToken(req);
     const tokenUserId = currentUser.data._id;
 
     const tokenUser = await User.findById(tokenUserId).select('isAdmin');
     const isAdmin = tokenUser.isAdmin;
 
-    // Grabs the ID of the to-be-deleted organization
     const givenOrganizationId = req.body._id;
 
-    // Check if the user is authorized to delete the organization
     if (isAdmin) {
       try {
-        // Try to delete the Organization with the given ID
         await Organization.findByIdAndDelete(givenOrganizationId);
 
-        // If the organization was successfully deleted, return a 200 status with a success message
         res.status(200).json('Organization has been deleted');
       } catch (error) {
-        // If there's an error deleting the organization, return a 500 status with the error
         return res.status(500).json(error);
       }
     } else {
-      // If the user is not authorized to delete the organization, return a 403 status with an error message
       return res
         .status(403)
         .json(
