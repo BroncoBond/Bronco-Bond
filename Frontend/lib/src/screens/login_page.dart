@@ -94,23 +94,24 @@ class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFF435F49),
       body: SingleChildScrollView(
         child: Stack(
           children: [
             Positioned.fill(
               child: Align(
-                alignment: Alignment.topCenter,
+                alignment: Alignment.bottomCenter,
                 child: Image.asset(
-                  'assets/images/bg_asset.png',
+                  'assets/images/login_bg.png',
                   width: MediaQuery.of(context).size.width,
-                  height: 300,
+                  height: MediaQuery.of(context).size.height,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
             Positioned(
               child: Container(
-                decoration: BoxDecoration(color: Color(0xFF2E4233)),
+                height: MediaQuery.of(context).size.height,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
