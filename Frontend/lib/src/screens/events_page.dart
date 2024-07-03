@@ -15,12 +15,20 @@ class EventsPage extends StatefulWidget {
 class EventsPageState extends State<EventsPage> {
   late DateTime _selectedDay;
   late DateTime _focusedDay;
+  late PageController _pageController = PageController();
 
   @override
   void initState() {
     super.initState();
     _selectedDay = DateTime.now();
     _focusedDay = DateTime.now();
+    _pageController = PageController(initialPage: 1);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -42,7 +50,18 @@ class EventsPageState extends State<EventsPage> {
         children: [
           _buildHeader(),
           Expanded(
-            child: _buildWeekView(context),
+            child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: (int index) {
+                  print('page changed');
+                  setState(() {
+                    _selectedDay = _focusedDay.add(Duration(days: index - 1));
+                  });
+                },
+                itemCount: 3,
+                itemBuilder: (BuildContext context, int index) {
+                  return _buildWeekView(context, index);
+                }),
           ),
         ],
       ),
@@ -66,9 +85,9 @@ class EventsPageState extends State<EventsPage> {
         headerStyle: const HeaderStyle(
           formatButtonVisible: false,
           titleCentered: true,
-          decoration: BoxDecoration(
-            color: Colors.white,
-          ),
+          // decoration: BoxDecoration(
+          //   color: Colors.white,
+          // ),
           titleTextStyle: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 20,
@@ -106,7 +125,7 @@ class EventsPageState extends State<EventsPage> {
             shape: BoxShape.circle,
             border: Border.all(
               color: Color(0xFF3B5F43),
-              width: 1.5,
+              width: 1,
             ),
           ),
           weekendTextStyle: const TextStyle(
@@ -116,9 +135,9 @@ class EventsPageState extends State<EventsPage> {
             color: Color(0xFFABABAB),
             fontSize: 15,
           ),
-          rowDecoration: const BoxDecoration(
-            color: Colors.white,
-          ),
+          // rowDecoration: const BoxDecoration(
+          //   color: Colors.white,
+          // ),
           // Decoration of single event markers. Affects each marker dot.
           // markerDecoration: BoxDecoration(
           //   color: Color.fromARGB(255, 82, 214, 111),
@@ -141,12 +160,14 @@ class EventsPageState extends State<EventsPage> {
     );
   }
 
-  Widget _buildWeekView(BuildContext context) {
+  Widget _buildWeekView(BuildContext context, int pageIndex) {
+    DateTime pageDate = _focusedDay.add(Duration(days: pageIndex - 1));
     DateTime now = DateTime.now();
     DateTime date = DateTime(now.year, now.month, now.day);
     final firstDayOfWeek =
         _selectedDay.subtract(Duration(days: _selectedDay.weekday - 1));
     final lastDayOfWeek = firstDayOfWeek.add(const Duration(days: 6));
+
     return WeekView(
       initialTime: HourMinute(hour: DateTime.now().hour).atDate(DateTime.now()),
       dates: [firstDayOfWeek, _selectedDay, lastDayOfWeek],
