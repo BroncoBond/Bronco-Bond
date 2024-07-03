@@ -22,6 +22,7 @@ class LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   late SharedPreferences prefs;
+  bool hidePassword = true;
   bool staySignedIn = false;
 
   @override
@@ -100,63 +101,82 @@ class LoginPageState extends State<LoginPage> {
       body: SingleChildScrollView(
         child: Stack(
           children: [
-            Positioned(
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.topCenter,
                 child: Image.asset(
-              'assets/images/bg_asset.png',
-              fit: BoxFit.cover,
-            )),
-            Container(
-              decoration: BoxDecoration(color: Color(0xFF2E4233)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const SizedBox(height: 70),
-                  buildTitle("BroncoBond", 50.0, FontWeight.w800),
-                  const SizedBox(height: 8),
-                  buildTextFieldWithIcon(
-                      Icons.email_rounded, "Email", emailController, false),
-                  const SizedBox(height: 30),
-                  buildTextFieldWithIcon(
-                      Icons.lock_rounded, "Password", passwordController, true),
-                  buildCheckBox("Stay signed in", staySignedIn, (value) {
-                    setState(() {
-                      staySignedIn = value ?? false;
-                    });
-                  }),
-                  const SizedBox(height: 30),
-                  buildMainButton("Log In", context, (BuildContext context) {
-                    loginUser(context);
-                  }),
-                  const SizedBox(height: 70),
-                  buildTextButton(
-                    "Forgot your Password?",
-                    context,
-                    const ForgotPasswordPage(),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        child: Text(
-                          "Don't have an account yet?",
-                          style: GoogleFonts.raleway(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                  'assets/images/bg_asset.png',
+                  width: MediaQuery.of(context).size.width,
+                  height: 300,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Positioned(
+              child: Container(
+                decoration: BoxDecoration(color: Color(0xFF2E4233)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const SizedBox(height: 70),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        buildTitle(
+                            "Bronco", 50.0, FontWeight.w800, Colors.white),
+                        buildTitle(
+                            "Bond", 50.0, FontWeight.w800, Color(0xFFFED154)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    buildTextFieldWithIcon(
+                        Icons.email_rounded, "Email", emailController, false),
+                    const SizedBox(height: 30),
+                    buildTextFieldWithIcon(Icons.lock_rounded, "Password",
+                        passwordController, true),
+                    buildCheckBox("Stay signed in", staySignedIn, (value) {
+                      setState(() {
+                        staySignedIn = value ?? false;
+                      });
+                    }),
+                    const SizedBox(height: 70),
+                    buildMainButton("Log In", context, (BuildContext context) {
+                      loginUser(context);
+                    }),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 40.0),
+                        child: buildTextButton(
+                          "Forgot your password?",
+                          context,
+                          const ForgotPasswordPage(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          child: Text(
+                            "Don't have an account yet?",
+                            style: GoogleFonts.raleway(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8,
+                        buildTextButton(
+                          "Sign up",
+                          context,
+                          const RegisterPage(),
                         ),
-                      ),
-                      buildTextButton(
-                        "Sign up",
-                        context,
-                        const RegisterPage(),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -165,17 +185,17 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget buildTitle(String label, double size, FontWeight weight) {
+  Widget buildTitle(String label, double size, FontWeight weight, Color color) {
     // Title
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
         child: Text(
           label,
           style: GoogleFonts.raleway(
             fontSize: size,
             fontWeight: weight,
-            color: Colors.white,
+            color: color,
           ),
         ),
       ),
@@ -185,7 +205,6 @@ class LoginPageState extends State<LoginPage> {
   Widget buildTextButton(
       String label, BuildContext context, Widget destination) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 0),
       child: TextButton(
         onPressed: () {
           Navigator.push(
@@ -215,7 +234,7 @@ class LoginPageState extends State<LoginPage> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
         child: Container(
           width: 329,
           decoration: BoxDecoration(
@@ -241,8 +260,12 @@ class LoginPageState extends State<LoginPage> {
   }
 
   // Widget for TextFields
-  Widget buildTextFieldWithIcon(IconData icon, String hint,
-      TextEditingController fieldController, bool obscureText) {
+  Widget buildTextFieldWithIcon(
+    IconData icon,
+    String hint,
+    TextEditingController fieldController,
+    bool obscureText,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -253,7 +276,7 @@ class LoginPageState extends State<LoginPage> {
           child: TextField(
             controller: fieldController,
             keyboardType: TextInputType.text,
-            obscureText: obscureText,
+            obscureText: hidePassword,
             cursorColor: Color(0xFFFED154),
             decoration: InputDecoration(
               prefixIcon: Icon(
@@ -265,6 +288,16 @@ class LoginPageState extends State<LoginPage> {
               hintStyle: const TextStyle(
                 color: Color(0xFF2E4233),
               ),
+              suffixIcon: obscureText
+                  ? IconButton(
+                      onPressed: () {
+                        setState(() => hidePassword = !hidePassword);
+                      },
+                      icon: Icon(
+                        hidePassword ? Icons.visibility_off : Icons.visibility,
+                      ),
+                    )
+                  : null,
               filled: true,
               fillColor: Color(0xFF55685A),
               border: OutlineInputBorder(
@@ -290,7 +323,7 @@ class LoginPageState extends State<LoginPage> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 15, top: 0, right: 0),
+          padding: const EdgeInsets.only(left: 20, top: 0, right: 0),
           child: CheckboxListTile(
             title: Text(
               label,
