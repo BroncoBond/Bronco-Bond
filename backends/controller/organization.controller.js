@@ -14,17 +14,17 @@ exports.createOrganization = async (req, res) => {
     const tokenUser = await User.findById(tokenUserId).select('isAdmin');
     const isAdmin = tokenUser.isAdmin;
 
-    // Grabs the given details of the organization
-    const { name, logo, description, type } = req.body;
-    const createOrganization = new Organization({
-      name,
-      logo,
-      description,
-      type,
-    });
-
     // Check if the user is authorized to create the organization
     if (isAdmin) {
+      // Grabs the given details of the organization
+      const { name, logo, description, type } = req.body;
+      const createOrganization = new Organization({
+        name,
+        logo,
+        description,
+        type,
+      });
+
       try {
         console.log('Received organization creation data');
         const newOrganization = await createOrganization.save(); // Saves organization to MongoDB
@@ -39,7 +39,7 @@ exports.createOrganization = async (req, res) => {
         return res.status(500).json({ message: error.message });
       }
     } else {
-      // If the user is not authorized to delete the organization, return a 403 status with an error message
+      // If the user is not authorized to create the organization, return a 403 status with an error message
       return res
         .status(403)
         .json(
