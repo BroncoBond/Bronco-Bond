@@ -4,6 +4,7 @@ import 'package:bronco_bond/src/screens/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
+import 'dart:ui';
 import 'package:bronco_bond/src/screens/nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -19,21 +20,37 @@ class LoginPage extends StatefulWidget {
   LoginPageState createState() => LoginPageState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   late SharedPreferences prefs;
   bool hidePassword = true;
   bool staySignedIn = false;
+  late AnimationController _controller;
+  late Animation<Offset> _offsetAnimation;
 
   @override
   void initState() {
     super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+
+    _controller.forward();
     initSharedPref();
   }
 
   void initSharedPref() async {
     prefs = await SharedPreferences.getInstance();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void loginUser(BuildContext context) async {
@@ -99,15 +116,42 @@ class LoginPageState extends State<LoginPage> {
       child: Scaffold(
         backgroundColor: Color(0xFF435F49),
         body: SlidingUpPanel(
-            maxHeight: MediaQuery.of(context).size.height,
-            minHeight: MediaQuery.of(context).size.height - 495,
-            color: Colors.transparent,
-            boxShadow: null,
-            panelBuilder: (ScrollController sc) => buildLogin(sc),
-            body: Container(
-              alignment: Alignment.center,
-              color: Color(0xFF435F49),
-            )),
+          maxHeight: MediaQuery.of(context).size.height,
+          minHeight: MediaQuery.of(context).size.height - 495,
+          color: Colors.transparent,
+          boxShadow: null,
+          panelBuilder: (ScrollController sc) => buildLogin(sc),
+          body: Stack(
+            children: [
+              Positioned(
+                top: MediaQuery.of(context).size.height * 0.2,
+                left: (MediaQuery.of(context).size.width - 250) /
+                    2, // center logo
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: Offset(
+                            0, 2.0), // start from the bottom of the screen
+                        end: Offset.zero, // end at the center vertically
+                      ).animate(CurvedAnimation(
+                        parent: _controller,
+                        curve: Curves.easeInOut,
+                      )),
+                      child: Image.asset(
+                        'assets/images/BroncoBondCircle.png',
+                        width: 250,
+                        height: 250,
+                        fit: BoxFit.contain,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -318,8 +362,8 @@ class LoginPageState extends State<LoginPage> {
               filled: true,
               fillColor: Color(0xFF55685A),
               border: OutlineInputBorder(
-                borderSide: const BorderSide(color: Color(0xFFABABAB)),
                 borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide:
@@ -383,8 +427,8 @@ class LoginPageState extends State<LoginPage> {
                   Navigator.of(context).pop();
                 },
                 style: ButtonStyle(
-                  overlayColor: MaterialStateColor.resolveWith(
-                      (states) => const Color(0xffABABAB)),
+                  overlayColor:
+                      MaterialStateColor.resolveWith((states) => Colors.white),
                 ),
                 child: const Text(
                   'OK',
