@@ -30,7 +30,7 @@ Comprehensive Information: Explore all that CPP has to offer in one convenient p
 |       |
 
 
-### **Consultant:**  
+### **Outreach Coordinator:**  
 |       |
 | :---: |
 | <img width="50" src="https://github.com/MichaelWuhu.png"/></br>[Michael Wu](https://github.com/MichaelWuhu) |

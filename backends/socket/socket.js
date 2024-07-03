@@ -19,6 +19,10 @@ const getReceiverSocketId = (receiverId) => {
 	return userSocketMap[receiverId];
 };
 
+const getSenderSocketId = (senderId) => {
+	return userSocketMap[senderId];
+};
+
 const userSocketMap = {}; //{userId: socketId}
 
 io.on("connection", (socket)=> {
@@ -30,6 +34,7 @@ io.on("connection", (socket)=> {
     } 
 
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    console.log('Online Users:', Object.keys(userSocketMap)); // Log the online users
 
 
     socket.on("sendMessage", async (data) => {
@@ -44,6 +49,12 @@ io.on("connection", (socket)=> {
                 io.to(receiverSocketId).emit("newMessage", newMessage);
             }
 
+            const senderSocketId = getSenderSocketId(senderId);
+            if (senderSocketId) {
+                io.to(senderSocketId).emit("newMessage", newMessage);
+            }
+
+
             socket.emit('sendMessageResponse', { status: 'sent' });
         } catch (err) {
             socket.emit('sendMessageResponse', { status: 'failed', error: err.message });
@@ -57,4 +68,4 @@ io.on("connection", (socket)=> {
     });
 });
 
-module.exports = {server, app, io, getReceiverSocketId};
+module.exports = {server, app, io, getReceiverSocketId, getSenderSocketId};
