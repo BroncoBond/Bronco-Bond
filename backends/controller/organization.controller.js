@@ -50,6 +50,58 @@ exports.createOrganization = async (req, res) => {
   }
 };
 
+// (REQUIRES ADMIN)
+exports.updateOrganizationInformation = async (req, res) => {
+  try {
+    const currentUser = await userController.extractAndDecodeToken(req);
+    const tokenUserId = currentUser.data._id;
+
+    const tokenUser = await User.findById(tokenUserId).select('isAdmin');
+    const isAdmin = tokenUser.isAdmin;
+
+    if (isAdmin) {
+      const givenOrganizationId = req.body._id;
+
+      const { name, description } = req.body;
+      console.log("Updating organization's information");
+
+      try {
+        const updatedOrganization = await Organization.findByIdAndUpdate(
+          givenOrganizationId,
+          {
+            $set: {
+              name,
+              description,
+            },
+          },
+          { new: true } // Returns the updated organization
+        );
+        if (!updatedOrganization) {
+          return res.status(404).json({
+            error: 'No organization ID provided.',
+          });
+        }
+        return res.status(200).json(updatedOrganization);
+      } catch (error) {
+        return res.status(404).json({
+          error: 'Error updating organization, organization not found',
+        });
+      }
+    } else {
+      return res
+        .status(403)
+        .json(
+          'Administrative priviledges are required to edit an organization!'
+        );
+    }
+  } catch (error) {
+    console.error('Error editing organization:', error);
+    return res
+      .status(500)
+      .json({ error: 'Error editing organization', details: error });
+  }
+};
+
 // (COMMENT OUT DURING PROD)
 exports.getAllOrganizationIds = async (req, res) => {
   try {

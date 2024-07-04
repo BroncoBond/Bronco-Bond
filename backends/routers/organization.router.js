@@ -9,12 +9,12 @@ router.post(
   organizationController.createOrganization
 );
 
-// Update Organization's description
-// router.put(
-//   '/updateDescription',
-//   protectRouter.protectRoute,
-//   organizationController.updateOrganizationDescription
-// );
+// Update Organization's information
+router.put(
+  '/update',
+  protectRouter.protectRoute,
+  organizationController.updateOrganizationInformation
+);
 
 // (COMMENT OUT DURING PROD) Get all Organization IDs
 router.get(
