@@ -102,6 +102,28 @@ exports.updateOrganizationInformation = async (req, res) => {
   }
 };
 
+exports.getAllFollowers = async (req, res) => {
+  try {
+    const currentOrganizationId = req.body._id;
+    const currentOrganizationFollowers = await Organization.findById(
+      currentOrganizationId
+    ).select('followers');
+    if (!currentOrganizationFollowers) {
+      return res.status(404).json({
+        error: 'No organization ID provided.',
+      });
+    }
+    return res
+      .status(200)
+      .json({ Followers: currentOrganizationFollowers.followers });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: 'An error occured while fetching the follower list ' });
+  }
+};
+
 // (COMMENT OUT DURING PROD)
 exports.getAllOrganizationIds = async (req, res) => {
   try {

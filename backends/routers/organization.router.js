@@ -16,6 +16,13 @@ router.put(
   organizationController.updateOrganizationInformation
 );
 
+// Get all Organization folllowers
+router.get(
+  '/followers',
+  protectRouter.protectRoute,
+  organizationController.getAllFollowers
+);
+
 // (COMMENT OUT DURING PROD) Get all Organization IDs
 router.get(
   '/ids',
