@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-exports.extractAndDecodeToken = async (req) => {
+const extractAndDecodeToken = async (req) => {
   const token = req.headers.authorization.split(' ')[1];
 
   if (!token) {
@@ -25,6 +25,9 @@ exports.extractAndDecodeToken = async (req) => {
     }
   }
 };
+
+// Separate line to export so the function can still be used for user methods
+exports.extractAndDecodeToken = extractAndDecodeToken;
 
 exports.register = async (req, res, next) => {
   try {
@@ -175,8 +178,10 @@ exports.searchUserByUsername = async (req, res) => {
 
 exports.getBondList = async (req, res) => {
   try {
-    const currentUserId = (await extractAndDecodeToken(req)).data._id;
-    const currentUserBonds = await User.findById(currentUserId).select('bonds');
+    const currentUser = await extractAndDecodeToken(req);
+    const tokenUserId = currentUser.data._id;
+    
+    const currentUserBonds = await User.findById(tokenUserId).select('bonds');
     return res.status(200).json({ bonds: currentUserBonds.bonds });
   } catch (error) {
     console.error(error);
