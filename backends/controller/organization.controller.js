@@ -7,10 +7,9 @@ const userController = require('../controller/user.controller');
 // (REQUIRES ADMIN)
 exports.createOrganization = async (req, res) => {
   try {
-    const currentUser = await userController.extractAndDecodeToken(req);
-    const tokenUserId = currentUser.data._id;
+    const currentUserId = (await extractAndDecodeToken(req)).data._id;
 
-    const tokenUser = await User.findById(tokenUserId).select('isAdmin');
+    const tokenUser = await User.findById(currentUserId).select('isAdmin');
     const isAdmin = tokenUser.isAdmin;
 
     if (isAdmin) {
@@ -53,10 +52,9 @@ exports.createOrganization = async (req, res) => {
 // (REQUIRES ADMIN)
 exports.updateOrganizationInformation = async (req, res) => {
   try {
-    const currentUser = await userController.extractAndDecodeToken(req);
-    const tokenUserId = currentUser.data._id;
+    const currentUserId = (await extractAndDecodeToken(req)).data._id;
 
-    const tokenUser = await User.findById(tokenUserId).select('isAdmin');
+    const tokenUser = await User.findById(currentUserId).select('isAdmin');
     const isAdmin = tokenUser.isAdmin;
 
     if (isAdmin) {
@@ -161,8 +159,7 @@ exports.getById = async (req, res) => {
 // (REQUIRES ADMIN)
 exports.deleteOrganization = async (req, res) => {
   try {
-    const currentUser = await userController.extractAndDecodeToken(req);
-    const tokenUserId = currentUser.data._id;
+    const currentUserId = (await extractAndDecodeToken(req)).data._id;
 
     const tokenUser = await User.findById(tokenUserId).select('isAdmin');
     const isAdmin = tokenUser.isAdmin;
