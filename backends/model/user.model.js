@@ -59,6 +59,15 @@ const userSchema = new Schema({
             type: Number,
             default:0
         },
+        followedOrganizations: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Organization',
+            default: []
+        }],
+        numOfFollowedOrganizations: {
+            type: Number,
+            default: 0
+        },
         interests: {
             type: [String],
             default:[]
