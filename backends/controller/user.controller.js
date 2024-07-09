@@ -668,6 +668,35 @@ exports.followOrganization = async (req, res) => {
   }
 };
 
+exports.unfollowOrganization = async (req, res) => {
+  const currentUserId = (await extractAndDecodeToken(req)).data._id;
+  const currentUser = await User.findById(currentUserId);
+
+  const givenOrganizationId = req.body._id;
+  const givenOrganization = await Organization.findById(givenOrganizationId);
+
+  try {
+    if (
+      currentUser.followedOrganizations
+        .map((followedOrganization) => followedOrganization.toString())
+        .includes(givenOrganizationId)
+    ) {
+      await currentUser.updateOne({
+        $pull: { followedOrganizations: givenOrganizationId },
+      });
+      await givenOrganization.updateOne({
+        $pull: { followers: currentUserId },
+      });
+
+      return res.status(200).json('Organization has been unfollowed');
+    } else {
+      return res.status(403).json('You are not following this organization!');
+    }
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 exports.makeAdmin = async (req, res) => {
   const { _id } = req.body;
   // Only allow this API to be called by admins

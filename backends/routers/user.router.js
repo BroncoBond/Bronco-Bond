@@ -54,6 +54,9 @@ router.delete("/unBond", protectRouter.protectRoute, userController.unBondUser);
 //Follow an Organization
 router.put("/followOrganization", protectRouter.protectRoute, userController.followOrganization);
 
+//Unfollow an Organization
+router.delete("/unfollowOrganization", protectRouter.protectRoute, userController.unfollowOrganization);
+
 //Logout User
 router.post("/logout", protectRouter.protectRoute, userController.logout);
 
