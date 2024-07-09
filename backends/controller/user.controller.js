@@ -9,7 +9,6 @@ require('dotenv').config();
 
 // Used for functions that involve (un)following organizations
 const Organization = require('../model/organization.model');
-const organizationController = require('../controller/organization.controller');
 
 const extractAndDecodeToken = async (req) => {
   const token = req.headers.authorization.split(' ')[1];
@@ -634,6 +633,38 @@ exports.unBondUser = async (req, res) => {
     }
   } catch (error) {
     return res.status(500).json(error);
+  }
+};
+
+exports.followOrganization = async (req, res) => {
+  const currentUserId = (await extractAndDecodeToken(req)).data._id;
+  const currentUser = await User.findById(currentUserId);
+
+  const givenOrganizationId = req.body._id;
+  const givenOrganization = await Organization.findById(givenOrganizationId);
+
+  try {
+    if (!givenOrganization) {
+      return res.status(404).json('Organization not found');
+    }
+
+    if (
+      currentUser.followedOrganizations.includes(givenOrganization.id) &&
+      givenOrganization.followers.includes(currentUser.id)
+    ) {
+      return res
+        .status(403)
+        .json('You are already following this organization!');
+    }
+
+    await currentUser.updateOne({
+      $push: { followedOrganizations: givenOrganization.id },
+    });
+    await givenOrganization.updateOne({ $push: { followers: currentUser.id } });
+
+    return res.status(200).json('Organization followed');
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 };
 

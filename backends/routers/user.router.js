@@ -51,7 +51,8 @@ router.put("/revokeBondRequest", protectRouter.protectRoute, userController.revo
 //Unfriend User
 router.delete("/unBond", protectRouter.protectRoute, userController.unBondUser);
 
-//
+//Follow an Organization
+router.put("/followOrganization", protectRouter.protectRoute, userController.followOrganization);
 
 //Logout User
 router.post("/logout", protectRouter.protectRoute, userController.logout);
