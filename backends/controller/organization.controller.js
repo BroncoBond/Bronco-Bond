@@ -165,7 +165,8 @@ exports.getById = async (req, res) => {
 // (REQUIRES ADMIN)
 exports.deleteOrganization = async (req, res) => {
   try {
-    const currentUserId = (await extractAndDecodeToken(req)).data._id;
+    const currentUser = await userController.extractAndDecodeToken(req);
+    const tokenUserId = currentUser.data._id;
 
     const tokenUser = await User.findById(tokenUserId).select('isAdmin');
     const isAdmin = tokenUser.isAdmin;
