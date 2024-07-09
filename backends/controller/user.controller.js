@@ -178,10 +178,8 @@ exports.searchUserByUsername = async (req, res) => {
 
 exports.getBondList = async (req, res) => {
   try {
-    const currentUser = await extractAndDecodeToken(req);
-    const tokenUserId = currentUser.data._id;
-    
-    const currentUserBonds = await User.findById(tokenUserId).select('bonds');
+    const currentUserId = (await extractAndDecodeToken(req)).data._id;
+    const currentUserBonds = await User.findById(currentUserId).select('bonds');
     return res.status(200).json({ bonds: currentUserBonds.bonds });
   } catch (error) {
     console.error(error);
