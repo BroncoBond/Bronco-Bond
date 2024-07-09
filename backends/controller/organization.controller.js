@@ -4,6 +4,10 @@ const Organization = require('../model/organization.model');
 const User = require('../model/user.model');
 const userController = require('../controller/user.controller');
 
+// Theoretically you could combine lines like 10-11 or 60-61 to just be
+// "const currentUserId = (await extractAndDecodeToken(req)).data._id;"
+// but this doesn't work for some reason?
+
 // (REQUIRES ADMIN)
 exports.createOrganization = async (req, res) => {
   try {
