@@ -191,6 +191,26 @@ exports.getBondList = async (req, res) => {
   }
 };
 
+exports.getFollowedOrganizations = async (req, res) => {
+  try {
+    const currentUserId = (await extractAndDecodeToken(req)).data._id;
+    const currentFollowedOrganizations = await User.findById(
+      currentUserId
+    ).select('followedOrganizations');
+    return res
+      .status(200)
+      .json({
+        "followedOrganizations:":
+          currentFollowedOrganizations.followedOrganizations,
+      });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ error: 'An error occured while fetching the organizations' });
+  }
+};
+
 exports.getById = async (req, res) => {
   const currentUserId = (await extractAndDecodeToken(req)).data._id;
   const bodyId = req.body._id;

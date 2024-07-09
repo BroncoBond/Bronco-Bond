@@ -15,6 +15,9 @@ router.get('/search', protectRouter.protectRoute, userController.searchUserByUse
 //Get all User Bonds
 router.get('/friendList', protectRouter.protectRoute, userController.getBondList);
 
+//Get all followed Organizations
+router.get('/followedOrganizations', protectRouter.protectRoute, userController.getFollowedOrganizations);
+
 //Update User Info
 router.put("/updateUserInfo", protectRouter.protectRoute, userController.updateUserInfo);
 
@@ -47,6 +50,8 @@ router.put("/revokeBondRequest", protectRouter.protectRoute, userController.revo
 
 //Unfriend User
 router.delete("/unBond", protectRouter.protectRoute, userController.unBondUser);
+
+//
 
 //Logout User
 router.post("/logout", protectRouter.protectRoute, userController.logout);
