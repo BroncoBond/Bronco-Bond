@@ -7,6 +7,10 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+// Used for functions that involve (un)following organizations
+const Organization = require('../model/organization.model');
+const organizationController = require('../controller/organization.controller');
+
 const extractAndDecodeToken = async (req) => {
   const token = req.headers.authorization.split(' ')[1];
 
@@ -195,12 +199,10 @@ exports.getFollowedOrganizations = async (req, res) => {
     const currentFollowedOrganizations = await User.findById(
       currentUserId
     ).select('followedOrganizations');
-    return res
-      .status(200)
-      .json({
-        "followedOrganizations:":
-          currentFollowedOrganizations.followedOrganizations,
-      });
+    return res.status(200).json({
+      'followedOrganizations:':
+        currentFollowedOrganizations.followedOrganizations,
+    });
   } catch (error) {
     console.error(error);
     return res
@@ -368,12 +370,10 @@ exports.updateUserInterests = async (req, res) => {
             .json({ error: 'Error updating user, user not found' });
         }
 
-        res
-          .status(200)
-          .json({
-            status: true,
-            success: 'User interests updated successfully',
-          });
+        res.status(200).json({
+          status: true,
+          success: 'User interests updated successfully',
+        });
       } catch (err) {
         console.error('Error updating user:', err);
         return res
