@@ -659,8 +659,12 @@ exports.followOrganization = async (req, res) => {
 
     await currentUser.updateOne({
       $push: { followedOrganizations: givenOrganization.id },
+      $inc: { numOfFollowedOrganizations: +1 }
     });
-    await givenOrganization.updateOne({ $push: { followers: currentUser.id } });
+    await givenOrganization.updateOne({
+      $push: { followers: currentUser.id },
+      $inc: { numOfFollowers: +1 },
+    });
 
     return res.status(200).json('Organization followed');
   } catch (error) {
@@ -683,9 +687,11 @@ exports.unfollowOrganization = async (req, res) => {
     ) {
       await currentUser.updateOne({
         $pull: { followedOrganizations: givenOrganizationId },
+        $inc: { numOfFollowedOrganizations: -1 },
       });
       await givenOrganization.updateOne({
         $pull: { followers: currentUserId },
+        $inc: { numOfFollowers: -1 },
       });
 
       return res.status(200).json('Organization has been unfollowed');
