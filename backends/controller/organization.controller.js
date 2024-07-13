@@ -30,6 +30,9 @@ exports.createOrganization = async (req, res) => {
         console.log('Received organization creation data');
         const newOrganization = await createOrganization.save();
         console.log('Organization created: ', newOrganization);
+            res.json({
+              status: true,
+            });
       } catch (error) {
         if (error.name === 'ValidationError') {
           // Error if name and/or type are not provided
