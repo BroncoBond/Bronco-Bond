@@ -15,17 +15,23 @@ router.get('/search', protectRouter.protectRoute, userController.searchUserByUse
 //Get all User Bonds
 router.get('/friendList', protectRouter.protectRoute, userController.getBondList);
 
+//Get all followed Organizations
+router.get('/followedOrganizations', protectRouter.protectRoute, userController.getFollowedOrganizations);
+
 //Update User Info
 router.put("/updateUserInfo", protectRouter.protectRoute, userController.updateUserInfo);
 
 //Update User Interests
 router.put("/updateUserInterest", protectRouter.protectRoute, userController.updateUserInterests);
 
-//Get all User ID
-router.get('/ids', userController.getAllUserIds); //Remove during production
+// DEVELOPMENT BUILD ONLY
+if (process.env.NODE_ENV === 'development') {
+  //Get all User ID
+  router.get('/ids', userController.getAllUserIds);
 
-//Get all User Data
-router.get("/data",userController.getAllUserData); //Remove during production
+  //Get all User Data
+  router.get('/data', userController.getAllUserData); // DEVELOPMENT BUILD ONLY
+};
 
 //Get User by Id
 router.post("/", protectRouter.protectRoute, userController.getById);
@@ -47,6 +53,12 @@ router.put("/revokeBondRequest", protectRouter.protectRoute, userController.revo
 
 //Unfriend User
 router.delete("/unBond", protectRouter.protectRoute, userController.unBondUser);
+
+//Follow an Organization
+router.put("/followOrganization", protectRouter.protectRoute, userController.followOrganization);
+
+//Unfollow an Organization
+router.delete("/unfollowOrganization", protectRouter.protectRoute, userController.unfollowOrganization);
 
 //Logout User
 router.post("/logout", protectRouter.protectRoute, userController.logout);
