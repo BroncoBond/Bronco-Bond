@@ -24,11 +24,14 @@ router.put("/updateUserInfo", protectRouter.protectRoute, userController.updateU
 //Update User Interests
 router.put("/updateUserInterest", protectRouter.protectRoute, userController.updateUserInterests);
 
-//Get all User ID
-router.get('/ids', userController.getAllUserIds); //Remove during production
+// DEVELOPMENT BUILD ONLY
+if (process.env.NODE_ENV === 'development') {
+  //Get all User ID
+  router.get('/ids', userController.getAllUserIds);
 
-//Get all User Data
-router.get("/data",userController.getAllUserData); //Remove during production
+  //Get all User Data
+  router.get('/data', userController.getAllUserData); // DEVELOPMENT BUILD ONLY
+};
 
 //Get User by Id
 router.post("/", protectRouter.protectRoute, userController.getById);

@@ -23,17 +23,14 @@ router.get(
   organizationController.getAllFollowers
 );
 
-// (COMMENT OUT DURING PROD) Get all Organization IDs
-router.get(
-  '/ids',
-  organizationController.getAllOrganizationIds
-);
+// DEVELOPMENT BUILD ONLY
+if (process.env.NODE_ENV === 'development') {
+  // Get all Organization IDs
+  router.get('/ids', organizationController.getAllOrganizationIds);
 
-// (COMMENT OUT DURING PROD) Get all Organization data
-router.get(
-  '/data',
-  organizationController.getAllOrganizationData
-);
+  // Get all Organization data
+  router.get('/data', organizationController.getAllOrganizationData);
+};
 
 // Get Organization by ID
 router.post('/', protectRouter.protectRoute, organizationController.getById);

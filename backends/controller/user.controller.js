@@ -225,27 +225,27 @@ exports.getById = async (req, res) => {
   return res.status(200).json({ user });
 };
 
-// COMMENT OUT DURING PRODUCTION
-exports.getAllUserIds = async (req, res) => {
-  try {
-    const users = await User.find({}, '_id'); // fetch only the _id field for all users
-    const _id = users.map((user) => user._id); // extract the _id from each user
-    return res.status(200).json(_id); // return the array of user IDs
-  } catch (error) {
-    console.error('Error fetching user IDs:', error);
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-// COMMENT OUT DURING PRODUCTION
-exports.getAllUserData = async (req, res) => {
-  try {
-    const users = await User.find({}).select('-password -profilePicture'); // fetch the user data for all users
-    return res.status(200).json(users); // return the array of user data
-  } catch (error) {
-    console.error('Error fetching user IDs:', error);
-    return res.status(500).json({ message: error.message });
-  }
+// DEVELOPMENT BUILD ONLY
+if (process.env.NODE_ENV === 'development') {
+  exports.getAllUserIds = async (req, res) => {
+    try {
+      const users = await User.find({}, '_id'); // fetch only the _id field for all users
+      const _id = users.map((user) => user._id); // extract the _id from each user
+      return res.status(200).json(_id); // return the array of user IDs
+    } catch (error) {
+      console.error('Error fetching user IDs:', error);
+      return res.status(500).json({ message: error.message });
+    }
+  };
+  exports.getAllUserData = async (req, res) => {
+    try {
+      const users = await User.find({}).select('-password -profilePicture'); // fetch the user data for all users
+      return res.status(200).json(users); // return the array of user data
+    } catch (error) {
+      console.error('Error fetching user IDs:', error);
+      return res.status(500).json({ message: error.message });
+    }
+  };
 };
 
 // This function is used to update a user's information

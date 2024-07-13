@@ -131,28 +131,29 @@ exports.getAllFollowers = async (req, res) => {
   }
 };
 
-// (COMMENT OUT DURING PROD)
-exports.getAllOrganizationIds = async (req, res) => {
-  try {
-    const organizations = await Organization.find({}, '_id');
-    const _id = organizations.map((organization) => organization._id);
-    return res.status(200).json(_id);
-  } catch (error) {
-    console.error('Error fetching Organization IDs:', error);
-    return res.status(500).json({ message: error.message });
-  }
-};
+// DEVELOPMENT BUILD ONLY
+if (process.env.NODE_ENV === 'development') {
+  exports.getAllOrganizationIds = async (req, res) => {
+    try {
+      const organizations = await Organization.find({}, '_id');
+      const _id = organizations.map((organization) => organization._id);
+      return res.status(200).json(_id);
+    } catch (error) {
+      console.error('Error fetching Organization IDs:', error);
+      return res.status(500).json({ message: error.message });
+    }
+  };
 
-// (COMMENT OUT DURING PROD)
-exports.getAllOrganizationData = async (req, res) => {
-  try {
-    const organizations = await Organization.find({}).select();
-    return res.status(200).json(organizations);
-  } catch (error) {
-    console.error('Error fetching Organization IDs:', error);
-    return res.status(500).json({ message: error.message });
-  }
-};
+  exports.getAllOrganizationData = async (req, res) => {
+    try {
+      const organizations = await Organization.find({}).select();
+      return res.status(200).json(organizations);
+    } catch (error) {
+      console.error('Error fetching Organization IDs:', error);
+      return res.status(500).json({ message: error.message });
+    }
+  };
+}
 
 exports.getById = async (req, res) => {
   const bodyId = req.body._id;
