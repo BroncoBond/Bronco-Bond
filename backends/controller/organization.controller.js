@@ -30,9 +30,9 @@ exports.createOrganization = async (req, res) => {
         console.log('Received organization creation data');
         const newOrganization = await createOrganization.save();
         console.log('Organization created: ', newOrganization);
-            res.status(201).json({
-              status: true,
-            });
+        res.status(201).json({
+          status: true,
+        });
       } catch (error) {
         if (error.name === 'ValidationError') {
           // Error if name and/or type are not provided
@@ -153,7 +153,7 @@ if (process.env.NODE_ENV === 'development') {
       return res.status(500).json({ message: error.message });
     }
   };
-}
+};
 
 exports.getById = async (req, res) => {
   const bodyId = req.body._id;
