@@ -30,7 +30,7 @@ exports.createOrganization = async (req, res) => {
         console.log('Received organization creation data');
         const newOrganization = await createOrganization.save();
         console.log('Organization created: ', newOrganization);
-            res.json({
+            res.status(201).json({
               status: true,
             });
       } catch (error) {
