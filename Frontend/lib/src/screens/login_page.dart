@@ -4,11 +4,13 @@ import 'package:bronco_bond/src/screens/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
+import 'dart:ui';
 import 'package:bronco_bond/src/screens/nav_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:bronco_bond/src/config.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 /// Displays detailed information about a SampleItem.
 class LoginPage extends StatefulWidget {
@@ -18,21 +20,37 @@ class LoginPage extends StatefulWidget {
   LoginPageState createState() => LoginPageState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   late SharedPreferences prefs;
   bool hidePassword = true;
   bool staySignedIn = false;
+  late AnimationController _controller;
+  late Animation<Offset> _offsetAnimation;
 
   @override
   void initState() {
     super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+
+    _controller.forward();
     initSharedPref();
   }
 
   void initSharedPref() async {
     prefs = await SharedPreferences.getInstance();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void loginUser(BuildContext context) async {
@@ -97,91 +115,132 @@ class LoginPageState extends State<LoginPage> {
       canPop: false,
       child: Scaffold(
         backgroundColor: Color(0xFF435F49),
-        body: SingleChildScrollView(
-          child: Stack(
+        body: SlidingUpPanel(
+          maxHeight: MediaQuery.of(context).size.height,
+          minHeight: MediaQuery.of(context).size.height - 495,
+          color: Colors.transparent,
+          boxShadow: null,
+          panelBuilder: (ScrollController sc) => buildLogin(sc),
+          body: Stack(
             children: [
-              Positioned.fill(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Image.asset(
-                    'assets/images/login_bg.png',
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
               Positioned(
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const SizedBox(height: 70),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          buildTitle(
-                              "Bronco", 45.0, FontWeight.w800, Colors.white),
-                          buildTitle(
-                              "Bond", 45.0, FontWeight.w800, Color(0xFFFED154)),
-                        ],
+                top: MediaQuery.of(context).size.height * 0.2,
+                left: (MediaQuery.of(context).size.width - 250) /
+                    2, // center logo
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: Offset(
+                            0, 2.0), // start from the bottom of the screen
+                        end: Offset.zero, // end at the center vertically
+                      ).animate(CurvedAnimation(
+                        parent: _controller,
+                        curve: Curves.easeInOut,
+                      )),
+                      child: Image.asset(
+                        'assets/images/BroncoBondCircle.png',
+                        width: 250,
+                        height: 250,
+                        fit: BoxFit.contain,
                       ),
-                      const SizedBox(height: 6),
-                      buildTextFieldWithIcon(
-                          Icons.email_rounded, "Email", emailController, false),
-                      const SizedBox(height: 10),
-                      buildTextFieldWithIcon(Icons.lock_rounded, "Password",
-                          passwordController, true),
-                      buildCheckBox("Stay signed in", staySignedIn, (value) {
-                        setState(() {
-                          staySignedIn = value ?? false;
-                        });
-                      }),
-                      const SizedBox(height: 70),
-                      buildMainButton("Log In", context,
-                          (BuildContext context) {
-                        loginUser(context);
-                      }),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 40.0),
-                          child: buildTextButton(
-                            "Forgot your password?",
-                            context,
-                            const ForgotPasswordPage(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            child: Text(
-                              "Don't have an account yet?",
-                              style: GoogleFonts.raleway(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          buildTextButton(
-                            "Sign up",
-                            context,
-                            const RegisterPage(),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildLogin(ScrollController sc) {
+    return SingleChildScrollView(
+      controller: sc,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            top: 30,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Image.asset(
+                'assets/images/login_bg.png',
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+          Positioned(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const SizedBox(height: 90),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      buildTitle("Bronco", 45.0, FontWeight.w800, Colors.white),
+                      buildTitle(
+                          "Bond", 45.0, FontWeight.w800, Color(0xFFFED154)),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  buildTextFieldWithIcon(
+                      Icons.email_rounded, "Email", emailController, false),
+                  const SizedBox(height: 2),
+                  buildTextFieldWithIcon(
+                      Icons.lock_rounded, "Password", passwordController, true),
+                  buildCheckBox("Stay signed in", staySignedIn, (value) {
+                    setState(() {
+                      staySignedIn = value ?? false;
+                    });
+                  }),
+                  const SizedBox(height: 30),
+                  buildMainButton("Log In", context, (BuildContext context) {
+                    loginUser(context);
+                  }),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 40.0),
+                      child: buildTextButton(
+                        "Forgot your password?",
+                        context,
+                        const ForgotPasswordPage(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        child: Text(
+                          "Don't have an account yet?",
+                          style: GoogleFonts.raleway(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      buildTextButton(
+                        "Sign up",
+                        context,
+                        const RegisterPage(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -296,14 +355,15 @@ class LoginPageState extends State<LoginPage> {
                       },
                       icon: Icon(
                         hidePassword ? Icons.visibility_off : Icons.visibility,
+                        color: Color(0xFF2E4233),
                       ),
                     )
                   : null,
               filled: true,
               fillColor: Color(0xFF55685A),
               border: OutlineInputBorder(
-                borderSide: const BorderSide(color: Color(0xFFABABAB)),
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide:
@@ -367,8 +427,8 @@ class LoginPageState extends State<LoginPage> {
                   Navigator.of(context).pop();
                 },
                 style: ButtonStyle(
-                  overlayColor: MaterialStateColor.resolveWith(
-                      (states) => const Color(0xffABABAB)),
+                  overlayColor:
+                      MaterialStateColor.resolveWith((states) => Colors.white),
                 ),
                 child: const Text(
                   'OK',
