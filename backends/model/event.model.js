@@ -22,6 +22,17 @@ const eventSchema = new Schema(
       max: 300,
       default: 'No description.',
     },
+    type: {
+      type: String,
+      enum: ['Public', 'Private'], // The type must match these hard-coded types of Organizations
+      required: true,
+    },
+    eventCreator: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      },
+    ],
   },
   { timestamps: true }
 );
