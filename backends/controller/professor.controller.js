@@ -57,3 +57,27 @@ exports.createProfessor = async (req, res) => {
         .json({ error: 'Error creating professor', details: error });
     }
 }
+
+// DEVELOPMENT BUILD ONLY
+if (process.env.NODE_ENV === 'development') {
+  exports.getAllProfessorIds = async (req, res) => {
+    try {
+      const professors = await Professor.find({}, '_id');
+      const _id = professors.map((professor) => professor._id);
+      return res.status(200).json(_id);
+    } catch (error) {
+      console.error('Error fetching Professor IDs:', error);
+      return res.status(500).json({ message: error.message });
+    }
+  };
+
+  exports.getAllProfessorData = async (req, res) => {
+    try {
+      const professors = await Professor.find({}).select();
+      return res.status(200).json(professors);
+    } catch (error) {
+      console.error('Error fetching Professor Data:', error);
+      return res.status(500).json({ message: error.message });
+    }
+  };
+};
