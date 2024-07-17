@@ -10,6 +10,7 @@ const UserModel = require('./model/user.model');
 const userRouter = require('./routers/user.router');
 const organizationRouter = require('./routers/organization.router');
 const messageRouter = require('./routers/message.router');
+const eventRouter = require('./routers/event.router');
 const websiteRouter = require('./routers/website.router');
 const errorHandler = require('./middleware/errorHandler');
 const durationLogger = require('./middleware/durationLogger');
@@ -37,6 +38,7 @@ app.use('/api/user', userRouter);
 app.use('/api/organization', organizationRouter);
 app.use('/api/message', messageRouter);
 app.use('/api/website', websiteRouter);
+app.use('/api/event', eventRouter);
 // Error Handler
 app.use(errorHandler);
 
