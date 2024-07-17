@@ -178,6 +178,16 @@ exports.deleteOrganization = async (req, res) => {
     const givenOrganizationId = req.body._id;
 
     if (isAdmin) {
+      if (!givenOrganizationId) {
+        return res.status(400).json({ error: 'Organization ID not provided' });
+      }
+
+      const organization = await Organization.findById(givenOrganizationId);
+
+      if (!organization) {
+        return res.status(404).json({ error: 'Organization not found' });
+      }
+
       try {
         await Organization.findByIdAndDelete(givenOrganizationId);
 
