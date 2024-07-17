@@ -82,6 +82,26 @@ if (process.env.NODE_ENV === 'development') {
   };
 }
 
+exports.getById = async (req, res) => {
+  const givenProfessorId = req.body._id;
+  let professor;
+  
+  if (!givenProfessorId) {
+    return res.status(400).json({ error: 'Professor ID not provided' });
+  }
+
+  try {
+    professor = await Professor.findById(givenProfessorId).select();
+
+    if (!professor) {
+      return res.status(404).json({ error: 'Professor not found' });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+  return res.status(200).json({ professor });
+}
+
 // (REQUIRES ADMIN)
 exports.deleteProfessor = async (req, res) => {
   try {

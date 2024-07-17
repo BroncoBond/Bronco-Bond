@@ -10,6 +10,8 @@ if (process.env.NODE_ENV === 'development') {
   router.get('/data', professorController.getAllProfessorData);
 };
 
+router.post('/', protectRouter.protectRoute, professorController.getById);
+
 router.delete('/delete', protectRouter.protectRoute, professorController.deleteProfessor);
 
 module.exports = router;
