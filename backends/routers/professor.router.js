@@ -6,11 +6,10 @@ router.post('/create', protectRouter.protectRoute, professorController.createPro
 
 // DEVELOPMENT BUILD ONLY
 if (process.env.NODE_ENV === 'development') {
-  // Get all Professor IDs
   router.get('/ids', professorController.getAllProfessorIds);
-
-  // Get all Professor data
   router.get('/data', professorController.getAllProfessorData);
 };
+
+router.delete('/delete', protectRouter.protectRoute, professorController.deleteProfessor);
 
 module.exports = router;

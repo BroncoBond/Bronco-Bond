@@ -6,57 +6,57 @@ const userController = require('../controller/user.controller');
 
 // (REQUIRES ADMIN)
 exports.createProfessor = async (req, res) => {
-    try {
-      const currentUser = await userController.extractAndDecodeToken(req);
-      const tokenUserId = currentUser.data._id;
+  try {
+    const currentUser = await userController.extractAndDecodeToken(req);
+    const tokenUserId = currentUser.data._id;
 
-      const tokenUser = await User.findById(tokenUserId).select('isAdmin');
-      const isAdmin = tokenUser.isAdmin;
+    const tokenUser = await User.findById(tokenUserId).select('isAdmin');
+    const isAdmin = tokenUser.isAdmin;
 
-      if (isAdmin) {
-        const { email, name, degree, college, department } = req.body;
-        if (!/@cpp\.edu\s*$/.test(email)) {
-          res.status(400).json({ status: false, error: 'Invalid Cpp Email' });
-        }
-        const createProfessor = new Professor({
-          email,
-          name,
-          degree,
-          college,
-          department,
-        });
-
-        try {
-          console.log('Received professor creation data');
-          const newProfessor = await createProfessor.save();
-          console.log('Professor created: ', newProfessor);
-          res.status(201).json({
-            status: true,
-            success: 'Professor Created Successfully',
-          });
-        } catch (error) {
-          if (error.name === 'ValidationError') {
-            // Error if name and/or type are not provided
-            console.log('Error during professor creation: ' + error.message);
-            return res.status(400).json({ message: error.message });
-          }
-          console.log('Error during professor creation: ' + error.message);
-          return res.status(500).json({ message: error.message });
-        }
-      } else {
-        return res
-          .status(403)
-          .json(
-            'Administrative priviledges are required to create an professor!'
-          );
+    if (isAdmin) {
+      const { email, name, degree, college, department } = req.body;
+      if (!/@cpp\.edu\s*$/.test(email)) {
+        res.status(400).json({ status: false, error: 'Invalid Cpp Email' });
       }
-    } catch (error) {
-      console.error('Error creating professor:', error);
+      const createProfessor = new Professor({
+        email,
+        name,
+        degree,
+        college,
+        department,
+      });
+
+      try {
+        console.log('Received professor creation data');
+        const newProfessor = await createProfessor.save();
+        console.log('Professor created: ', newProfessor);
+        res.status(201).json({
+          status: true,
+          success: 'Professor Created Successfully',
+        });
+      } catch (error) {
+        if (error.name === 'ValidationError') {
+          // Error if name and/or type are not provided
+          console.log('Error during professor creation: ' + error.message);
+          return res.status(400).json({ message: error.message });
+        }
+        console.log('Error during professor creation: ' + error.message);
+        return res.status(500).json({ message: error.message });
+      }
+    } else {
       return res
-        .status(500)
-        .json({ error: 'Error creating professor', details: error });
+        .status(403)
+        .json(
+          'Administrative priviledges are required to create an professor!'
+        );
     }
-}
+  } catch (error) {
+    console.error('Error creating professor:', error);
+    return res
+      .status(500)
+      .json({ error: 'Error creating professor', details: error });
+  }
+};
 
 // DEVELOPMENT BUILD ONLY
 if (process.env.NODE_ENV === 'development') {
@@ -80,4 +80,47 @@ if (process.env.NODE_ENV === 'development') {
       return res.status(500).json({ message: error.message });
     }
   };
+}
+
+// (REQUIRES ADMIN)
+exports.deleteProfessor = async (req, res) => {
+  try {
+    const currentUser = await userController.extractAndDecodeToken(req);
+    const tokenUserId = currentUser.data._id;
+
+    const tokenUser = await User.findById(tokenUserId).select('isAdmin');
+    const isAdmin = tokenUser.isAdmin;
+
+    const givenProfessorId = req.body._id;
+
+    if (isAdmin) {
+      if (!givenProfessorId) {
+        return res.status(400).json({ error: 'Professor ID not provided' });
+      }
+
+      const professor = await Professor.findById(givenProfessorId);
+
+      if (!professor) {
+        return res.status(404).json({ error: 'Professor not found' });
+      }
+
+      try {
+        await Professor.findByIdAndDelete(givenProfessorId);
+        res.status(200).json('Professor has been deleted');
+      } catch (error) {
+        return res.status(500).json(error);
+      }
+    } else {
+      return res
+        .status(403)
+        .json(
+          'Administrative priviledges are required to delete an professor!'
+        );
+    }
+  } catch (error) {
+    console.error('Error deleting professor:', error);
+    return res
+      .status(500)
+      .json({ error: 'Error deleting professor', details: error });
+  }
 };
