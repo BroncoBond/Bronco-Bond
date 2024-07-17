@@ -178,7 +178,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             }),
             const SizedBox(height: 10),
             buildTextArea(),
-            LoginPageState.buildMainButton("Next", context,
+            LoginPageState.buildMainButton("Next", "green", context,
                 (BuildContext context) {
               addInfoToUser(context);
             }),

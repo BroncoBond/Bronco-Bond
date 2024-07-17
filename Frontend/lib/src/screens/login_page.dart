@@ -137,7 +137,8 @@ class LoginPageState extends State<LoginPage> {
                       });
                     }),
                     const SizedBox(height: 70),
-                    buildMainButton("Log In", context, (BuildContext context) {
+                    buildMainButton("Log In", "yellow", context,
+                        (BuildContext context) {
                       loginUser(context);
                     }),
                     Align(
@@ -226,8 +227,23 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
-  static Widget buildMainButton(String label, BuildContext context,
-      void Function(BuildContext) onPressed) {
+  static Widget buildMainButton(String label, String color,
+      BuildContext context, void Function(BuildContext) onPressed) {
+    Color buttonColor;
+    Color textColor;
+
+    if (color == "yellow") {
+      buttonColor = const Color(0xFFFED154);
+      textColor = const Color(0xFF435E49);
+    } else if (color == "green") {
+      buttonColor = const Color(0xFF435E49);
+      textColor = const Color(0xFFFED154);
+    } else {
+      // Default colors
+      buttonColor = const Color(0xFFFED154);
+      textColor = const Color(0xFF435E49);
+    }
+
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
@@ -236,7 +252,7 @@ class LoginPageState extends State<LoginPage> {
           width: 329,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
-            color: const Color(0xFFFED154),
+            color: buttonColor,
           ),
           child: TextButton(
             onPressed: () {
@@ -247,7 +263,7 @@ class LoginPageState extends State<LoginPage> {
               style: GoogleFonts.raleway(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF435E49),
+                color: textColor,
               ),
             ),
           ),
