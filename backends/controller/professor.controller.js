@@ -14,7 +14,7 @@ exports.createProfessor = async (req, res) => {
     const isAdmin = tokenUser.isAdmin;
 
     if (isAdmin) {
-      const { email, name, degree, college, department } = req.body;
+      const { email, name, degree, college, department, classes } = req.body;
       if (!/@cpp\.edu\s*$/.test(email)) {
         res.status(400).json({ status: false, error: 'Invalid Cpp Email' });
       }
@@ -24,6 +24,7 @@ exports.createProfessor = async (req, res) => {
         degree,
         college,
         department,
+        classes,
       });
 
       try {
@@ -59,9 +60,9 @@ exports.createProfessor = async (req, res) => {
 };
 
 exports.searchProfessor = async (req, res) => {
-  const { email, name, degree, college, department } = req.body;
+  const { email, name, degree, college, department, classes } = req.body;
 
-  if (!(email || name || degree || college || department)) {
+  if (!(email || name || degree || college || department || classes)) {
     return res
       .status(400)
       .json({ error: 'You must provide at least one search parameter.' });
@@ -97,6 +98,10 @@ exports.searchProfessor = async (req, res) => {
     if (department) {
       const regex = new RegExp(department, 'i');
       query.department = { $regex: regex };
+    }
+
+    if (classes) {
+      query.classes = { $in: classes };
     }
 
     const professors = await Professor.find(query);
