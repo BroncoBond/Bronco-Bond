@@ -58,6 +58,61 @@ exports.createProfessor = async (req, res) => {
   }
 };
 
+exports.searchProfessor = async (req, res) => {
+  const { email, name, degree, college, department } = req.body;
+
+  if (!(email || name || degree || college || department)) {
+    return res
+      .status(400)
+      .json({ error: 'You must provide at least one search parameter.' });
+  }
+
+  if (email && !/@cpp\.edu\s*$/.test(email)) {
+    res.status(400).json({ error: 'Invalid Cpp Email' });
+  }
+
+  try {
+    const query = {};
+
+    if (email) {
+      const regex = new RegExp(email, 'i');
+      query.email = { $regex: regex };
+    }
+
+    if (name) {
+      const regex = new RegExp(name, 'i');
+      query.name = { $regex: regex };
+    }
+
+    if (degree) {
+      const regex = new RegExp(degree, 'i');
+      query.degree = { $regex: regex };
+    }
+
+    if (college) {
+      const regex = new RegExp(college, 'i');
+      query.college = { $regex: regex };
+    }
+
+    if (department) {
+      const regex = new RegExp(department, 'i');
+      query.department = { $regex: regex };
+    }
+
+    const professors = await Professor.find(query);
+
+    if (professors.length > 0) {
+      return res.status(200).json(professors);
+    }
+
+    return res.status(404).json({ error: 'No professors found' });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while searching for professors.' });
+  }
+}
+
 // DEVELOPMENT BUILD ONLY
 if (process.env.NODE_ENV === 'development') {
   exports.getAllProfessorIds = async (req, res) => {

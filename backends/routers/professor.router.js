@@ -4,6 +4,8 @@ const protectRouter = require('../middleware/protectRouter');
 
 router.post('/create', protectRouter.protectRoute, professorController.createProfessor);
 
+router.get('/search', protectRouter.protectRoute, professorController.searchProfessor);
+
 // DEVELOPMENT BUILD ONLY
 if (process.env.NODE_ENV === 'development') {
   router.get('/ids', professorController.getAllProfessorIds);
