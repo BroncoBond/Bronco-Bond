@@ -96,7 +96,6 @@ const professorSchema = new Schema(
     },
     department: {
       type: String,
-      required: true,
       validate: {
         validator: function (value) {
           return collegesDepartments[this.college]?.includes(value);
