@@ -6,6 +6,8 @@ router.post('/create', protectRouter.protectRoute, professorController.createPro
 
 router.get('/search', protectRouter.protectRoute, professorController.searchProfessor);
 
+router.post('/addClasses', protectRouter.protectRoute, professorController.addClasses);
+
 // DEVELOPMENT BUILD ONLY
 if (process.env.NODE_ENV === 'development') {
   router.get('/ids', professorController.getAllProfessorIds);

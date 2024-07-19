@@ -118,6 +118,77 @@ exports.searchProfessor = async (req, res) => {
   }
 }
 
+// (REQUIRES ADMIN)
+exports.addClasses = async (req, res) => {
+  try {
+    const currentUser = await userController.extractAndDecodeToken(req);
+    const tokenUserId = currentUser.data._id;
+
+    const tokenUser = await User.findById(tokenUserId).select('isAdmin');
+    const isAdmin = tokenUser.isAdmin;
+
+    if (isAdmin) {
+      const givenProfessorId = req.body._id;
+      if (!givenProfessorId) {
+        return res.status(400).json({ error: 'Professor ID not provided' });
+      }
+
+      const { classes } = req.body;
+      if (!classes) {
+        return res.status(400).json({ error: 'No classes provided' });
+      }
+
+      try {
+        // If at least one of the provided classes already exists, then an error will be returned and no classes will be added.
+        const professor = await Professor.findById(givenProfessorId);
+        if (professor.classes.some(c => classes.includes(c))) {
+          const matchingClasses = professor.classes.filter(c => classes.includes(c));
+          return res.status(400).json({
+            error: 'The professor already has the following classes:',
+            matchingClasses
+          });
+        };
+
+        const updatedProfessor = await Professor.findByIdAndUpdate(
+          givenProfessorId,
+          {
+            $addToSet: {
+              classes
+            },
+          },
+          { new: true }
+        );
+
+        if (!updatedProfessor) {
+          return res.status(404).json({
+            error: 'No professor ID provided.',
+          });
+        }
+
+        return res.status(200).json({ 
+          message: 'Classes added!', 
+          updatedClasses: updatedProfessor.classes
+        });
+      } catch (error) {
+        return res.status(404).json({
+          error: 'Error updating professor, professor not found',
+        });
+      }
+    } else {
+      return res
+        .status(403)
+        .json(
+          'Administrative priviledges are required to add/delete classes from a professor!'
+        );
+    }
+  } catch (error) {
+    console.error('Error editing professor\'s classes:', error);
+    return res
+      .status(500)
+      .json({ error: 'Error editing professor\'s classes', details: error });
+  }
+};
+
 // DEVELOPMENT BUILD ONLY
 if (process.env.NODE_ENV === 'development') {
   exports.getAllProfessorIds = async (req, res) => {
@@ -161,6 +232,8 @@ exports.getById = async (req, res) => {
   }
   return res.status(200).json({ professor });
 }
+
+
 
 // (REQUIRES ADMIN)
 exports.deleteProfessor = async (req, res) => {
