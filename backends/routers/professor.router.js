@@ -16,6 +16,8 @@ if (process.env.NODE_ENV === 'development') {
 
 router.post('/', protectRouter.protectRoute, professorController.getById);
 
+router.delete('/deleteClasses', protectRouter.protectRoute, professorController.deleteClasses);
+
 router.delete('/delete', protectRouter.protectRoute, professorController.deleteProfessor);
 
 module.exports = router;

@@ -178,7 +178,7 @@ exports.addClasses = async (req, res) => {
       return res
         .status(403)
         .json(
-          'Administrative priviledges are required to add/delete classes from a professor!'
+          'Administrative priviledges are required to add classes to a professor!'
         );
     }
   } catch (error) {
@@ -233,7 +233,79 @@ exports.getById = async (req, res) => {
   return res.status(200).json({ professor });
 }
 
+// (REQUIRES ADMIN)
+exports.deleteClasses = async (req, res) => {
+  try {
+    const currentUser = await userController.extractAndDecodeToken(req);
+    const tokenUserId = currentUser.data._id;
 
+    const tokenUser = await User.findById(tokenUserId).select('isAdmin');
+    const isAdmin = tokenUser.isAdmin;
+
+    if (isAdmin) {
+      const givenProfessorId = req.body._id;
+      if (!givenProfessorId) {
+        return res.status(400).json({ error: 'Professor ID not provided' });
+      }
+
+      const { classes } = req.body;
+      if (!classes) {
+        return res.status(400).json({ error: 'No classes provided' });
+      }
+
+      try {
+        // If at least one of the provided classes does not exist, then an error will be returned and no classes will be deleted.
+        const professor = await Professor.findById(givenProfessorId);
+        const missingClasses = Array.isArray(classes) // The input accepts both a single class or an array of classes.
+          ? classes.filter((c) => !professor.classes.includes(c))
+          : professor.classes.includes(classes)
+        if (missingClasses.length > 0) {
+          return res.status(400).json({
+            error: 'The professor does not have the following classes:',
+            missingClasses,
+          });
+        }
+
+        const updatedProfessor = await Professor.findByIdAndUpdate(
+          givenProfessorId,
+          {
+            $pullAll: {
+              classes: Array.isArray(classes) ? classes : [classes],
+            },
+          },
+          { new: true }
+        );
+
+        if (!updatedProfessor) {
+          return res.status(404).json({
+            error: 'No professor ID provided.',
+          });
+        }
+
+        return res.status(200).json({
+          message: 'Classes deleted!',
+          updatedClasses: updatedProfessor.classes,
+        });
+      } catch (error) {
+        console.log(error);
+        return res
+          .status(404)
+          .json({ error: "Error editing professor's classes" });
+      }
+    } else {
+      return res
+        .status(403)
+        .json(
+          'Administrative priviledges are required to delete classes from a professor!'
+        );
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ error: "Error editing professor's classes", details: error });
+  }
+};
 
 // (REQUIRES ADMIN)
 exports.deleteProfessor = async (req, res) => {
