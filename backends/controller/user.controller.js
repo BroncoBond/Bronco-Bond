@@ -93,7 +93,7 @@ exports.login = async (req, res, next) => {
     console.log(staySignedIn);
 
     // Try to find a user with the given email
-    const user = await UserService.checkuser(email);
+    const user = await UserService.checkUser(email);
 
     // If no user is found, throw an error
     if (!user || !user._id) {
