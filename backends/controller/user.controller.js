@@ -41,7 +41,7 @@ exports.register = async (req, res, next) => {
     console.log('Received registration data');
 
     const newUser = await UserService.registerUser(email, username, password);
-    console.log('User created:');
+    console.log('User created:', newUser);
 
     try {
       let tokenData = { _id: newUser._id };
@@ -52,7 +52,16 @@ exports.register = async (req, res, next) => {
     } catch (err) {
       console.log('Error generating token');
       // If generating the token fails, delete the user
-      await newUser.findByIdAndDelete(newUser._id);
+      await User.findByIdAndDelete(newUser._id);
+      throw err;
+    }
+
+    try {
+      const otp = await UserService.sendUserOTP(newUser._id, newUser.email);
+      console.log(otp);
+    } catch (err) {
+      console.log('Error sending OTP email');
+      await User.findByIdAndDelete(newUser._id);
       throw err;
     }
 
@@ -93,7 +102,7 @@ exports.login = async (req, res, next) => {
     console.log(staySignedIn);
 
     // Try to find a user with the given email
-    const user = await UserService.checkuser(email);
+    const user = await UserService.checkUser(email);
 
     // If no user is found, throw an error
     if (!user || !user._id) {

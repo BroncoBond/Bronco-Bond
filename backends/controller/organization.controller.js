@@ -156,10 +156,19 @@ if (process.env.NODE_ENV === 'development') {
 };
 
 exports.getById = async (req, res) => {
-  const bodyId = req.body._id;
+  const givenOrganizationId = req.body._id;
   let organization;
+
+  if (!givenOrganizationId) {
+    return res.status(400).json({ error: 'Organization ID not provided' });
+  }
+
   try {
-    organization = await Organization.findById(bodyId).select();
+    organization = await Organization.findById(givenOrganizationId).select();
+
+    if (!organization) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -178,6 +187,16 @@ exports.deleteOrganization = async (req, res) => {
     const givenOrganizationId = req.body._id;
 
     if (isAdmin) {
+      if (!givenOrganizationId) {
+        return res.status(400).json({ error: 'Organization ID not provided' });
+      }
+
+      const organization = await Organization.findById(givenOrganizationId);
+
+      if (!organization) {
+        return res.status(404).json({ error: 'Organization not found' });
+      }
+
       try {
         await Organization.findByIdAndDelete(givenOrganizationId);
 

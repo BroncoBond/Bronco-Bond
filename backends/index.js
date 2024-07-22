@@ -9,6 +9,7 @@ const db = require('./config/db');
 const UserModel = require('./model/user.model');
 const userRouter = require('./routers/user.router');
 const organizationRouter = require('./routers/organization.router');
+const professorRouter = require('./routers/professor.router');
 const messageRouter = require('./routers/message.router');
 const websiteRouter = require('./routers/website.router');
 const errorHandler = require('./middleware/errorHandler');
@@ -35,6 +36,7 @@ app.set('view engine', 'ejs');
 app.use(requestDurationLogger);
 app.use('/api/user', userRouter);
 app.use('/api/organization', organizationRouter);
+app.use('/api/professor', professorRouter);
 app.use('/api/message', messageRouter);
 app.use('/api/website', websiteRouter);
 // Error Handler
