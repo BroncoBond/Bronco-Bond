@@ -2,6 +2,11 @@ const User = require('../model/user.model');
 const jwt = require('jsonwebtoken');
 const generateToken = require('../utils/generateToken');
 
+// Used for OTP
+const UserOTP = require('../model/userOTP.model');
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
+
 class UserService {
   static async registerUser(email, username, password) {
     const createUser = new User({ email, username, password });
@@ -25,6 +30,52 @@ class UserService {
       // For other errors, log and rethrow
       console.error('Error during user registration:', error);
       throw new CustomError(error.message, 500);
+    }
+  }
+
+  static async sendUserOTP(_id, email) {
+    let transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      auth: {
+        user: process.env.AUTH_EMAIL,
+        pass: process.env.AUTH_PASS,
+      },
+    });
+
+    try {
+      const otp = `${Math.floor(1000 + Math.random() * 9000)}`; // 4 digit code between 0000-9999
+
+      const mailOptions = {
+        from: process.env.AUTH_EMAIL,
+        to: email,
+        subject: 'Verify Your Email For BroncoBond!',
+        html: `<p>Enter <b>${otp}</b> in the app to verify your email address for BroncoBond.</p><p>This code <b>expires 1 hour</b> from creation.</p>`,
+      };
+
+      const saltRounds = 10;
+      const hashedOTP = await bcrypt.hash(otp, saltRounds);
+      const newUserOTP = await new UserOTP({
+        userId: _id,
+        otp: hashedOTP,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 3600000 // 1 hour (ms)
+      });
+
+      await newUserOTP.save();
+      await transporter.sendMail(mailOptions);
+      return {
+        status: 'PENDING',
+        message: 'Verification OTP email sent.',
+        data: {
+            userId: _id,
+            email,
+        }
+      };
+    } catch (error) {
+        return {
+            status: 'FAILED',
+            message: error.message,
+        };
     }
   }
 

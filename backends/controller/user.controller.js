@@ -56,6 +56,15 @@ exports.register = async (req, res, next) => {
       throw err;
     }
 
+    try {
+      const otp = await UserService.sendUserOTP(newUser._id, newUser.email);
+      console.log(otp);
+    } catch (err) {
+      console.log('Error sending OTP email');
+      await User.findByIdAndDelete(newUser._id);
+      throw err;
+    }
+
     // Log the success response
     console.log('User registered successfully:', newUser);
 
