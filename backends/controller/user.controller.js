@@ -41,7 +41,7 @@ exports.register = async (req, res, next) => {
     console.log('Received registration data');
 
     const newUser = await UserService.registerUser(email, username, password);
-    console.log('User created:');
+    console.log('User created:', newUser);
 
     try {
       let tokenData = { _id: newUser._id };
@@ -52,7 +52,7 @@ exports.register = async (req, res, next) => {
     } catch (err) {
       console.log('Error generating token');
       // If generating the token fails, delete the user
-      await newUser.findByIdAndDelete(newUser._id);
+      await User.findByIdAndDelete(newUser._id);
       throw err;
     }
 
