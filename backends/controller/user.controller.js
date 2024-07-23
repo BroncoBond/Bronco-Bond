@@ -9,6 +9,7 @@ require('dotenv').config();
 
 // Used for functions that involve (un)following organizations
 const Organization = require('../model/organization.model');
+const UserOTP = require('../model/userOTP.model');
 
 const extractAndDecodeToken = async (req) => {
   const token = req.headers.authorization.split(' ')[1];
@@ -57,8 +58,7 @@ exports.register = async (req, res, next) => {
     }
 
     try {
-      const otp = await UserService.sendUserOTP(newUser._id, newUser.email);
-      console.log(otp);
+      await UserService.sendUserOTP(newUser._id, newUser.email);
     } catch (err) {
       console.log('Error sending OTP email');
       await User.findByIdAndDelete(newUser._id);
