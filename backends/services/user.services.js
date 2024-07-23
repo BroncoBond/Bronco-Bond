@@ -53,7 +53,7 @@ class UserService {
     });
 
     try {
-      const otp = `${Math.floor(1000 + Math.random() * 9000)}`; // 4 digit code between 0000-9999
+      const otp = `${Math.floor(100000 + Math.random() * 900000)}`; // 6 digit code between 000000-999999
 
       const mailOptions = {
         from: process.env.AUTH_EMAIL,
