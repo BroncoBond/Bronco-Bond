@@ -6,6 +6,7 @@ const generateToken = require('../utils/generateToken');
 const UserOTP = require('../model/userOTP.model');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 class UserService {
   static async registerUser(email, username, password) {
@@ -35,11 +36,20 @@ class UserService {
 
   static async sendUserOTP(_id, email) {
     let transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
+      service: 'gmail',
       auth: {
         user: process.env.AUTH_EMAIL,
         pass: process.env.AUTH_PASS,
       },
+    });
+
+    transporter.verify((error, success) => {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Ready for messages');
+            console.log(success);
+        }
     });
 
     try {
