@@ -9,6 +9,9 @@ router.post('/register', userController.register);
 //Verify User
 router.post('/verify', protectRouter.protectRoute, userController.verifyOTP);
 
+//Resend verification code
+router.post('/resendVerification', protectRouter.protectRoute, userController.resendOTP);
+
 //Login User
 router.post('/login', userController.login);
 

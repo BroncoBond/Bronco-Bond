@@ -152,6 +152,25 @@ exports.verifyOTP = async (req, res) => {
   }
 };
 
+exports.resendOTP = async (req, res) => {
+  try {
+    const { data: { _id: currentUserId } } = await extractAndDecodeToken(req);
+    const { email: currentUserEmail } = await User.findById(currentUserId);
+
+    await UserOTP.deleteMany({ userId: currentUserId });
+    await UserService.sendUserOTP(currentUserId, currentUserEmail);
+    return res.json({
+      status: true,
+      success: 'OTP resent successfully.'
+    });
+  } catch (error) {
+    console.error('Error during OTP resend: ', error);
+    return res
+      .status(500)
+      .json({ error: 'An error occurred during OTP resend.' });
+  }
+}
+
 // This function is used to log in a user
 exports.login = async (req, res, next) => {
   try {
