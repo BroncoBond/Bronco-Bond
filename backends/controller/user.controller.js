@@ -93,6 +93,65 @@ exports.register = async (req, res, next) => {
   }
 };
 
+exports.verifyOTP = async (req, res) => {
+  try {
+    const currentUser = await extractAndDecodeToken(req);
+    const currentUserId = currentUser.data._id;
+    const otp = req.body.otp;
+
+    if (!otp) {
+      return res.status(400).json({ error: 'Please provide the OTP.' });
+    }
+
+    const userOTPRecords = await UserOTP.find({
+      userId: currentUserId,
+    });
+
+    console.log(userOTPRecords);
+    
+    if (!userOTPRecords) {
+      return res
+      .status(400)
+      .json({
+        error: 'No OTP found. Perhaps the account is already verified?',
+      });
+    }
+
+    const expiresAt = new Date(userOTPRecords[0].expiresAt);
+    const hashedOTP = userOTPRecords[0].otp;
+
+    if (expiresAt < Date.now()) {
+      await UserOTP.deleteMany({ userId: currentUserId });
+      return res.status(400).json({
+        error: 'Code has expired. Please request another OTP.',
+      });
+    }
+
+    const validOTP = bcrypt.compare(otp, hashedOTP);
+
+    if (!validOTP) {
+      return res.status(400).json({
+        error: 'Invalid, please double-check your OTP.',
+      });
+    }
+
+    await User.findByIdAndUpdate(
+      currentUserId,
+      {
+        $set: {
+          verified: true,
+        },
+      },
+      { new: true }
+    );
+    await UserOTP.deleteMany({ userId: currentUserId });
+    return res.status(200).json({ message: 'OTP verified successfully.' });
+  } catch (error) {
+    console.error('Error during OTP verification: ', error);
+    return res.status(500).json({ error: 'An error occurred during OTP verification.' });
+  }
+};
+
 // This function is used to log in a user
 exports.login = async (req, res, next) => {
   try {
