@@ -153,7 +153,7 @@ class InterestsPageState extends State<InterestsPage> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor:
-            isSelected ? const Color(0xff435f49) : const Color(0xfffed154),
+            isSelected ? const Color(0xfffed154) : const Color(0x7ffed154),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
           side: const BorderSide(
@@ -178,11 +178,11 @@ class InterestsPageState extends State<InterestsPage> {
         style: isSelected
             ? GoogleFonts.raleway(
                 fontSize: 14,
-                color: const Color(0xfffed154),
+                color: const Color(0xff435f49),
                 fontWeight: FontWeight.w700)
             : GoogleFonts.raleway(
                 fontSize: 14,
-                color: const Color(0xff435f49),
+                color: const Color(0xff939393),
                 fontWeight: FontWeight.w700),
       ),
     );
