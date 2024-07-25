@@ -22,6 +22,7 @@ class UserProfile extends StatefulWidget {
 
 class UserProfileState extends State<UserProfile>
     with SingleTickerProviderStateMixin {
+  late String fullName = '';
   late String username = '';
   late int numOfBonds = 0;
   late String descriptionMajor = '';
@@ -92,6 +93,7 @@ class UserProfileState extends State<UserProfile>
         final userData = json.decode(response.body);
         if (mounted) {
           setState(() {
+            fullName = userData['user']['fullName'] ?? 'Unknown';
             username = userData['user']['username'] ?? 'Unknown';
             numOfBonds = userData['user']['numOfBonds'] ?? 0;
             descriptionMajor =
@@ -218,7 +220,7 @@ class UserProfileState extends State<UserProfile>
               if (isCurrentUserProfile) {
                 return AppBar(
                   title: Text(
-                    'BroncoBond',
+                    'Profile',
                     textAlign: TextAlign.left,
                     style: GoogleFonts.raleway(
                       textStyle: Theme.of(context).textTheme.displaySmall,
@@ -248,7 +250,7 @@ class UserProfileState extends State<UserProfile>
               } else {
                 return AppBar(
                   title: Text(
-                    'BroncoBond',
+                    'Profile',
                     textAlign: TextAlign.left,
                     style: GoogleFonts.raleway(
                       textStyle: Theme.of(context).textTheme.displaySmall,
@@ -313,24 +315,27 @@ class UserProfileState extends State<UserProfile>
     bool isCurrentUserProfile = widget.userID == currentUserID;
     return Column(
       children: [
-        buildProfileHeader(context, isCurrentUserProfile),
-        buildInfoBar(),
-        // Check if this is the current user, if not then show a follow button
-        if (!isCurrentUserProfile)
-          buildOtherProfileButtons(widget.userID, currentUserID),
-        if (isCurrentUserProfile) buildEditProfileButton(currentUserID),
+        buildProfileHeader(
+            context, isCurrentUserProfile, widget.userID, currentUserID),
         TabBar(
           labelStyle:
-              const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              GoogleFonts.raleway(fontSize: 20, fontWeight: FontWeight.w700),
           labelColor: const Color(0xFF3B5F43),
-          indicatorColor: const Color(0xFF3B5F43),
+          indicator: UnderlineTabIndicator(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: BorderSide(width: 10, color: const Color(0xFFFED154)),
+          ),
+          indicatorColor: const Color(0xFFFED154),
           unselectedLabelColor: Colors.grey,
-          indicatorWeight: 3,
+          indicatorWeight: 7,
           controller: _tabController,
           tabs: const [
             Tab(text: 'About'),
             Tab(text: 'Posts'),
           ],
+          isScrollable: true, // Add this line to make the tabs scrollable
+          indicatorPadding: EdgeInsets
+              .zero, // Add this line to remove padding around the indicator
         ),
         Expanded(
           child: TabBarView(
@@ -355,6 +360,7 @@ class UserProfileState extends State<UserProfile>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            buildInfoBar(),
             buildAboutSection("Experience", "Add Experiences",
                 "Showcase professional experiences..."),
             buildAboutSection(
@@ -465,77 +471,115 @@ class UserProfileState extends State<UserProfile>
     );
   }
 
-  Widget buildProfileHeader(BuildContext context, bool isCurrentUserProfile) {
-      double screenWidth = MediaQuery.of(context).size.width;
+  Widget buildProfileHeader(BuildContext context, bool isCurrentUserProfile,
+      String profileUserID, String? currentUserID) {
+    double screenWidth = MediaQuery.of(context).size.width;
 
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              width: screenWidth * 0.2, // Set the width to 20% of the screen width
-              child: Column(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        width: screenWidth * 0.85, // Set the width to 80% of the screen width
+        decoration: ShapeDecoration(
+          color: const Color(0xFF2E4233),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(
+              top: 20.0, bottom: 20.0, right: 25.0, left: 25.0),
+          child: Column(
+            children: [
+              SizedBox(
+                width: screenWidth *
+                    0.25, // Set the width to 30% of the screen width
+                child: CircleAvatar(
+                  radius: 50, // Increase the radius to make the picture bigger
+                  backgroundColor: Colors.white,
+                  backgroundImage: profilePictureData.isNotEmpty
+                      ? MemoryImage(pfp)
+                      : const AssetImage('assets/images/user_profile_icon.png')
+                          as ImageProvider,
+                ),
+              ),
+              const SizedBox(height: 11),
+              Text(
+                fullName,
+                style: GoogleFonts.raleway(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 11),
+              // Apply maximum width constraint and handle overflow
+              Text(
+                '@' + username,
+                style: GoogleFonts.raleway(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF55685A),
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white,
-                    backgroundImage: profilePictureData.isNotEmpty
-                        ? MemoryImage(pfp)
-                        : const AssetImage('assets/images/user_profile_icon.png')
-                            as ImageProvider,
-                  ),
-                  const SizedBox(height: 12),
-                  // Apply maximum width constraint and handle overflow
-                  Text(
-                    username,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
+                  SizedBox(
+                      width: screenWidth *
+                          0.03), // Set the width to 3% of the screen width
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        buildStatColumn('Posts', 0),
+                        SizedBox(
+                            width: screenWidth *
+                                0.05), // Increase the width to create more space
+                        buildBondsStat('Bonds', numOfBonds, widget.userID,
+                            isCurrentUserProfile),
+                        SizedBox(
+                            width: screenWidth *
+                                0.03), // Increase the width to create more space
+                        buildStatColumn('Interests', 0),
+                      ],
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
-            ),
-
-            SizedBox(width: screenWidth * 0.05), // Set the width to 5% of the screen width
-            // SizedBox(height: 8),
-            Padding(
-              padding: EdgeInsets.only(right: 20.0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    buildStatColumn('Posts', 0),
-                    SizedBox(width: screenWidth * 0.02), // Set the width to 2% of the screen width
-                    buildBondsStat(
-                        'Bonds', numOfBonds, widget.userID, isCurrentUserProfile),
-                    SizedBox(width: screenWidth * 0.02), // Set the width to 2% of the screen width
-                    buildStatColumn('Interests', 0),
-                  ],
-                ),
-              ),
-            ),  
-          ],
+              const SizedBox(height: 11),
+              // Check if this is the current user, if not then show a follow button
+              if (!isCurrentUserProfile)
+                buildOtherProfileButtons(widget.userID, currentUserID),
+              if (isCurrentUserProfile) buildEditProfileButton(currentUserID),
+            ],
+          ),
         ),
-      );
-    }
+      ),
+    );
+  }
 
   Widget buildStatColumn(String label, int value) {
     return Column(
       children: [
         Text(
           value.toString(),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.raleway(
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
           ),
         ),
         Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.w400),
+          style: GoogleFonts.raleway(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
         ),
       ],
     );
@@ -557,7 +601,7 @@ class UserProfileState extends State<UserProfile>
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFFCFC),
+                backgroundColor: const Color(0xFF2E4233),
                 shadowColor: Colors.transparent,
                 elevation: 0,
               ),
@@ -565,15 +609,17 @@ class UserProfileState extends State<UserProfile>
                 children: [
                   Text(
                     value.toString(),
-                    style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
+                    style: GoogleFonts.raleway(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white),
                   ),
                   Text(
                     label,
-                    style: const TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w400),
+                    style: GoogleFonts.raleway(
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700),
                   ),
                 ],
               )),
@@ -588,30 +634,52 @@ class UserProfileState extends State<UserProfile>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, bottom: 15.0),
-            child: Text(descriptionBio),
+          Row(
+            children: [
+              const Icon(
+                Icons.auto_stories_outlined,
+                color: const Color(0xFF435E49),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                descriptionMajor,
+                style: GoogleFonts.raleway(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF435E49),
+                ),
+              ),
+            ],
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 10.0),
+            padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
             child: Row(
               children: [
+                const Icon(
+                  Icons.school_rounded,
+                  color: const Color(0xFF435E49),
+                ),
                 const SizedBox(width: 10),
-                const Icon(Icons.auto_stories_outlined),
-                const SizedBox(width: 10),
-                Text(descriptionMajor),
+                Text(
+                  'Class of $graduationDate',
+                  style: GoogleFonts.raleway(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF435E49),
+                  ),
+                ),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              children: [
-                const SizedBox(width: 10),
-                const Icon(Icons.school_rounded),
-                const SizedBox(width: 10),
-                Text('Class of $graduationDate'),
-              ],
+            padding: const EdgeInsets.only(bottom: 15.0),
+            child: Text(
+              descriptionBio,
+              style: GoogleFonts.raleway(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF435E49),
+              ),
             ),
           ),
         ],
@@ -741,20 +809,22 @@ class UserProfileState extends State<UserProfile>
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor: Color(0xFF435E49),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(30.0),
                     side: const BorderSide(
-                      color: Color(0xFF3B5F43),
+                      color: Color(0xFF435E49),
                     ),
                   ),
+                  padding: const EdgeInsets.all(
+                      12.0), // Add padding to increase space around the text
                 ),
-                child: const Text(
+                child: Text(
                   "Edit Profile",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
+                  style: GoogleFonts.raleway(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
                   ),
                 )),
           ),
