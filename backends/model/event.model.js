@@ -33,6 +33,18 @@ const eventSchema = new Schema(
         ref: 'User'
       },
     ],
+    startDateTime: {
+      type: Date,
+      required: true,
+    },
+    endDateTime: {
+      type: Date,
+      required: true,
+    },
+    location: {
+      type: String, 
+      required: true
+    }
   },
   { timestamps: true }
 );
