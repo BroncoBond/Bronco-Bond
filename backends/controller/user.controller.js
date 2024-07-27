@@ -127,7 +127,7 @@ exports.verifyOTP = async (req, res) => {
       });
     }
 
-    const validOTP = bcrypt.compare(otp, hashedOTP);
+    const validOTP = await bcrypt.compare(otp, hashedOTP);
 
     if (!validOTP) {
       return res.status(400).json({
@@ -154,8 +154,13 @@ exports.verifyOTP = async (req, res) => {
 
 exports.resendOTP = async (req, res) => {
   try {
-    const { data: { _id: currentUserId } } = await extractAndDecodeToken(req);
+    const { data: { _id: currentUserId, verified: checkVerify } } = await extractAndDecodeToken(req);
     const { email: currentUserEmail } = await User.findById(currentUserId);
+    if (checkVerify) {
+      return res
+        .status(500)
+        .json({error: 'User already verified'});
+    }
 
     await UserOTP.deleteMany({ userId: currentUserId });
     await UserService.sendUserOTP(currentUserId, currentUserEmail);
