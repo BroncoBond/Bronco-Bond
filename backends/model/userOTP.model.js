@@ -6,6 +6,7 @@ const userOTPSchema = new Schema({
     userId: {
         type: String
     },
+    // One-Time Password
     otp: {
         type: String
     },
