@@ -3,8 +3,14 @@ const userController = require("../controller/user.controller");
 const auth = require('../middleware/auth');
 const protectRouter = require("../middleware/protectRouter");
 
-//register User
+//Register User
 router.post('/register', userController.register);
+
+//Verify User
+router.post('/verify', protectRouter.protectRoute, userController.verifyOTP);
+
+//Resend verification code
+router.post('/resendVerification', protectRouter.protectRoute, userController.resendOTP);
 
 //Login User
 router.post('/login', userController.login);

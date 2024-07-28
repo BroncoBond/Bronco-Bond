@@ -9,6 +9,7 @@ require('dotenv').config();
 
 // Used for functions that involve (un)following organizations
 const Organization = require('../model/organization.model');
+const UserOTP = require('../model/userOTP.model');
 
 const extractAndDecodeToken = async (req) => {
   const token = req.headers.authorization.split(' ')[1];
@@ -41,7 +42,7 @@ exports.register = async (req, res, next) => {
     console.log('Received registration data');
 
     const newUser = await UserService.registerUser(email, username, password);
-    console.log('User created:');
+    console.log('User created:', newUser);
 
     try {
       let tokenData = { _id: newUser._id };
@@ -52,7 +53,15 @@ exports.register = async (req, res, next) => {
     } catch (err) {
       console.log('Error generating token');
       // If generating the token fails, delete the user
-      await newUser.findByIdAndDelete(newUser._id);
+      await User.findByIdAndDelete(newUser._id);
+      throw err;
+    }
+
+    try {
+      await UserService.sendUserOTP(newUser._id, newUser.email);
+    } catch (err) {
+      console.log('Error sending OTP email');
+      await User.findByIdAndDelete(newUser._id);
       throw err;
     }
 
@@ -84,6 +93,89 @@ exports.register = async (req, res, next) => {
   }
 };
 
+exports.verifyOTP = async (req, res) => {
+  try {
+    const currentUser = await extractAndDecodeToken(req);
+    const currentUserId = currentUser.data._id;
+    const otp = req.body.otp;
+
+    if (!otp) {
+      return res.status(400).json({ error: 'Please provide the OTP.' });
+    }
+
+    const userOTPRecords = await UserOTP.find({
+      userId: currentUserId,
+    });
+
+    console.log(userOTPRecords);
+    
+    if (!userOTPRecords) {
+      return res
+      .status(400)
+      .json({
+        error: 'No OTP found. Perhaps the account is already verified?',
+      });
+    }
+
+    const expiresAt = new Date(userOTPRecords[0].expiresAt);
+    const hashedOTP = userOTPRecords[0].otp;
+
+    if (expiresAt < Date.now()) {
+      await UserOTP.deleteMany({ userId: currentUserId });
+      return res.status(400).json({
+        error: 'Code has expired. Please request another OTP.',
+      });
+    }
+
+    const validOTP = await bcrypt.compare(otp, hashedOTP);
+
+    if (!validOTP) {
+      return res.status(400).json({
+        error: 'Invalid, please double-check your OTP.',
+      });
+    }
+
+    await User.findByIdAndUpdate(
+      currentUserId,
+      {
+        $set: {
+          verified: true,
+        },
+      },
+      { new: true }
+    );
+    await UserOTP.deleteMany({ userId: currentUserId });
+    return res.status(200).json({ message: 'OTP verified successfully.' });
+  } catch (error) {
+    console.error('Error during OTP verification: ', error);
+    return res.status(500).json({ error: 'An error occurred during OTP verification.' });
+  }
+};
+
+exports.resendOTP = async (req, res) => {
+  try {
+    const { data: { _id: currentUserId, verified: checkVerify } } = await extractAndDecodeToken(req);
+    const { email: currentUserEmail } = await User.findById(currentUserId);
+    if (checkVerify) {
+      return res
+        .status(500)
+        .json({error: 'User already verified'});
+    }
+
+    await UserOTP.deleteMany({ userId: currentUserId });
+    await UserService.sendUserOTP(currentUserId, currentUserEmail);
+    return res.json({
+      status: true,
+      success: 'OTP resent successfully.'
+    });
+  } catch (error) {
+    console.error('Error during OTP resend: ', error);
+    return res
+      .status(500)
+      .json({ error: 'An error occurred during OTP resend.' });
+  }
+}
+
 // This function is used to log in a user
 exports.login = async (req, res, next) => {
   try {
@@ -93,7 +185,7 @@ exports.login = async (req, res, next) => {
     console.log(staySignedIn);
 
     // Try to find a user with the given email
-    const user = await UserService.checkuser(email);
+    const user = await UserService.checkUser(email);
 
     // If no user is found, throw an error
     if (!user || !user._id) {
