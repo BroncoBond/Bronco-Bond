@@ -44,7 +44,14 @@ const eventSchema = new Schema(
     location: {
       type: String, 
       required: true
-    }
+    },
+    interest: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: 0,
+      },
+    ]
   },
   { timestamps: true }
 );
