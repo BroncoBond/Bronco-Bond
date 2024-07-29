@@ -61,11 +61,13 @@ const userSchema = new Schema({
         },
         pronouns: {
             type: String,
-            required: true,
+            lowercase:true,
+            default: "Prefer Not To Say"
         },
         gender: {
             type: String,
-            required: true,
+            lowercase:true,
+            default: "Prefer Not To Say"
         },
         followedOrganizations: [{
             type: mongoose.Schema.Types.ObjectId,
