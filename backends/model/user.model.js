@@ -84,7 +84,7 @@ const userSchema = new Schema({
         },
         isAdmin: {
             type: Boolean,
-            default: false,
+            default: false
         },
         descriptionMajor: {
             type: String,
@@ -112,6 +112,10 @@ const userSchema = new Schema({
         is_online: {
             type: String,
             default: '0'
+        },
+        verified: {
+            type: Boolean,
+            default: false
         },
         tokens: [{ type: Object }]
     }, {timestamps:true} 
