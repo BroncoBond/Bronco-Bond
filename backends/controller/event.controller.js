@@ -77,6 +77,26 @@ exports.createEvent = async (req, res) => {
   }
 };
 
+exports.getById = async (req, res) => {
+  const givenEventId = req.body._id;
+  let event;
+
+  if (!givenEventId) {
+    return res.status(400).json({ error: 'Event ID not provided' });
+  }
+
+  try {
+    event = await Event.findById(givenEventId).select();
+
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+  return res.status(200).json({ event });
+};
+
 // Requires admin
 exports.deleteEvent = async (req, res) => {
   try {
