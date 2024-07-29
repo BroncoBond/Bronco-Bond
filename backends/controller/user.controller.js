@@ -381,6 +381,8 @@ exports.updateUserInfo = async (req, res) => {
         descriptionBio,
         fullName,
         prefName,
+        gender,
+        pronouns
       } = req.body;
 
       // Log the data that will be used to update the user
@@ -400,6 +402,8 @@ exports.updateUserInfo = async (req, res) => {
             descriptionBio,
             fullName,
             prefName,
+            gender,
+            pronouns
           },
         },
         { new: true }

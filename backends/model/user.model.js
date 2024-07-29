@@ -61,12 +61,10 @@ const userSchema = new Schema({
         },
         pronouns: {
             type: String,
-            enum: ['he/him', 'she/her', 'preferNotToSay'],
             required: true,
         },
         gender: {
             type: String,
-            enum: ['male', 'female', 'preferNotToSay'],
             required: true,
         },
         followedOrganizations: [{
