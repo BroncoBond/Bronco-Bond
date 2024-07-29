@@ -16,7 +16,7 @@ exports.createEvent = async (req, res) => {
     if (isAdmin) {
       const { title, type, description, startDateTime, endDateTime, location } = req.body;
       const eventCreator = tokenUser;
-      const createEvent = new Event({
+      const newEvent = new Event({
         title,
         type,
         description,
@@ -39,7 +39,7 @@ exports.createEvent = async (req, res) => {
             });
         }
 
-        const newEvent = await createEvent.save();
+        await newEvent.save();
          res.status(201).json({
             status: true,
             newEvent,
