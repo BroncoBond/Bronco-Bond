@@ -31,6 +31,10 @@ const eventSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    eventHost: {
+      type: String,
+      max: 100
+    },
     startDateTime: {
       type: Date,
       required: true,
