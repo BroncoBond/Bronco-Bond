@@ -200,7 +200,7 @@ exports.deleteOrganization = async (req, res) => {
       try {
         await Organization.findByIdAndDelete(givenOrganizationId);
 
-        res.status(200).json('Organization has been deleted');
+        return res.status(200).json('Organization has been deleted');
       } catch (error) {
         return res.status(500).json(error);
       }
