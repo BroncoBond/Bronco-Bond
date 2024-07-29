@@ -27,12 +27,10 @@ const eventSchema = new Schema(
       enum: ['Public', 'Private'], // The type must match these hard-coded types of Organizations
       required: true,
     },
-    eventCreator: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-      },
-    ],
+    eventCreator: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
     startDateTime: {
       type: Date,
       required: true,
