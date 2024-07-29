@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const messageController = require('../controller/event.controller');
+const messageController = require('../controller/message.controller');
 const protectRouter = require('../middleware/protectRouter');
 
 router.post(
