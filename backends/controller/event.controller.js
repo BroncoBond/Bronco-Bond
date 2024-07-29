@@ -14,12 +14,21 @@ exports.createEvent = async (req, res) => {
     const isAdmin = tokenUser.isAdmin;
 
     if (isAdmin) {
-      const { title, type, description, startDateTime, endDateTime, location } = req.body;
+      const {
+        title,
+        type,
+        description,
+        eventHost,
+        startDateTime,
+        endDateTime,
+        location,
+      } = req.body;
       const eventCreator = tokenUser;
       const newEvent = new Event({
         title,
         type,
         description,
+        eventHost,
         eventCreator,
         startDateTime,
         endDateTime,
