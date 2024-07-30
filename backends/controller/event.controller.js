@@ -10,11 +10,11 @@ exports.createEvent = async (req, res) => {
     const currentUser = await userController.extractAndDecodeToken(req);
     const tokenUserId = currentUser.data._id;
 
-    const tokenUser = await User.findById(tokenUserId).select('isAdmin');
+    let tokenUser = await User.findById(tokenUserId).select('isAdmin');
     const isAdmin = tokenUser.isAdmin;
 
     if (isAdmin) {
-      const {
+      let {
         title,
         type,
         description,
@@ -23,7 +23,13 @@ exports.createEvent = async (req, res) => {
         endDateTime,
         location,
       } = req.body;
-      const eventCreator = tokenUser;
+
+      tokenUser = await User.findById(tokenUserId).select('username');
+      const eventCreator = tokenUser.username;
+      if (!eventHost) { // Event host will be set to event creator by default
+        eventHost = tokenUser.username;
+      }
+
       const newEvent = new Event({
         title,
         type,
@@ -36,6 +42,13 @@ exports.createEvent = async (req, res) => {
       });
 
       try {
+        const requiredProperties = ['title', 'type', 'startDateTime', 'endDateTime', 'location'];
+        const missingProperties = requiredProperties.filter(property => !req.body[property]);
+
+        if (missingProperties.length > 0) {
+          return res.status(400).json({ error: `The following properties are required: ${missingProperties.join(', ')}` });
+        }
+
         if (startDateTime > endDateTime) {
           return res.status(400).json({
             message:
