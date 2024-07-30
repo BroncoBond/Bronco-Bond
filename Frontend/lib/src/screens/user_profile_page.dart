@@ -4,7 +4,9 @@ import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
 import 'package:bronco_bond/src/screens/edit_profile.dart';
 import 'package:bronco_bond/src/screens/settings_page.dart';
 import 'package:bronco_bond/src/screens/friends_list_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:bronco_bond/src/config.dart';
@@ -323,133 +325,142 @@ class UserProfileState extends State<UserProfile>
 
   Widget buildUserProfile(SharedPreferences prefs) {
     bool isCurrentUserProfile = widget.userID == currentUserID;
-    return SingleChildScrollView(
-      child: Stack(
-        children: [
-          Image.asset(
-            'assets/images/header_bg.png',
-            width: MediaQuery.of(context).size.width,
-            fit: BoxFit.cover,
-          ),
-          Column(
-            children: [
-              buildProfileHeader(
-                  context, isCurrentUserProfile, widget.userID, currentUserID),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    child: TabBar(
-                      overlayColor:
-                          MaterialStateProperty.all(Colors.transparent),
-                      dividerColor: Colors.transparent,
-                      tabAlignment: TabAlignment.start,
-                      labelStyle: GoogleFonts.raleway(
-                          fontSize: 20, fontWeight: FontWeight.w700),
-                      labelColor: const Color(0xFF3B5F43),
-                      indicator: UnderlineTabIndicator(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(
-                            width: 10, color: const Color(0xFFFED154)),
-                      ),
-                      indicatorColor: Colors.transparent,
-                      unselectedLabelColor: Colors.grey,
-                      indicatorWeight: 7,
-                      controller: _tabController,
-                      tabs: const [
-                        Tab(text: 'About'),
-                        Tab(text: 'Posts'),
-                      ],
-                      isScrollable:
-                          true, // Add this line to make the tabs scrollable
-                      indicatorPadding: EdgeInsets
-                          .zero, // Add this line to remove padding around the indicator
-                    ),
-                  ),
-                ),
-              ),
-              AutoScaleTabBarView(
-                controller: _tabController,
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            SliverToBoxAdapter(
+              child: Stack(
+                alignment: Alignment.topCenter,
                 children: [
-                  // Content for About tab
-                  buildAboutContent(),
-                  // Content for Posts tab
-                  buildPosts(),
+                  Image.asset(
+                    'assets/images/header_bg.png',
+                    width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.cover,
+                  ),
+                  Column(
+                    children: [
+                      buildProfileHeader(context, isCurrentUserProfile,
+                          widget.userID, currentUserID),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: TabBar(
+                            overlayColor:
+                                MaterialStateProperty.all(Colors.transparent),
+                            dividerColor: Colors.transparent,
+                            tabAlignment: TabAlignment.start,
+                            labelStyle: GoogleFonts.raleway(
+                                fontSize: 20, fontWeight: FontWeight.w700),
+                            labelColor: const Color(0xFF3B5F43),
+                            indicator: UnderlineTabIndicator(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: const BorderSide(
+                                  width: 10, color: Color(0xFFFED154)),
+                            ),
+                            indicatorColor: Colors.transparent,
+                            unselectedLabelColor: Color(0xFF939393),
+                            indicatorWeight: 7,
+                            controller: _tabController,
+                            tabs: const [
+                              Tab(text: 'About'),
+                              Tab(text: 'Posts'),
+                            ],
+                            isScrollable: true,
+                            indicatorPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ],
-          ),
-        ],
+            ),
+          ];
+        },
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            // Content for About tab
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildAboutContent(),
+                  ],
+                ),
+              ),
+            ),
+            // Content for Posts tab
+            buildPosts(),
+          ],
+        ),
       ),
     );
   }
 
   Widget buildAboutContent() {
-    return SingleChildScrollView(
-      //alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildInfoBar(),
-            buildAboutSection("Experience", "Add Experiences",
-                "Showcase professional experiences...", _experienceController),
-            buildAboutSection("Clubs", "Add Clubs",
-                "Showcase clubs you participated in...", _clubsController),
-            // Interests section
-            Theme(
-              data: ThemeData(splashColor: Colors.transparent),
-              child: ExpansionTile(
-                tilePadding: EdgeInsets.zero,
-                title: Text(
-                  "Interests",
-                  style: GoogleFonts.raleway(
-                    color: const Color(0xFF2E4233),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                onExpansionChanged: (bool expanded) {
-                  setState(() {
-                    _interestsExpanded = expanded;
-                  });
-                },
-                trailing: Icon(_interestsExpanded ? Icons.remove : Icons.add),
-                shape: Border(),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Wrap(
-                      alignment: WrapAlignment.start,
-                      spacing: 8.0, // padding between each button
-                      runSpacing: 8.0, // padding between each row of buttons
-                      children: interests.map((interest) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xfffed154),
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          padding: const EdgeInsets.all(6.0),
-                          child: Text(
-                            interest,
-                            style: GoogleFonts.raleway(
-                                fontSize: 14,
-                                color: const Color(0xff435f49),
-                                fontWeight: FontWeight.w700),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildInfoBar(),
+        buildAboutSection("Experience", "Add Experiences",
+            "Showcase professional experiences...", _experienceController),
+        buildAboutSection("Clubs", "Add Clubs",
+            "Showcase clubs you participated in...", _clubsController),
+        // Interests section
+        Theme(
+          data: ThemeData(splashColor: Colors.transparent),
+          child: ExpansionTile(
+            tilePadding: EdgeInsets.zero,
+            title: Text(
+              "Interests",
+              style: GoogleFonts.raleway(
+                color: const Color(0xFF2E4233),
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
               ),
-            )
-          ],
-        ),
-      ),
+            ),
+            onExpansionChanged: (bool expanded) {
+              setState(() {
+                _interestsExpanded = expanded;
+              });
+            },
+            trailing: Icon(_interestsExpanded ? Icons.remove : Icons.add),
+            shape: Border(),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Wrap(
+                  alignment: WrapAlignment.start,
+                  spacing: 8.0, // padding between each button
+                  runSpacing: 10.0, // padding between each row of buttons
+                  children: interests.map((interest) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xfffed154),
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 15.0),
+                      child: Text(
+                        interest,
+                        style: GoogleFonts.raleway(
+                            fontSize: 14,
+                            color: const Color(0xff435f49),
+                            fontWeight: FontWeight.w700),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
     );
   }
 
@@ -512,20 +523,18 @@ class UserProfileState extends State<UserProfile>
                             //add function to add experience
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
+                            backgroundColor: Color(0xFFDDDDDD),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              side: const BorderSide(
-                                color: Color(0xFF3B5F43),
-                              ),
+                              borderRadius: BorderRadius.circular(30.0),
                             ),
+                            elevation: 0.0,
                           ),
                           child: Text(
                             buttonLabel,
                             style: GoogleFonts.raleway(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF2E4233),
                             ),
                           )),
                     ),
@@ -539,7 +548,7 @@ class UserProfileState extends State<UserProfile>
                   style: GoogleFonts.raleway(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black,
+                    color: const Color(0xFF2E4233),
                   ),
                 ),
               ),

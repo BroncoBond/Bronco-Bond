@@ -117,7 +117,7 @@ class LoginPageState extends State<LoginPage>
         backgroundColor: Color(0xFF435F49),
         body: SlidingUpPanel(
           maxHeight: MediaQuery.of(context).size.height,
-          minHeight: MediaQuery.of(context).size.height - 495,
+          minHeight: MediaQuery.of(context).size.height - 540,
           color: Colors.transparent,
           boxShadow: null,
           panelBuilder: (ScrollController sc) => buildLogin(sc),
@@ -162,7 +162,7 @@ class LoginPageState extends State<LoginPage>
       child: Stack(
         children: [
           Positioned.fill(
-            top: 30,
+            top: 20,
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Image.asset(
