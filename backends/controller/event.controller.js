@@ -119,6 +119,12 @@ exports.deleteEvent = async (req, res) => {
         return res.status(404).json({ error: 'Event not found' });
       }
 
+      if (event.eventCreator !== tokenUserId) {
+        return res
+          .status(403)
+          .json({ error: 'You are not the creator of this event' });
+      }
+
       try {
         await Event.findByIdAndDelete(givenEventId);
 
