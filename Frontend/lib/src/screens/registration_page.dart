@@ -77,8 +77,8 @@ class RegisterPageState extends State<RegisterPage> {
               "Password must be at least 6 characters!");
         }
       } else {
-        LoginPageState.buildDialog(context, "Registration failed!",
-              "Invalid Email!");
+        LoginPageState.buildDialog(
+            context, "Registration failed!", "Invalid Email!");
       }
     } else {
       LoginPageState.buildDialog(context, "Registration failed!",
@@ -126,7 +126,7 @@ class RegisterPageState extends State<RegisterPage> {
                 _obscureConfirmPassword = !_obscureConfirmPassword;
               });
             }),
-            LoginPageState.buildMainButton("Next", context,
+            LoginPageState.buildMainButton("Next", "green", context,
                 (BuildContext context) {
               registerUser(context);
             }),

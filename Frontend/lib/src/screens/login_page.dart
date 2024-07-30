@@ -179,7 +179,7 @@ class LoginPageState extends State<LoginPage>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const SizedBox(height: 90),
+                  const SizedBox(height: 70),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -188,10 +188,10 @@ class LoginPageState extends State<LoginPage>
                           "Bond", 45.0, FontWeight.w800, Color(0xFFFED154)),
                     ],
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 6),
                   buildTextFieldWithIcon(
                       Icons.email_rounded, "Email", emailController, false),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 10),
                   buildTextFieldWithIcon(
                       Icons.lock_rounded, "Password", passwordController, true),
                   buildCheckBox("Stay signed in", staySignedIn, (value) {
@@ -199,8 +199,9 @@ class LoginPageState extends State<LoginPage>
                       staySignedIn = value ?? false;
                     });
                   }),
-                  const SizedBox(height: 30),
-                  buildMainButton("Log In", context, (BuildContext context) {
+                  const SizedBox(height: 70),
+                  buildMainButton("Log In", "yellow", context,
+                      (BuildContext context) {
                     loginUser(context);
                   }),
                   Align(
@@ -289,8 +290,23 @@ class LoginPageState extends State<LoginPage>
     );
   }
 
-  static Widget buildMainButton(String label, BuildContext context,
-      void Function(BuildContext) onPressed) {
+  static Widget buildMainButton(String label, String color,
+      BuildContext context, void Function(BuildContext) onPressed) {
+    Color buttonColor;
+    Color textColor;
+
+    if (color == "yellow") {
+      buttonColor = const Color(0xFFFED154);
+      textColor = const Color(0xFF435E49);
+    } else if (color == "green") {
+      buttonColor = const Color(0xFF435E49);
+      textColor = const Color(0xFFFED154);
+    } else {
+      // Default colors
+      buttonColor = const Color(0xFFFED154);
+      textColor = const Color(0xFF435E49);
+    }
+
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
@@ -299,7 +315,7 @@ class LoginPageState extends State<LoginPage>
           width: 329,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
-            color: const Color(0xFFFED154),
+            color: buttonColor,
           ),
           child: TextButton(
             onPressed: () {
@@ -310,7 +326,7 @@ class LoginPageState extends State<LoginPage>
               style: GoogleFonts.raleway(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF435E49),
+                color: textColor,
               ),
             ),
           ),

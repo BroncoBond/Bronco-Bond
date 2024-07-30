@@ -64,83 +64,84 @@ class InterestsPageState extends State<InterestsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "BroncoBond",
-          style: GoogleFonts.raleway(
-            textStyle: Theme.of(context).textTheme.displaySmall,
-            fontSize: 25,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF3B5F43),
-          ),
-        ),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   title: Text(
+      //     "BroncoBond",
+      //     style: GoogleFonts.raleway(
+      //       textStyle: Theme.of(context).textTheme.displaySmall,
+      //       fontSize: 25,
+      //       fontWeight: FontWeight.w800,
+      //       color: const Color(0xFF3B5F43),
+      //     ),
+      //   ),
+      //   centerTitle: true,
+      // ),
       body: SingleChildScrollView(
-        child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "How do you want to be involved?",
-                    style: TextStyle(
-                        // color: Colors.black,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginPage(),
-                          ));
-                    },
-                    child: const Row(
-                      children: [
-                        Text(
-                          'Skip',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF3B5F43),
-                          ),
+        child: Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Column(
+            // crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 15.0, left: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 250),
+                      child: Text(
+                        "How do you want to be involved?",
+                        style: GoogleFonts.raleway(
+                          fontSize: 23,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xff2e4233),
                         ),
-                        SizedBox(width: 2.0),
-                        Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          color: Color(0xFF3B5F43),
-                          size: 16,
-                        )
-                      ],
+                        // color: Colors.black,
+                        //fontWeight: FontWeight.w700),
+                      ),
                     ),
-                  )
-                ],
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginPage(),
+                            ));
+                      },
+                      child: Text(
+                        'Skip',
+                        style: GoogleFonts.raleway(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xff939393),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-            /*Padding(
+              /*Padding(
                 padding: const EdgeInsets.all(10.0), child: buildSearchBar()), */ // Comment out search bar for now
-            // Build all interests
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 8.0, // padding between each button
-                runSpacing: 2.0, // padding between each row of buttons
-                children:
-                    interests.map((interest) => buildButton(interest)).toList(),
+              // Build all interests
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Wrap(
+                  alignment: WrapAlignment.start,
+                  spacing: 8.0, // padding between each button
+                  runSpacing: 2.0, // padding between each row of buttons
+                  children: interests
+                      .map((interest) => buildButton(interest))
+                      .toList(),
+                ),
               ),
-            ),
-            // const SizedBox(height: 10),
-            buildCustomInterest(interestsController),
-            LoginPageState.buildMainButton("Next", context,
-                (BuildContext context) {
-              addInterestsToUser(context);
-            }),
-          ], //column children
+              // const SizedBox(height: 10),
+              buildCustomInterest(interestsController),
+              LoginPageState.buildMainButton("Done", "green", context,
+                  (BuildContext context) {
+                addInterestsToUser(context);
+              }),
+            ], //column children
+          ),
         ),
       ),
     );
@@ -152,11 +153,11 @@ class InterestsPageState extends State<InterestsPage> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor:
-            isSelected ? const Color(0xFFABABAB) : Colors.transparent,
+            isSelected ? const Color(0xfffed154) : const Color(0x7ffed154),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(30.0),
           side: const BorderSide(
-            color: Color(0xFF3B5F43),
+            color: Colors.transparent,
             width: 1,
           ),
         ),
@@ -174,8 +175,15 @@ class InterestsPageState extends State<InterestsPage> {
       },
       child: Text(
         label,
-        style: const TextStyle(
-            fontSize: 15, color: Colors.black, fontWeight: FontWeight.w500),
+        style: isSelected
+            ? GoogleFonts.raleway(
+                fontSize: 14,
+                color: const Color(0xff435f49),
+                fontWeight: FontWeight.w700)
+            : GoogleFonts.raleway(
+                fontSize: 14,
+                color: const Color(0xff939393),
+                fontWeight: FontWeight.w700),
       ),
     );
   }
@@ -204,16 +212,26 @@ class InterestsPageState extends State<InterestsPage> {
       padding: const EdgeInsets.all(8.0),
       child: TextField(
         controller: textEditingController,
+        cursorColor: const Color(0xff939393),
         decoration: InputDecoration(
             labelText: "Add your own interests",
-            labelStyle: const TextStyle(color: Color(0xFF3B5F43)),
-            border: OutlineInputBorder(
-              borderSide: const BorderSide(color: Color(0xFF3B5F43)),
-              borderRadius: BorderRadius.circular(8.0),
+            labelStyle: GoogleFonts.raleway(
+                fontSize: 16,
+                color: Color(0xff939393),
+                fontWeight: FontWeight.w500),
+            enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Color(0xffdddddd)),
+              borderRadius: BorderRadius.circular(10.0),
             ),
-            focusColor: const Color(0xFF3B5F43),
-            focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF3B5F43))),
+            filled: true,
+            fillColor: const Color(0xffdddddd),
+            focusColor: const Color(0xffdddddd),
+            focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                color: Color(0xffdddddd),
+              ),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
             suffixIcon: IconButton(
               icon: const Icon(
                 Icons.add,
@@ -236,10 +254,14 @@ class InterestsPageState extends State<InterestsPage> {
                   }
                   textEditingController.clear();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Interests added successfully!"),
+                    SnackBar(
+                      content: Text(
+                        "Interests added successfully!",
+                        style: GoogleFonts.raleway(
+                            fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
                       duration: Duration(seconds: 2),
-                      backgroundColor: Color(0xff3B5F43),
+                      backgroundColor: Color(0xff435f49),
                     ),
                   );
                 });

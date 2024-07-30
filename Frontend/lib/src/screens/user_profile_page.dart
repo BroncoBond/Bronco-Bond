@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
 import 'package:bronco_bond/src/screens/edit_profile.dart';
 import 'package:bronco_bond/src/screens/settings_page.dart';
 import 'package:bronco_bond/src/screens/friends_list_page.dart';
@@ -22,6 +23,7 @@ class UserProfile extends StatefulWidget {
 
 class UserProfileState extends State<UserProfile>
     with SingleTickerProviderStateMixin {
+  late String fullName = '';
   late String username = '';
   late int numOfBonds = 0;
   late String descriptionMajor = '';
@@ -34,8 +36,14 @@ class UserProfileState extends State<UserProfile>
   late String profilePictureContentType;
   late Uint8List pfp;
   late TabController _tabController;
+  late ExpansionTileController _experienceController;
+  late ExpansionTileController _clubsController;
+  late ExpansionTileController _interestsController;
   late Future<SharedPreferences> prefsFuture;
   late SharedPreferences prefs;
+  bool _experienceExpanded = false;
+  bool _clubsExpanded = false;
+  bool _interestsExpanded = false;
   String? currentUserID;
   bool isCurrentUserProfile = false;
   late Timer timer;
@@ -47,6 +55,9 @@ class UserProfileState extends State<UserProfile>
     super.initState();
     prefsFuture = initSharedPref();
     _tabController = TabController(length: 2, vsync: this);
+    _experienceController = ExpansionTileController();
+    _clubsController = ExpansionTileController();
+    _interestsController = ExpansionTileController();
 
     pfp = Uint8List(0);
     profilePictureData = [];
@@ -92,6 +103,7 @@ class UserProfileState extends State<UserProfile>
         final userData = json.decode(response.body);
         if (mounted) {
           setState(() {
+            fullName = userData['user']['fullName'] ?? 'Unknown';
             username = userData['user']['username'] ?? 'Unknown';
             numOfBonds = userData['user']['numOfBonds'] ?? 0;
             descriptionMajor =
@@ -218,7 +230,7 @@ class UserProfileState extends State<UserProfile>
               if (isCurrentUserProfile) {
                 return AppBar(
                   title: Text(
-                    'BroncoBond',
+                    'Profile',
                     textAlign: TextAlign.left,
                     style: GoogleFonts.raleway(
                       textStyle: Theme.of(context).textTheme.displaySmall,
@@ -248,7 +260,7 @@ class UserProfileState extends State<UserProfile>
               } else {
                 return AppBar(
                   title: Text(
-                    'BroncoBond',
+                    'Profile',
                     textAlign: TextAlign.left,
                     style: GoogleFonts.raleway(
                       textStyle: Theme.of(context).textTheme.displaySmall,
@@ -311,40 +323,66 @@ class UserProfileState extends State<UserProfile>
 
   Widget buildUserProfile(SharedPreferences prefs) {
     bool isCurrentUserProfile = widget.userID == currentUserID;
-    return Column(
-      children: [
-        buildProfileHeader(context, isCurrentUserProfile),
-        buildInfoBar(),
-        // Check if this is the current user, if not then show a follow button
-        if (!isCurrentUserProfile)
-          buildOtherProfileButtons(widget.userID, currentUserID),
-        if (isCurrentUserProfile) buildEditProfileButton(currentUserID),
-        TabBar(
-          labelStyle:
-              const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          labelColor: const Color(0xFF3B5F43),
-          indicatorColor: const Color(0xFF3B5F43),
-          unselectedLabelColor: Colors.grey,
-          indicatorWeight: 3,
-          indicatorSize: TabBarIndicatorSize.tab,
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'About'),
-            Tab(text: 'Posts'),
-          ],
-        ),
-        Expanded(
-          child: TabBarView(
-            controller: _tabController,
+    return SingleChildScrollView(
+      child: Stack(
+        children: [
+          Image.asset(
+            'assets/images/header_bg.png',
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.cover,
+          ),
+          Column(
             children: [
-              // Content for About tab
-              buildAboutContent(),
-              // Content for Posts tab
-              buildPosts(),
+              buildProfileHeader(
+                  context, isCurrentUserProfile, widget.userID, currentUserID),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width / 2,
+                    child: TabBar(
+                      overlayColor:
+                          MaterialStateProperty.all(Colors.transparent),
+                      dividerColor: Colors.transparent,
+                      tabAlignment: TabAlignment.start,
+                      labelStyle: GoogleFonts.raleway(
+                          fontSize: 20, fontWeight: FontWeight.w700),
+                      labelColor: const Color(0xFF3B5F43),
+                      indicator: UnderlineTabIndicator(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide(
+                            width: 10, color: const Color(0xFFFED154)),
+                      ),
+                      indicatorColor: Colors.transparent,
+                      unselectedLabelColor: Colors.grey,
+                      indicatorWeight: 7,
+                      controller: _tabController,
+                      tabs: const [
+                        Tab(text: 'About'),
+                        Tab(text: 'Posts'),
+                      ],
+                      isScrollable:
+                          true, // Add this line to make the tabs scrollable
+                      indicatorPadding: EdgeInsets
+                          .zero, // Add this line to remove padding around the indicator
+                    ),
+                  ),
+                ),
+              ),
+              AutoScaleTabBarView(
+                controller: _tabController,
+                children: [
+                  // Content for About tab
+                  buildAboutContent(),
+                  // Content for Posts tab
+                  buildPosts(),
+                ],
+              ),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -352,54 +390,62 @@ class UserProfileState extends State<UserProfile>
     return SingleChildScrollView(
       //alignment: Alignment.centerLeft,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(30.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            buildInfoBar(),
             buildAboutSection("Experience", "Add Experiences",
-                "Showcase professional experiences..."),
-            buildAboutSection(
-                "Clubs", "Add Clubs", "Showcase clubs you participated in..."),
+                "Showcase professional experiences...", _experienceController),
+            buildAboutSection("Clubs", "Add Clubs",
+                "Showcase clubs you participated in...", _clubsController),
             // Interests section
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+            Theme(
+              data: ThemeData(splashColor: Colors.transparent),
+              child: ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: Text(
                   "Interests",
                   style: GoogleFonts.raleway(
-                    color: const Color(0xFF3B5F43),
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF2E4233),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    spacing: 8.0, // padding between each button
-                    runSpacing: 8.0, // padding between each row of buttons
-                    children: interests.map((interest) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(
-                              width: 1, color: const Color(0xFF3B5F43)),
-                        ),
-                        padding: const EdgeInsets.all(6.0),
-                        child: Text(
-                          interest,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
+                onExpansionChanged: (bool expanded) {
+                  setState(() {
+                    _interestsExpanded = expanded;
+                  });
+                },
+                trailing: Icon(_interestsExpanded ? Icons.remove : Icons.add),
+                shape: Border(),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Wrap(
+                      alignment: WrapAlignment.start,
+                      spacing: 8.0, // padding between each button
+                      runSpacing: 8.0, // padding between each row of buttons
+                      children: interests.map((interest) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xfffed154),
+                            borderRadius: BorderRadius.circular(30.0),
                           ),
-                        ),
-                      );
-                    }).toList(),
+                          padding: const EdgeInsets.all(6.0),
+                          child: Text(
+                            interest,
+                            style: GoogleFonts.raleway(
+                                fontSize: 14,
+                                color: const Color(0xff435f49),
+                                fontWeight: FontWeight.w700),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             )
           ],
         ),
@@ -408,125 +454,189 @@ class UserProfileState extends State<UserProfile>
   }
 
 // Use template for now until user can add more to their page
-  Widget buildAboutSection(
-      String title, String buttonLabel, String description) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
+  Widget buildAboutSection(String title, String buttonLabel, String description,
+      ExpansionTileController controller) {
+    bool isExperienceController = controller == _experienceController;
+    bool isClubsController = controller == _clubsController;
+
+    return Theme(
+      data: ThemeData(
+        splashColor: Colors.transparent,
+      ),
+      child: ExpansionTile(
+        tilePadding: EdgeInsets.zero,
+        expandedAlignment: Alignment.centerLeft,
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+        title: Text(
           title,
           style: GoogleFonts.raleway(
-            color: const Color(0xFF3B5F43),
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
+            color: const Color(0xFF2E4233),
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0, bottom: 7.0),
-          child: Row(
+        onExpansionChanged: (bool expanded) {
+          setState(() {
+            if (isExperienceController) {
+              _experienceExpanded = expanded;
+            } else if (isClubsController) {
+              _clubsExpanded = expanded;
+            }
+          });
+        },
+        trailing: Icon(
+          isExperienceController
+              ? _experienceExpanded
+                  ? Icons.remove
+                  : Icons.add
+              : isClubsController
+                  ? _clubsExpanded
+                      ? Icons.remove
+                      : Icons.add
+                  : Icons.add,
+          color: const Color(0xFF2E4233),
+        ),
+        shape: Border(),
+        controller: controller,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: ElevatedButton(
-                    onPressed: () {
-                      //add function to add experience
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        side: const BorderSide(
-                          color: Color(0xFF3B5F43),
-                        ),
-                      ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0, bottom: 7.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                          onPressed: () {
+                            //add function to add experience
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              side: const BorderSide(
+                                color: Color(0xFF3B5F43),
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            buttonLabel,
+                            style: GoogleFonts.raleway(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                          )),
                     ),
-                    child: Text(
-                      buttonLabel,
-                      style: GoogleFonts.raleway(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      ),
-                    )),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: Text(
+                  description,
+                  style: GoogleFonts.raleway(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
               ),
             ],
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
-          child: Text(
-            description,
-            style: GoogleFonts.raleway(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget buildProfileHeader(BuildContext context, bool isCurrentUserProfile) {
+  Widget buildProfileHeader(BuildContext context, bool isCurrentUserProfile,
+      String profileUserID, String? currentUserID) {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width:
-                screenWidth * 0.2, // Set the width to 20% of the screen width
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 40,
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        width: screenWidth * 0.85, // Set the width to 80% of the screen width
+        decoration: ShapeDecoration(
+          color: const Color(0xFF2E4233),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(
+              top: 20.0, bottom: 20.0, right: 25.0, left: 25.0),
+          child: Column(
+            children: [
+              SizedBox(
+                width: screenWidth *
+                    0.25, // Set the width to 30% of the screen width
+                child: CircleAvatar(
+                  radius: 50, // Increase the radius to make the picture bigger
                   backgroundColor: Colors.white,
                   backgroundImage: profilePictureData.isNotEmpty
                       ? MemoryImage(pfp)
                       : const AssetImage('assets/images/user_profile_icon.png')
                           as ImageProvider,
                 ),
-                const SizedBox(height: 12),
-                // Apply maximum width constraint and handle overflow
-                Text(
-                  username,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 11),
+              Text(
+                fullName,
+                style: GoogleFonts.raleway(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
                 ),
-              ],
-            ),
-          ),
-
-          SizedBox(
-              width: screenWidth *
-                  0.05), // Set the width to 5% of the screen width
-          // SizedBox(height: 8),
-          Padding(
-            padding: EdgeInsets.only(right: 20.0),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 11),
+              // Apply maximum width constraint and handle overflow
+              Text(
+                '@' + username,
+                style: GoogleFonts.raleway(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF55685A),
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  buildStatColumn('Posts', 0),
                   SizedBox(
                       width: screenWidth *
-                          0.02), // Set the width to 2% of the screen width
-                  buildBondsStat(
-                      'Bonds', numOfBonds, widget.userID, isCurrentUserProfile),
-                  SizedBox(
-                      width: screenWidth *
-                          0.02), // Set the width to 2% of the screen width
-                  buildStatColumn('Interests', 0),
+                          0.03), // Set the width to 3% of the screen width
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        buildStatColumn('Posts', 0),
+                        SizedBox(
+                            width: screenWidth *
+                                0.05), // Increase the width to create more space
+                        buildBondsStat('Bonds', numOfBonds, widget.userID,
+                            isCurrentUserProfile),
+                        SizedBox(
+                            width: screenWidth *
+                                0.03), // Increase the width to create more space
+                        buildStatColumn('Interests', 0),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
+              const SizedBox(height: 11),
+              // Check if this is the current user, if not then show a follow button
+              if (!isCurrentUserProfile)
+                buildOtherProfileButtons(widget.userID, currentUserID),
+              if (isCurrentUserProfile) buildEditProfileButton(currentUserID),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -536,14 +646,19 @@ class UserProfileState extends State<UserProfile>
       children: [
         Text(
           value.toString(),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.raleway(
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
           ),
         ),
         Text(
           label,
-          style: const TextStyle(fontWeight: FontWeight.w400),
+          style: GoogleFonts.raleway(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
         ),
       ],
     );
@@ -565,7 +680,7 @@ class UserProfileState extends State<UserProfile>
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFFCFC),
+                backgroundColor: const Color(0xFF2E4233),
                 shadowColor: Colors.transparent,
                 elevation: 0,
               ),
@@ -573,15 +688,17 @@ class UserProfileState extends State<UserProfile>
                 children: [
                   Text(
                     value.toString(),
-                    style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
+                    style: GoogleFonts.raleway(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white),
                   ),
                   Text(
                     label,
-                    style: const TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w400),
+                    style: GoogleFonts.raleway(
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700),
                   ),
                 ],
               )),
@@ -596,30 +713,50 @@ class UserProfileState extends State<UserProfile>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, bottom: 15.0),
-            child: Text(descriptionBio),
+          Row(
+            children: [
+              const ImageIcon(AssetImage('assets/images/book_4.png'),
+                  color: const Color(0xFF435E49)),
+              const SizedBox(width: 10),
+              Text(
+                descriptionMajor,
+                style: GoogleFonts.raleway(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF435E49),
+                ),
+              ),
+            ],
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 10.0),
+            padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
             child: Row(
               children: [
+                const Icon(
+                  Icons.school_rounded,
+                  color: const Color(0xFF435E49),
+                ),
                 const SizedBox(width: 10),
-                const Icon(Icons.auto_stories_outlined),
-                const SizedBox(width: 10),
-                Text(descriptionMajor),
+                Text(
+                  'Class of $graduationDate',
+                  style: GoogleFonts.raleway(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF435E49),
+                  ),
+                ),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              children: [
-                const SizedBox(width: 10),
-                const Icon(Icons.school_rounded),
-                const SizedBox(width: 10),
-                Text('Class of $graduationDate'),
-              ],
+            padding: const EdgeInsets.only(bottom: 5.0),
+            child: Text(
+              descriptionBio,
+              style: GoogleFonts.raleway(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF435E49),
+              ),
             ),
           ),
         ],
@@ -629,21 +766,24 @@ class UserProfileState extends State<UserProfile>
 
   Widget buildPosts() {
     // Replace this with your logic to display user posts
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 4.0,
-        mainAxisSpacing: 4.0,
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 4.0,
+          mainAxisSpacing: 4.0,
+        ),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 9,
+        itemBuilder: (context, index) {
+          return Image.network(
+            'https://via.placeholder.com/150', // Replace with your image URLs
+            fit: BoxFit.cover,
+          );
+        },
       ),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 9,
-      itemBuilder: (context, index) {
-        return Image.network(
-          'https://via.placeholder.com/150', // Replace with your image URLs
-          fit: BoxFit.cover,
-        );
-      },
     );
   }
 
@@ -749,20 +889,22 @@ class UserProfileState extends State<UserProfile>
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor: Color(0xFF435E49),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(30.0),
                     side: const BorderSide(
-                      color: Color(0xFF3B5F43),
+                      color: Color(0xFF435E49),
                     ),
                   ),
+                  padding: const EdgeInsets.all(
+                      12.0), // Add padding to increase space around the text
                 ),
-                child: const Text(
+                child: Text(
                   "Edit Profile",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
+                  style: GoogleFonts.raleway(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
                   ),
                 )),
           ),
