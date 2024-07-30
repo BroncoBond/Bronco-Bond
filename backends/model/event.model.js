@@ -28,12 +28,11 @@ const eventSchema = new Schema(
       required: true,
     },
     eventCreator: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      type: String,
     },
     eventHost: {
       type: String,
-      max: 100
+      max: 100,
     },
     startDateTime: {
       type: Date,
