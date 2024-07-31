@@ -5,6 +5,8 @@ const protectRouter = require('../middleware/protectRouter');
 // Requires admin
 router.post('/create', protectRouter.protectRoute, eventController.createEvent);
 
+router.get('/search', protectRouter.protectRoute, eventController.searchEvent);
+
 router.get("/", protectRouter.protectRoute, eventController.getById);
 
 // Requires admin
