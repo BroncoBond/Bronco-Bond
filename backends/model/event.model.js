@@ -28,7 +28,8 @@ const eventSchema = new Schema(
       required: true,
     },
     eventCreator: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
     eventHost: {
       type: String,
@@ -43,8 +44,8 @@ const eventSchema = new Schema(
       required: true,
     },
     location: {
-      type: String, 
-      required: true
+      type: String,
+      required: true,
     },
     interest: [
       {
@@ -52,7 +53,7 @@ const eventSchema = new Schema(
         ref: 'User',
         default: 0,
       },
-    ]
+    ],
   },
   { timestamps: true }
 );
