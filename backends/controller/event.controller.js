@@ -101,6 +101,75 @@ exports.createEvent = async (req, res) => {
   }
 };
 
+exports.updateEvent = async (req, res) => {
+  // Events can only be updated by the event creator (regardless of admin status)
+  try {
+    const currentUser = await userController.extractAndDecodeToken(req);
+    const tokenUserId = currentUser.data._id;
+
+    const { _id, title, description, eventHost, startDateTime, endDateTime, location } = req.body;
+    const givenEventId = _id;
+
+    if (!givenEventId) {
+      return res.status(400).json({ error: 'Event ID not provided' });
+    }
+
+    const event = await Event.findById(givenEventId);
+
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    
+    if (event.eventCreator.toString() === tokenUserId.toString()) {
+      try {
+        const oldStartDateTime = event.startDateTime;
+        const oldEndDateTime = event.endDateTime;
+
+        const updatedEvent = await Event.findByIdAndUpdate(
+          givenEventId,
+          {
+            $set: { title, description, eventHost, startDateTime, endDateTime, location },
+          },
+          { new: true }
+        );
+
+        if (updatedEvent.startDateTime >= updatedEvent.endDateTime) {
+          await Event.findByIdAndUpdate(
+            givenEventId,
+            {
+              $set: {
+                startDateTime: oldStartDateTime,
+                endDateTime: oldEndDateTime,
+              },
+            },
+            { new: true }
+          );
+          return res.status(400).json({
+            message:
+              'The start date and time must be before the end date and time!',
+          });
+        }
+    
+        return res.status(200).json(updatedEvent);
+      } catch (error) {
+        return res
+          .status(500)
+          .json({ error: 'Error updating event', details: error });
+      }
+    } else {
+      return res
+        .status(403)
+        .json(
+          'You must be the event creator to update the event!'
+        );
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: 'Error updating event', details: error });
+  }
+};
+
 exports.searchEvent = async (req, res) => {
   const { title, eventCreator, eventHost, startDateTime, location } = req.body;
 
@@ -197,12 +266,15 @@ exports.deleteEvent = async (req, res) => {
     }
 
     const event = await Event.findById(givenEventId);
-    
+
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
-    
-    if (event.eventCreator.toString() !== tokenUserId.toString() && !tokenUser.isAdmin) {
+
+    if (
+      event.eventCreator.toString() !== tokenUserId.toString() &&
+      !tokenUser.isAdmin
+    ) {
       // This case should be impossible reach in practice ngl
       return res
         .status(403)
