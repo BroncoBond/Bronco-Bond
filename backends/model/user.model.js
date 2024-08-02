@@ -77,7 +77,7 @@ const userSchema = new Schema({
             type: Number,
             default: 0
         },
-        interests: {
+        interests: { // This "interest" is specifically for a user's interests (activities, hobbies, etc.)
             type: [String],
             default:[]
         },
