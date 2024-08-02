@@ -11,6 +11,9 @@ require('dotenv').config();
 const Organization = require('../model/organization.model');
 const UserOTP = require('../model/userOTP.model');
 
+// Used for functions that involve (un)interest events
+const Event = require('../model/event.model');
+
 const extractAndDecodeToken = async (req) => {
   const token = req.headers.authorization.split(' ')[1];
 
@@ -773,7 +776,7 @@ exports.unfollowOrganization = async (req, res) => {
 
   try {
     if (
-      currentUser.followedOrganizations
+      currentUser.followedOrganizations // Converts the followedOrganizations array to an array of strings so it can be parsed
         .map((followedOrganization) => followedOrganization.toString())
         .includes(givenOrganizationId)
     ) {
@@ -789,6 +792,85 @@ exports.unfollowOrganization = async (req, res) => {
       return res.status(200).json('Organization has been unfollowed');
     } else {
       return res.status(403).json('You are not following this organization!');
+    }
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+exports.interestEvent = async (req, res) => {
+  const currentUserId = (await extractAndDecodeToken(req)).data._id;
+  const currentUser = await User.findById(currentUserId);
+
+  const givenEventId = req.body._id;
+  const givenEvent = await Event.findById(givenEventId);
+
+  try {
+    if (!givenEvent) {
+      return res.status(404).json('Event not found');
+    }
+
+    if (givenEvent.type === 'Private') {
+      return res.status(403).json('You cannot express interest in a private event!');
+    }
+
+    if (
+      currentUser.eventInterests.includes(givenEvent.id) &&
+      givenEvent.interest.includes(currentUser.id)
+    ) {
+      return res.status(403).json('You are already interested in this event!');
+    }
+
+    await currentUser.updateOne({
+      $push: { eventInterests: givenEvent.id },
+      $inc: { numOfEventInterests: +1 },
+    });
+    await givenEvent.updateOne({
+      $push: { interest: currentUser.id },
+      $inc: { numOfInterest: +1 },
+    });
+
+    return res.status(200).json('Event marked as interested');
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.uninterestEvent = async (req, res) => {
+  const currentUserId = (await extractAndDecodeToken(req)).data._id;
+  const currentUser = await User.findById(currentUserId);
+
+  const givenEventId = req.body._id;
+  const givenEvent = await Event.findById(givenEventId);
+
+  try {
+    if (!givenEvent) {
+      return res.status(404).json('Event not found');
+    }
+
+    if (givenEvent.type === 'Private') {
+      return res
+        .status(403)
+        .json('You cannot retract interest from a private event!');
+    }
+
+    if (
+      currentUser.eventInterests // Converts the eventInterests array to an array of strings so it can be parsed
+        .map((eventInterest) => eventInterest.toString())
+        .includes(givenEventId)
+    ) {
+      await currentUser.updateOne({
+        $pull: { eventInterests: givenEventId },
+        $inc: { numOfEventInterests: -1 },
+      });
+      await givenEvent.updateOne({
+        $pull: { interest: currentUserId },
+        $inc: { numOfInterest: -1 },
+      });
+
+      return res.status(200).json('Interest from event has been retracted');
+    } else {
+      return res.status(403).json('You are not interested in this event!');
     }
   } catch (error) {
     return res.status(500).json(error);
