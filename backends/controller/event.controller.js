@@ -37,7 +37,7 @@ exports.createEvent = async (req, res) => {
       eventHost = tokenUser.username;
     }
 
-    const newEvent = new Event({
+    let newEvent = new Event({
       title,
       type,
       description,
@@ -56,6 +56,7 @@ exports.createEvent = async (req, res) => {
         'endDateTime',
         'location',
       ];
+
       const missingProperties = requiredProperties.filter(
         (property) => !req.body[property]
       );
@@ -80,6 +81,17 @@ exports.createEvent = async (req, res) => {
       }
 
       await newEvent.save();
+
+      if (type === 'Private') {
+        newEvent = await Event.findByIdAndUpdate(
+          newEvent._id,
+          {
+            $unset: { interest: "", numOfInterest: "" },
+          },
+          { new: true }
+        );
+      }
+
       res.status(201).json({
         status: true,
         newEvent,
