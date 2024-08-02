@@ -246,23 +246,47 @@ exports.searchEvent = async (req, res) => {
 
 exports.getById = async (req, res) => {
   const givenEventId = req.body._id;
-  let event;
 
   if (!givenEventId) {
     return res.status(400).json({ error: 'Event ID not provided' });
   }
 
   try {
-    event = await Event.findById(givenEventId).select();
+    const event = await Event.findById(givenEventId).select();
 
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
+
+    return res.status(200).json({ event });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-  return res.status(200).json({ event });
 };
+
+exports.getAllInterest = async (req, res) => {
+  const givenEventId = req.body._id;
+
+  if (!givenEventId) {
+    return res.status(400).json({ error: 'Event ID not provided' });
+  }
+
+  try {
+    const event = await Event.findById(givenEventId);
+    
+    if (event.type === 'Private') {
+      return res.status(403).json({ error: 'Private events do not have interests' });
+    }
+
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    return res.status(200).json({ interest: event.interest, numOfInterest: event.numOfInterest });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+}
 
 exports.deleteEvent = async (req, res) => {
   // Private events can only be deleted by the creator or admins

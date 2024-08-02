@@ -8,7 +8,9 @@ router.put('/update', protectRouter.protectRoute, eventController.updateEvent);
 
 router.get('/search', protectRouter.protectRoute, eventController.searchEvent);
 
-router.get("/", protectRouter.protectRoute, eventController.getById);
+router.get('/', protectRouter.protectRoute, eventController.getById);
+
+router.get('/interest', protectRouter.protectRoute, eventController.getAllInterest);
 
 router.delete('/delete', protectRouter.protectRoute, eventController.deleteEvent);
 
