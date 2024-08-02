@@ -54,6 +54,10 @@ const eventSchema = new Schema(
         default: 0,
       },
     ],
+    numOfInterest: {
+      type: Number,
+      default:0
+    },
   },
   { timestamps: true }
 );
