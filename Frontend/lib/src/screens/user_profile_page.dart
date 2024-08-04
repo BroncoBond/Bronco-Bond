@@ -25,6 +25,7 @@ class UserProfileState extends State<UserProfile>
     with SingleTickerProviderStateMixin {
   late String fullName = '';
   late String username = '';
+  late String pronouns = '';
   late int numOfBonds = 0;
   late String descriptionMajor = '';
   late String descriptionBio = '';
@@ -105,6 +106,7 @@ class UserProfileState extends State<UserProfile>
           setState(() {
             fullName = userData['user']['fullName'] ?? 'Unknown';
             username = userData['user']['username'] ?? 'Unknown';
+            pronouns = userData['user']['pronouns'] ?? 'Unknown';
             numOfBonds = userData['user']['numOfBonds'] ?? 0;
             descriptionMajor =
                 userData['user']['descriptionMajor'] ?? 'Unknown';
@@ -588,7 +590,7 @@ class UserProfileState extends State<UserProfile>
               const SizedBox(height: 11),
               // Apply maximum width constraint and handle overflow
               Text(
-                'they/them', //pronoun placeholder
+                pronouns,
                 style: GoogleFonts.raleway(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
