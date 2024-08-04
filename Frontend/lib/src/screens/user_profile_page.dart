@@ -231,9 +231,7 @@ class UserProfileState extends State<UserProfile>
                   prefs = snapshot.data as SharedPreferences;
                   isCurrentUserProfile = widget.userID == currentUserID;
                   return Container(
-                    color: isCurrentUserProfile
-                        ? const Color(0xFF3B5F43)
-                        : Colors.white,
+                    color: const Color(0xff435f49),
                     padding: const EdgeInsets.only(
                         right: 16.0, left: 16.0, top: 16.0),
                     child: Row(
@@ -245,9 +243,7 @@ class UserProfileState extends State<UserProfile>
                             textStyle: Theme.of(context).textTheme.displaySmall,
                             fontSize: 25,
                             fontWeight: FontWeight.w800,
-                            color: isCurrentUserProfile
-                                ? Colors.white
-                                : const Color(0xFF3B5F43),
+                            color: Colors.white,
                           ),
                         ),
                         if (isCurrentUserProfile)

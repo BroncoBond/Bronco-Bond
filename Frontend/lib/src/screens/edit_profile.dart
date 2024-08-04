@@ -201,7 +201,7 @@ class EditProfilePageState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF3B5F43),
+      backgroundColor: Color(0xff435f49),
       body: FutureBuilder<void>(
           future: _dataFuture ?? Future.value(null),
           builder: (context, snapshot) {
@@ -222,7 +222,7 @@ class EditProfilePageState extends State<EditProfile> {
                     ),
                     // App bar
                     Container(
-                      color: const Color(0xFF3B5F43),
+                      color: const Color(0xff435f49),
                       child: Stack(children: [
                         Align(
                           alignment: Alignment.centerLeft,
@@ -558,14 +558,14 @@ class _EditableRowState extends State<EditableRow> {
                   widget.label,
                   style: GoogleFonts.raleway(
                       fontSize: 16.0,
-                      color: const Color(0xff3B5F43),
+                      color: const Color(0xff2e4233),
                       fontWeight: FontWeight.w700),
                 ),
               ),
               if (isEditing)
                 IconButton(
                   icon: const Icon(Icons.check_rounded),
-                  color: const Color(0xff3B5F43),
+                  color: const Color(0xff2e4233),
                   onPressed: _saveChanges,
                 )
               else
@@ -687,7 +687,7 @@ class _EditableRowState extends State<EditableRow> {
                         right: 8.0), // Add padding to the right of the icon
                     child: Icon(
                       Icons.arrow_drop_down,
-                      color: Color(0xff3B5F43),
+                      color: Color(0xff2e4233),
                     ),
                   ),
                   iconEnabledColor: const Color(0xff939393),
