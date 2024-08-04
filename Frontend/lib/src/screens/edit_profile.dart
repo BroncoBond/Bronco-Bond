@@ -413,6 +413,7 @@ class EditableRow extends StatefulWidget {
 
 class _EditableRowState extends State<EditableRow> {
   bool isEditing = false;
+  final FocusNode _focusNode = FocusNode();
   late TextEditingController textController;
   String? _selectedMajor;
   String? _selectedMinor;
@@ -444,6 +445,7 @@ class _EditableRowState extends State<EditableRow> {
   @override
   void dispose() {
     textController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -628,15 +630,10 @@ class _EditableRowState extends State<EditableRow> {
                 filled: true,
                 fillColor: const Color(0xffdddddd),
                 contentPadding: const EdgeInsets.all(10.0),
-                border: isEditing
-                    ? OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(color: Color(0xff3B5F43)),
-                      )
-                    : OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide.none,
-                      ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
+                ),
                 focusedBorder: isEditing
                     ? OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -662,32 +659,50 @@ class _EditableRowState extends State<EditableRow> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: double.infinity,
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(
-                0xffdddddd), // Set the background color of the button
-            borderRadius: BorderRadius.circular(8.0), // Set the border radius
-          ),
-          child: DropdownButton<String>(
-            isExpanded: true,
-            value: dropdownValue,
-            icon: const Padding(
-              padding: EdgeInsets.only(
-                  right: 8.0), // Add padding to the right of the icon
-              child: Icon(
-                Icons.arrow_drop_down,
-                color: Color(0xff3B5F43),
-              ),
-            ),
-            iconEnabledColor: const Color(0xff939393),
-            iconDisabledColor: const Color(0xff939393),
-            underline: const SizedBox(),
-            items: items.map((String value) {
-              return buildDropDownItem(value);
-            }).toList(),
-            onChanged: isEditing ? onChanged : null,
+        Focus(
+          focusNode: _focusNode,
+          child: Builder(
+            builder: (context) {
+              final isFocused = Focus.of(context).hasFocus;
+              return Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: const Color(
+                      0xffdddddd), // Set the background color of the button
+                  borderRadius:
+                      BorderRadius.circular(8.0), // Set the border radius
+                  border: Border.all(
+                    color: isFocused
+                        ? const Color(0xff3B5F43)
+                        : Colors.transparent,
+                    width: 2.0,
+                  ),
+                ),
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: dropdownValue,
+                  icon: const Padding(
+                    padding: EdgeInsets.only(
+                        right: 8.0), // Add padding to the right of the icon
+                    child: Icon(
+                      Icons.arrow_drop_down,
+                      color: Color(0xff3B5F43),
+                    ),
+                  ),
+                  iconEnabledColor: const Color(0xff939393),
+                  iconDisabledColor: const Color(0xff939393),
+                  underline: const SizedBox(),
+                  items: items.map((String value) {
+                    return buildDropDownItem(value);
+                  }).toList(),
+                  onChanged: isEditing ? onChanged : null,
+                  onTap: () {
+                    _focusNode.requestFocus();
+                  },
+                ),
+              );
+            },
           ),
         ),
       ],
