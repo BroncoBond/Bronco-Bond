@@ -217,106 +217,101 @@ class UserProfileState extends State<UserProfile>
 
   @override
   Widget build(BuildContext context) {
-    //bool isCurrentUserProfile = widget.userID == prefs?.getString('userID');
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: FutureBuilder(
-          future: prefsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              prefs = snapshot.data as SharedPreferences;
-              isCurrentUserProfile = widget.userID == currentUserID;
-              if (isCurrentUserProfile) {
-                return AppBar(
-                  title: Text(
-                    'Profile',
-                    textAlign: TextAlign.left,
-                    style: GoogleFonts.raleway(
-                      textStyle: Theme.of(context).textTheme.displaySmall,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                  backgroundColor: const Color(0xFF3B5F43),
-                  leadingWidth: 0.0,
-                  automaticallyImplyLeading: false,
-                  actions: [
-                    IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SettingsPage(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.settings_rounded),
-                        color: Colors.white // const Color(0xFF3B5F43),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          PreferredSize(
+            preferredSize: const Size.fromHeight(kToolbarHeight),
+            child: FutureBuilder(
+              future: prefsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  prefs = snapshot.data as SharedPreferences;
+                  isCurrentUserProfile = widget.userID == currentUserID;
+                  return Container(
+                    color: isCurrentUserProfile
+                        ? const Color(0xFF3B5F43)
+                        : Colors.white,
+                    padding: const EdgeInsets.only(
+                        right: 16.0, left: 16.0, top: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          username,
+                          style: GoogleFonts.raleway(
+                            textStyle: Theme.of(context).textTheme.displaySmall,
+                            fontSize: 25,
+                            fontWeight: FontWeight.w800,
+                            color: isCurrentUserProfile
+                                ? Colors.white
+                                : const Color(0xFF3B5F43),
+                          ),
                         ),
-                  ],
+                        if (isCurrentUserProfile)
+                          IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SettingsPage(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.settings_rounded),
+                            color: Colors.white,
+                          )
+                        else
+                          IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: Colors.black,
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return const SizedBox(); // Return empty box while loading
+                }
+              },
+            ),
+          ),
+          FutureBuilder(
+            future: prefsFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container(
+                  color: Colors.white,
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
+                    ),
+                  ),
                 );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error: ${snapshot.error}'),
+                );
+              } else if (snapshot.connectionState == ConnectionState.done) {
+                final prefs = snapshot.data;
+                if (prefs != null) {
+                  return buildUserProfile(prefs);
+                } else {
+                  return const Center(
+                    child: Text('SharedPreferences is null'),
+                  );
+                }
               } else {
-                return AppBar(
-                  title: Text(
-                    'Profile',
-                    textAlign: TextAlign.left,
-                    style: GoogleFonts.raleway(
-                      textStyle: Theme.of(context).textTheme.displaySmall,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF3B5F43),
-                    ),
-                  ),
-                  leadingWidth: 40.0,
-                  leading: IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: Colors.black,
-                    ),
-                  ),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
-            } else {
-              return const SizedBox(); // Return empty box while loading
-            }
-          },
-        ),
-      ),
-      body: FutureBuilder(
-        future: prefsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container(
-              color: Colors.white,
-              child: const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
-                ),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          } else if ((snapshot.connectionState == ConnectionState.done)) {
-            final prefs = snapshot.data;
-            if (prefs != null) {
-              return buildUserProfile(prefs);
-            } else {
-              // Handle the case where prefs is null
-              return const Center(
-                child: Text('SharedPreferences is null'),
-              );
-            }
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
+            },
+          ),
+        ],
       ),
     );
   }
@@ -593,7 +588,7 @@ class UserProfileState extends State<UserProfile>
               const SizedBox(height: 11),
               // Apply maximum width constraint and handle overflow
               Text(
-                '@' + username,
+                'they/them', //pronoun placeholder
                 style: GoogleFonts.raleway(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
