@@ -26,7 +26,7 @@ Comprehensive Information: Explore all that CPP has to offer in one convenient p
 ### **Lead Developer & Project Manager:**  
 |       |
 | :---: |
-| <img width="50" src="https://github.com/Jay7vn.png"/></br>[Jayden Nguyen](https://github.com/Jay7vn) |
+| <img width="50" src="https://github.com/Jay7vn.png"/></br>[Jayden Nguyen](https://github.com/jayvnn) |
 |       |
 
 
