@@ -56,7 +56,7 @@ exports.createEvent = async (req, res) => {
         'endDateTime',
         'location',
       ];
-
+      const currentDate = new Date();
       const missingProperties = requiredProperties.filter(
         (property) => !req.body[property]
       );
@@ -68,18 +68,22 @@ exports.createEvent = async (req, res) => {
           )}`,
         });
       }
-
-      if (startDateTime > endDateTime) {
+      if (startDateTime > currentDate){
+        if (startDateTime > endDateTime) {
+          return res.status(400).json({
+            message:
+              'The start date and time must be before the end date and time!',
+          });
+        } else if (startDateTime === endDateTime) {
+          return res.status(400).json({
+            message: 'The start date and time cannot be the same!',
+          });
+        }
+      } else {
         return res.status(400).json({
-          message:
-            'The start date and time must be before the end date and time!',
-        });
-      } else if (startDateTime === endDateTime) {
-        return res.status(400).json({
-          message: 'The start date and time cannot be the same!',
-        });
+            message: 'The start date must be after the current date!',
+          });
       }
-
       await newEvent.save();
 
       if (type === 'Private') {
