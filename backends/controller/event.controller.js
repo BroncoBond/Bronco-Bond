@@ -57,6 +57,9 @@ exports.createEvent = async (req, res) => {
         'location',
       ];
       const currentDate = new Date();
+      const startDateTime = new Date(req.body.startDateTime);
+      const endDateTime = new Date(req.body.endDateTime);
+
       const missingProperties = requiredProperties.filter(
         (property) => !req.body[property]
       );
