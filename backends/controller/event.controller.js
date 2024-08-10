@@ -186,7 +186,10 @@ exports.updateEvent = async (req, res) => {
               message:
                 'The start date and time must be before the end date and time!',
             });
-          } else if (updatedEvent.startDateTime === updatedEvent.endDateTime) {
+          } else if (
+            updatedEvent.startDateTime.getTime() ===
+            updatedEvent.endDateTime.getTime()
+          ) {
             await Event.findByIdAndUpdate(
               givenEventId,
               {
@@ -349,6 +352,8 @@ exports.getAllInterest = async (req, res) => {
 
 exports.deleteEvent = async (req, res) => {
   // Private events can only be deleted by the creator or admins
+  // Public events can only be deleted by the creator
+
   try {
     const currentUser = await userController.extractAndDecodeToken(req);
     const tokenUserId = currentUser.data._id;
@@ -366,16 +371,25 @@ exports.deleteEvent = async (req, res) => {
       return res.status(404).json({ error: 'Event not found' });
     }
 
-    if (
-      event.eventCreator.toString() !== tokenUserId.toString() &&
-      !tokenUser.isAdmin
-    ) {
-      // This case should be impossible reach in practice ngl
-      return res
-        .status(403)
-        .json(
-          'Administrative priviledges are required to delete private events you have not created!'
-        );
+    const eventType = event.type;
+    const isAdmin = tokenUser.isAdmin;
+    const isEventCreator =
+      event.eventCreator.toString() === tokenUserId.toString();
+
+    if (eventType === 'Private') {
+      if (!isEventCreator && !isAdmin) {
+        return res
+          .status(403)
+          .json(
+            'Administrative priviledges are required to delete private events you have not created!'
+          );
+      }
+    } else {
+      if (!isEventCreator) {
+        return res
+          .status(403)
+          .json('You must be the event creator to delete this public event!');
+      }
     }
 
     try {
