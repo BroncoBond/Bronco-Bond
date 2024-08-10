@@ -78,7 +78,7 @@ exports.createEvent = async (req, res) => {
             message:
               'The start date and time must be before the end date and time!',
           });
-        } else if (startDateTime === endDateTime) {
+        } else if (startDateTime.getTime() === endDateTime.getTime()) {
           return res.status(400).json({
             message: 'The start date and time cannot be the same!',
           });
