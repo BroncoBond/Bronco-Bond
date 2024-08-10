@@ -71,7 +71,8 @@ exports.createEvent = async (req, res) => {
           )}`,
         });
       }
-      if (startDateTime > currentDate){
+
+      if (startDateTime > currentDate) {
         if (startDateTime > endDateTime) {
           return res.status(400).json({
             message:
@@ -84,8 +85,8 @@ exports.createEvent = async (req, res) => {
         }
       } else {
         return res.status(400).json({
-            message: 'The start date must be after the current date!',
-          });
+          message: 'The start date must be after the current date!',
+        });
       }
       await newEvent.save();
 
@@ -93,7 +94,7 @@ exports.createEvent = async (req, res) => {
         newEvent = await Event.findByIdAndUpdate(
           newEvent._id,
           {
-            $unset: { interest: "", numOfInterest: "" },
+            $unset: { interest: '', numOfInterest: '' },
           },
           { new: true }
         );
@@ -126,7 +127,15 @@ exports.updateEvent = async (req, res) => {
     const currentUser = await userController.extractAndDecodeToken(req);
     const tokenUserId = currentUser.data._id;
 
-    const { _id, title, description, eventHost, startDateTime, endDateTime, location } = req.body;
+    const {
+      _id,
+      title,
+      description,
+      eventHost,
+      startDateTime,
+      endDateTime,
+      location,
+    } = req.body;
     const givenEventId = _id;
 
     if (!givenEventId) {
@@ -138,21 +147,62 @@ exports.updateEvent = async (req, res) => {
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
-    
+
     if (event.eventCreator.toString() === tokenUserId.toString()) {
       try {
+        const currentDate = new Date();
         const oldStartDateTime = event.startDateTime;
         const oldEndDateTime = event.endDateTime;
 
         const updatedEvent = await Event.findByIdAndUpdate(
           givenEventId,
           {
-            $set: { title, description, eventHost, startDateTime, endDateTime, location },
+            $set: {
+              title,
+              description,
+              eventHost,
+              startDateTime,
+              endDateTime,
+              location,
+            },
           },
           { new: true }
         );
 
-        if (updatedEvent.startDateTime >= updatedEvent.endDateTime) {
+        if (updatedEvent.startDateTime > currentDate) {
+          if (updatedEvent.startDateTime > updatedEvent.endDateTime) {
+            await Event.findByIdAndUpdate(
+              givenEventId,
+              {
+                $set: {
+                  startDateTime: oldStartDateTime,
+                  endDateTime: oldEndDateTime,
+                },
+              },
+              { new: true }
+            );
+
+            return res.status(400).json({
+              message:
+                'The start date and time must be before the end date and time!',
+            });
+          } else if (updatedEvent.startDateTime === updatedEvent.endDateTime) {
+            await Event.findByIdAndUpdate(
+              givenEventId,
+              {
+                $set: {
+                  startDateTime: oldStartDateTime,
+                  endDateTime: oldEndDateTime,
+                },
+              },
+              { new: true }
+            );
+
+            return res.status(400).json({
+              message: 'The start date and time cannot be the same!',
+            });
+          }
+        } else {
           await Event.findByIdAndUpdate(
             givenEventId,
             {
@@ -163,12 +213,12 @@ exports.updateEvent = async (req, res) => {
             },
             { new: true }
           );
+
           return res.status(400).json({
-            message:
-              'The start date and time must be before the end date and time!',
+            message: 'The start date must be after the current date!',
           });
         }
-    
+
         return res.status(200).json(updatedEvent);
       } catch (error) {
         return res
@@ -178,9 +228,7 @@ exports.updateEvent = async (req, res) => {
     } else {
       return res
         .status(403)
-        .json(
-          'You must be the event creator to update the event!'
-        );
+        .json('You must be the event creator to update the event!');
     }
   } catch (error) {
     return res
@@ -280,20 +328,24 @@ exports.getAllInterest = async (req, res) => {
 
   try {
     const event = await Event.findById(givenEventId);
-    
+
     if (event.type === 'Private') {
-      return res.status(403).json({ error: 'Private events do not have interests' });
+      return res
+        .status(403)
+        .json({ error: 'Private events do not have interests' });
     }
 
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
 
-    return res.status(200).json({ interest: event.interest, numOfInterest: event.numOfInterest });
+    return res
+      .status(200)
+      .json({ interest: event.interest, numOfInterest: event.numOfInterest });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-}
+};
 
 exports.deleteEvent = async (req, res) => {
   // Private events can only be deleted by the creator or admins
