@@ -66,6 +66,12 @@ router.put("/followOrganization", protectRouter.protectRoute, userController.fol
 //Unfollow an Organization
 router.delete("/unfollowOrganization", protectRouter.protectRoute, userController.unfollowOrganization);
 
+//Express interest in a public Event
+router.put("/interestEvent", protectRouter.protectRoute, userController.interestEvent);
+
+//Retract interest from a public Event
+router.delete("/uninterestEvent", protectRouter.protectRoute, userController.uninterestEvent);
+
 //Logout User
 router.post("/logout", protectRouter.protectRoute, userController.logout);
 

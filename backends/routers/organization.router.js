@@ -13,7 +13,7 @@ router.post(
 router.put(
   '/update',
   protectRouter.protectRoute,
-  organizationController.updateOrganizationInformation
+  organizationController.updateOrganization
 );
 
 // Get all Organization folllowers
