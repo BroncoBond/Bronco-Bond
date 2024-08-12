@@ -78,7 +78,16 @@ const userSchema = new Schema({
             type: Number,
             default: 0
         },
-        interests: {
+        eventInterests: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Event',
+            default: []
+        }],
+        numOfEventInterests: {
+            type: Number,
+            default: 0
+        },
+        interests: { // This "interest" is specifically for a user's interests (activities, hobbies, etc.)
             type: [String],
             default:[]
         },

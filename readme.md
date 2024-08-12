@@ -26,7 +26,7 @@ Comprehensive Information: Explore all that CPP has to offer in one convenient p
 ### **Lead Developer & Project Manager:**  
 |       |
 | :---: |
-| <img width="50" src="https://github.com/Jay7vn.png"/></br>[Jayden Nguyen](https://github.com/Jay7vn) |
+| <img width="50" src="https://github.com/Jayvnn.png"/></br>[Jayden Nguyen](https://github.com/jayvnn) |
 |       |
 
 
@@ -38,14 +38,19 @@ Comprehensive Information: Explore all that CPP has to offer in one convenient p
 
 
 ### **Frontend Developers:**  
-|       |       |
-| :---: | :---: |
-<img width="50" src="https://github.com/mialmf.png"/></br>[Mia Felipe](https://github.com/mialmf) | <img width="50" src="https://github.com/Vivian-Trieu.png"/></br>[Vivian Trieu](https://github.com/Vivian-Trieu) |
-|       |       |
+|       |       |       |       |
+| :---: | :---: | :---: | :---: |
+<img width="50" src="https://github.com/mialmf.png"/></br>[Mia Felipe](https://github.com/mialmf) | <img width="50" src="https://github.com/Vivian-Trieu.png"/></br>[Vivian Trieu](https://github.com/Vivian-Trieu) | <img width="50" src="https://github.com/natmwong.png"/></br>[Natasha Wong](https://github.com/natmwong) | <img width="50" src="https://github.com/Sweetzzzz.png"/></br>[Jacob Lembach](https://github.com/Sweetzzzz) |
+|       |       |       |       |
 
 
 ### **Backend Developers:**  
-|       |       |
-| :---: | :---: |
-| <img width="50" src="https://github.com/lancetaningco.png"/></br>[Lance Taningco](https://github.com/lancetaningco) | <img width="50" src="https://github.com/mohraielm.png"/></br>[Mohraiel Matta](https://github.com/mohraielm) |
-|       |       |
+|       |       |       |
+| :---: | :---: | :---: |
+| <img width="50" src="https://github.com/lancetaningco.png"/></br>[Lance Taningco](https://github.com/lancetaningco) | <img width="50" src="https://github.com/mohraielm.png"/></br>[Mohraiel Matta](https://github.com/mohraielm) | <img width="50" src="https://github.com/PlainOlSoapBar.png"/></br>[Brandon Tseng](https://github.com/PlainOlSoapBar) |
+|       |       |       |
+
+### **UI/UX Designor:**  
+|       |
+| :---: |
+| <img width="50" src="https://github.com/fercia.png"/></br>[Jennifer Garcia](https://github.com/fercia) |
