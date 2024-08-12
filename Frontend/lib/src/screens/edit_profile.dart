@@ -426,7 +426,7 @@ class _EditableRowState extends State<EditableRow> {
   void initState() {
     super.initState();
     initSharedPref();
-    textController = TextEditingController(text: widget.initialValue);
+    textController = TextEditingController();
     if (widget.initialValue != "Unknown") {
       if (widget.label == 'Major') {
         _selectedMajor = widget.initialValue;
@@ -625,8 +625,13 @@ class _EditableRowState extends State<EditableRow> {
               style: GoogleFonts.raleway(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xff939393)),
+                  color: const Color(0xff3B5F43)),
               decoration: InputDecoration(
+                hintText: widget.initialValue,
+                hintStyle: GoogleFonts.raleway(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xff939393)),
                 filled: true,
                 fillColor: const Color(0xffdddddd),
                 contentPadding: const EdgeInsets.all(10.0),
@@ -668,10 +673,8 @@ class _EditableRowState extends State<EditableRow> {
                 width: double.infinity,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: const Color(
-                      0xffdddddd), // Set the background color of the button
-                  borderRadius:
-                      BorderRadius.circular(8.0), // Set the border radius
+                  color: const Color(0xffdddddd),
+                  borderRadius: BorderRadius.circular(8.0),
                   border: Border.all(
                     color: isFocused
                         ? const Color(0xff3B5F43)
@@ -683,8 +686,7 @@ class _EditableRowState extends State<EditableRow> {
                   isExpanded: true,
                   value: dropdownValue,
                   icon: const Padding(
-                    padding: EdgeInsets.only(
-                        right: 8.0), // Add padding to the right of the icon
+                    padding: EdgeInsets.only(right: 8.0),
                     child: Icon(
                       Icons.arrow_drop_down,
                       color: Color(0xff2e4233),
@@ -694,7 +696,8 @@ class _EditableRowState extends State<EditableRow> {
                   iconDisabledColor: const Color(0xff939393),
                   underline: const SizedBox(),
                   items: items.map((String value) {
-                    return buildDropDownItem(value);
+                    return buildDropDownItem(
+                        value, value == widget.initialValue);
                   }).toList(),
                   onChanged: isEditing ? onChanged : null,
                   onTap: () {
@@ -709,7 +712,8 @@ class _EditableRowState extends State<EditableRow> {
     );
   }
 
-  DropdownMenuItem<String> buildDropDownItem(String value) {
+  DropdownMenuItem<String> buildDropDownItem(
+      String value, bool isInitialValue) {
     return DropdownMenuItem<String>(
       value: value,
       child: Container(
@@ -720,7 +724,9 @@ class _EditableRowState extends State<EditableRow> {
           style: GoogleFonts.raleway(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: const Color(0xff939393),
+            color: isInitialValue
+                ? const Color(0xff939393)
+                : const Color(0xff3B5F43),
           ),
           textAlign: TextAlign.start,
           overflow: TextOverflow.ellipsis,
