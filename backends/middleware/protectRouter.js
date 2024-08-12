@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/user.model');
+const rateLimiter = require('../middleware/rateLimiter');
 
-exports.protectRoute = async (req, res, next) => {
+exports.protectRoute = [rateLimiter, async (req, res, next) => {
     try {
         // Extract the token from the Authorization header
         const authHeader = req.headers.authorization;
@@ -30,4 +31,4 @@ exports.protectRoute = async (req, res, next) => {
         console.log("Error in protectRoute middleware: ", error.message);
         res.status(500).json({ error: "Internal server error" });
     }
-};
+}];
