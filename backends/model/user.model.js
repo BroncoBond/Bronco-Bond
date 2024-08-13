@@ -59,13 +59,32 @@ const userSchema = new Schema({
             type: Number,
             default:0
         },
+        pronouns: {
+            type: String,
+            lowercase:true,
+            default: "Prefer Not To Say"
+        },
+        gender: {
+            type: String,
+            lowercase:true,
+            default: "Prefer Not To Say"
+        },
+        followedOrganizations: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Organization',
+            default: []
+        }],
+        numOfFollowedOrganizations: {
+            type: Number,
+            default: 0
+        },
         interests: {
             type: [String],
             default:[]
         },
         isAdmin: {
             type: Boolean,
-            default: false,
+            default: false
         },
         descriptionMajor: {
             type: String,
@@ -93,6 +112,10 @@ const userSchema = new Schema({
         is_online: {
             type: String,
             default: '0'
+        },
+        verified: {
+            type: Boolean,
+            default: false
         },
         tokens: [{ type: Object }]
     }, {timestamps:true} 
