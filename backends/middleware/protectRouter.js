@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/user.model');
-const rateLimiter = require('../middleware/rateLimiter');
-
+const rateLimiter = require("../middleware/rateLimiter");
 exports.protectRoute = [rateLimiter, async (req, res, next) => {
     try {
         // Extract the token from the Authorization header
