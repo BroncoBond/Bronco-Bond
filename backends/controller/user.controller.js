@@ -845,20 +845,23 @@ exports.interestEvent = async (req, res) => {
     }
 
     if (
-      currentUser.eventInterests.includes(givenEvent.id) &&
-      givenEvent.interest.includes(currentUser.id)
+      currentUser.eventInterests.includes(givenEventId) &&
+      givenEvent.interest.includes(currentUserId)
     ) {
       return res.status(403).json('You are already interested in this event!');
     }
 
     await currentUser.updateOne({
-      $push: { eventInterests: givenEvent.id },
+      $push: { eventInterests: givenEventId },
       $inc: { numOfEventInterests: +1 },
     });
     await givenEvent.updateOne({
-      $push: { interest: currentUser.id },
+      $push: { interest: currentUserId },
       $inc: { numOfInterest: +1 },
     });
+
+    // Add event to user's calendar
+    await CalendarService.addEvent(currentUserId, givenEventId);
 
     return res.status(200).json('Event marked as interested');
   } catch (error) {
@@ -897,6 +900,9 @@ exports.uninterestEvent = async (req, res) => {
         $pull: { interest: currentUserId },
         $inc: { numOfInterest: -1 },
       });
+
+      // Remove event from user's calendar
+      await CalendarService.removeEvent(currentUserId, givenEventId);
 
       return res.status(200).json('Interest from event has been retracted');
     } else {
