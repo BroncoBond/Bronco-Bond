@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const calendarSchema = new Schema(
   {
-    userID: { // User associated with the calendar
+    userId: { // User associated with the calendar
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     },
