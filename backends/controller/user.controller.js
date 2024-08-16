@@ -508,18 +508,25 @@ exports.deleteAccount = async (req, res) => {
   try {
     const currentUser = await extractAndDecodeToken(req);
     const tokenUserId = currentUser.data._id;
-    const givenUserId = req.body._id;
-
     const tokenUser = await User.findById(tokenUserId).select('isAdmin');
     const isAdmin = tokenUser.isAdmin;
+
+    const givenUserId = req.body._id;
+    const givenUser = await User.findById(givenUserId);
+    if (!givenUser) {
+      return res.status(404).json('User not found');
+    }
 
     // Check if the user is authorized to delete the account
     if (givenUserId === tokenUserId || isAdmin) {
       try {
-        const userId = req.user._id;
+        
         // Try to delete the user with the given ID
         await User.findByIdAndDelete(givenUserId);
-
+        
+        // Try to delete associated calendar with the given ID
+        await Calendar.deleteOne({ userId: givenUserId });
+        
         const allUsers = await User.find();
 
         allUsers.forEach(async (user) => {

@@ -48,6 +48,23 @@ class UserService {
     }
   };
 
+  // static async deleteCalendar(_id) {
+  //   const calendar = await Calendar.findOne({
+  //     userId: _id,
+  //   });
+
+  //   if (!calendar) {
+  //     return { message: 'Calendar not found' };
+  //   }
+
+  //   try {
+  //     await Calendar.deleteOne({ userId: _id });
+  //     return { message: 'Calendar deleted successfully' };
+  //   } catch (error) {
+  //     return { message: error.message };
+  //   }
+  // }
+
   static async sendUserOTP(_id, email) {
     let transporter = nodemailer.createTransport({
       service: 'gmail',
