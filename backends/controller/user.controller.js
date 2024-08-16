@@ -861,6 +861,9 @@ exports.interestEvent = async (req, res) => {
     });
 
     // Add event to user's calendar
+    if (process.env.NODE_ENV === 'development') {
+      await CalendarService.checkCalendar(currentUserId);
+    }
     await CalendarService.addEvent(currentUserId, givenEventId);
 
     return res.status(200).json('Event marked as interested');
@@ -902,6 +905,9 @@ exports.uninterestEvent = async (req, res) => {
       });
 
       // Remove event from user's calendar
+      if (process.env.NODE_ENV === 'development') {
+        await CalendarService.checkCalendar(currentUserId);
+      }
       await CalendarService.removeEvent(currentUserId, givenEventId);
 
       return res.status(200).json('Interest from event has been retracted');
