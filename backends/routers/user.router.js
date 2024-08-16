@@ -24,6 +24,9 @@ router.get('/friendList', protectRouter.protectRoute, userController.getBondList
 //Get all followed Organizations
 router.get('/followedOrganizations', protectRouter.protectRoute, userController.getFollowedOrganizations);
 
+//Get User Calendar
+router.get('/calendar', protectRouter.protectRoute, userController.getCalendar);
+
 //Update User Info
 router.put("/updateUserInfo", protectRouter.protectRoute, userController.updateUserInfo);
 

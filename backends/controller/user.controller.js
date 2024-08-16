@@ -322,6 +322,18 @@ exports.getFollowedOrganizations = async (req, res) => {
   }
 };
 
+exports.getCalendar = async (req, res) => {
+  try {
+    const currentUserId = (await extractAndDecodeToken(req)).data._id;
+    const calendar = await Calendar.findOne({ userId: currentUserId });
+    return res.status(200).json(calendar);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: 'An error occured while fetching the calendar' });
+  }
+};
+
 exports.getById = async (req, res) => {
   const currentUserId = (await extractAndDecodeToken(req)).data._id;
   const bodyId = req.body._id;
