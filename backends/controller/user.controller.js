@@ -8,7 +8,10 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 const UserOTP = require('../model/userOTP.model');
+
+// Used for functions that involve creating/deleting a user's calendar
 const Calendar = require('../model/calendar.model');
+const CalendarService = require('../services/calendar.services');
 
 // Used for functions that involve (un)following organizations
 const Organization = require('../model/organization.model');
@@ -65,7 +68,7 @@ exports.register = async (req, res, next) => {
 
     // Creating the user's calendar
     try {
-      const calendar = await UserService.createCalendar(newUser._id);
+      const calendar = await CalendarService.createCalendar(newUser._id);
       await User.findByIdAndUpdate(newUser._id, { calendar: calendar });
     } catch (err) {
       console.log('Error creating calendar');
@@ -526,7 +529,7 @@ exports.deleteAccount = async (req, res) => {
         
         // Try to delete associated calendar with the given ID
         await Calendar.deleteOne({ userId: givenUserId });
-        
+
         const allUsers = await User.find();
 
         allUsers.forEach(async (user) => {

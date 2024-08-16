@@ -8,9 +8,6 @@ const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
-// Used for calendar
-const Calendar = require('../model/calendar.model');
-
 class UserService {
   static async registerUser(email, username, password) {
     const createUser = new User({ email, username, password });
@@ -36,34 +33,6 @@ class UserService {
       throw new CustomError(error.message, 500);
     }
   }
-
-  static async createCalendar(_id) {
-    const newCalendar = new Calendar({ userId: _id });
-    try {
-      await newCalendar.save();
-      console.log('Calendar created successfully');
-      return newCalendar;
-    } catch (error) {
-      return { message: error.message };
-    }
-  };
-
-  // static async deleteCalendar(_id) {
-  //   const calendar = await Calendar.findOne({
-  //     userId: _id,
-  //   });
-
-  //   if (!calendar) {
-  //     return { message: 'Calendar not found' };
-  //   }
-
-  //   try {
-  //     await Calendar.deleteOne({ userId: _id });
-  //     return { message: 'Calendar deleted successfully' };
-  //   } catch (error) {
-  //     return { message: error.message };
-  //   }
-  // }
 
   static async sendUserOTP(_id, email) {
     let transporter = nodemailer.createTransport({
