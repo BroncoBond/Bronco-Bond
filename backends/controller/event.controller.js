@@ -106,9 +106,9 @@ exports.createEvent = async (req, res) => {
 
       // Add event to user's calendar
       if (process.env.NODE_ENV === 'development') {
-        await CalendarService.checkCalendar(currentUser._id);
+        await CalendarService.checkCalendar(tokenUserId);
       }
-      await CalendarService.addEvent(currentUser._id, newEvent._id);
+      await CalendarService.addEvent(tokenUserId, newEvent.id);
 
       res.status(201).json({
         status: true,
@@ -404,9 +404,9 @@ exports.deleteEvent = async (req, res) => {
 
     // Remove event from user's calendar
     if (process.env.NODE_ENV === 'development') {
-      await CalendarService.checkCalendar(currentUser._id);
+      await CalendarService.checkCalendar(tokenUserId);
     }
-    await CalendarService.removeEvent(currentUser._id, event._id);
+    await CalendarService.removeEvent(tokenUserId, event._id);
 
     try {
       await Event.findByIdAndDelete(givenEventId);

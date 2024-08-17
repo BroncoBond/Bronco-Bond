@@ -856,6 +856,12 @@ exports.interestEvent = async (req, res) => {
         .json('You cannot express interest in a private event!');
     }
 
+    if (givenEvent.eventCreator.toString() === currentUserId.toString()) {
+      return res
+        .status(403)
+        .json('You cannot express interest your own event!');
+    }
+
     if (
       currentUser.eventInterests.includes(givenEventId) &&
       givenEvent.interest.includes(currentUserId)
@@ -876,7 +882,7 @@ exports.interestEvent = async (req, res) => {
     if (process.env.NODE_ENV === 'development') {
       await CalendarService.checkCalendar(currentUserId);
     }
-    await CalendarService.addEvent(currentUserId, givenEventId);
+    await CalendarService.addEvent(currentUserId, givenEvent.id);
 
     return res.status(200).json('Event marked as interested');
   } catch (error) {
