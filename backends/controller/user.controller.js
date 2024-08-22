@@ -309,15 +309,19 @@ exports.getById = async (req, res) => {
   const currentUserId = (await extractAndDecodeToken(req)).data._id;
   const bodyId = req.body._id;
   let user;
-  try {
-    user = await User.findById(bodyId).select('-email -password');
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
+  if (currentUserId !== bodyId) {
+    try {
+      user = await User.findById(bodyId).select('-email -password');
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+    if (!user) {
+      return res.status(404).json({ message: 'No User Found' });
+    }
+    return res.status(200).json({ user });
+  } else {
+    return res.status(403).json({ message: 'Forbidden' });
   }
-  if (!user) {
-    return res.status(404).json({ message: 'No User Found' });
-  }
-  return res.status(200).json({ user });
 };
 
 // DEVELOPMENT BUILD ONLY
