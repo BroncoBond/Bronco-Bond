@@ -309,7 +309,7 @@ exports.getById = async (req, res) => {
   const currentUserId = (await extractAndDecodeToken(req)).data._id;
   const bodyId = req.body._id;
   let user;
-  if (currentUserId !== bodyId) {
+  if (currentUserId == bodyId) {
     try {
       user = await User.findById(bodyId).select('-email -password');
     } catch (error) {
