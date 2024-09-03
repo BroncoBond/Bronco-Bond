@@ -122,7 +122,7 @@ const userSchema = new Schema({
             type: String,
             default: '0'
         },
-        verified: {
+        isVerified: {
             type: Boolean,
             default: false
         },
