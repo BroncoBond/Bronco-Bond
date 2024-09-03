@@ -22,6 +22,11 @@ exports.protectRoute = [rateLimiter, async (req, res, next) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
+        
+        // Check if the user is verified
+        if (!user.isVerified) {
+            return res.status(403).json({ error: "Forbidden - User not verified" });
+        }
 
         req.user = user;
 
