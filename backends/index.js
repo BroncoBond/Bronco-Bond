@@ -23,6 +23,9 @@ const rateLimit = require("./middleware/rateLimiter.js")
 const { app, server } = require('./socket/socket.js');
 const port = process.env.WEBSITES_PORT;
 
+// Enable trust proxy
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(express.json({ limit: process.env.JSON_LIMIT || '50mb' }));
 app.use(helmet());
