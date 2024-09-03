@@ -26,7 +26,7 @@ const userSchema = new Schema({
             min: 6,
             required: true
         },
-        is_online:{
+        isOnline:{
             type:String,
             default: '0'
         },
@@ -117,10 +117,6 @@ const userSchema = new Schema({
                 let currentYear = new Date().getFullYear();
                 return (currentYear + 4).toString();
             })()
-        },
-        is_online: {
-            type: String,
-            default: '0'
         },
         isVerified: {
             type: Boolean,
