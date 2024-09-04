@@ -86,21 +86,18 @@ class RegisterPageState extends State<RegisterPage> {
     }
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      
       appBar: AppBar(
         title: Text('BroncoBond'),
       ),
-
       body: Stack(
         children: <Widget>[
           Center(
             child: SingleChildScrollView(
               child: Column(
-                
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Padding(
@@ -110,10 +107,9 @@ class RegisterPageState extends State<RegisterPage> {
                       child: Text(
                         'Sign Up',
                         style: TextStyle(
-                          fontSize: 50,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff55685A)
-                        ),
+                            fontSize: 50,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xff55685A)),
                       ),
                     ),
                   ),
@@ -135,17 +131,18 @@ class RegisterPageState extends State<RegisterPage> {
                   userTextField("", usernameController),
                   buildTextField("", emailController),
                   buildTextFieldWithToggle(
-                    "", passwordController, _obscurePassword, () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    }),
+                      "", passwordController, _obscurePassword, () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  }),
                   confirmTextFieldWithToggle(
-                    "", confirmPasswordController, _obscureConfirmPassword, () {
-                      setState(() {
-                        _obscureConfirmPassword = !_obscureConfirmPassword;
-                      });
-                    }),
+                      "", confirmPasswordController, _obscureConfirmPassword,
+                      () {
+                    setState(() {
+                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                    });
+                  }),
                 ],
               ),
             ),
@@ -155,7 +152,7 @@ class RegisterPageState extends State<RegisterPage> {
             right: 20,
             child: GestureDetector(
               onTap: () {
-                // Add your onTap code here!
+                registerUser(context);
               },
               child: Container(
                 width: 60.0,
@@ -172,11 +169,9 @@ class RegisterPageState extends State<RegisterPage> {
             ),
           ),
         ],
-
       ),
     );
   }
-
 
   // Widget for TextFields
   Widget buildTextFieldWithToggle(
@@ -210,18 +205,18 @@ class RegisterPageState extends State<RegisterPage> {
                   controller: fieldController,
                   keyboardType: TextInputType.text,
                   obscureText: obscureText,
-                   decoration: InputDecoration(
-                labelText: "Password",
-                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18) ,
-                filled: true,
-                fillColor:Color(0xffDDDDDD),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(11),
-                ),
-               
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-              ),
+                  decoration: InputDecoration(
+                    labelText: "Password",
+                    labelStyle:
+                        TextStyle(color: Color(0xff939393), fontSize: 18),
+                    filled: true,
+                    fillColor: Color(0xffDDDDDD),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
                   textAlign: TextAlign.start,
                 ),
                 IconButton(
@@ -238,9 +233,7 @@ class RegisterPageState extends State<RegisterPage> {
     );
   }
 
-
-
-Widget confirmTextFieldWithToggle(
+  Widget confirmTextFieldWithToggle(
       String label,
       TextEditingController fieldController,
       bool obscureText,
@@ -252,7 +245,7 @@ Widget confirmTextFieldWithToggle(
         children: [
           // Text label
           Text(
-             label,
+            label,
             style: GoogleFonts.raleway(
               fontSize: 16,
               fontWeight: FontWeight.w800,
@@ -271,18 +264,18 @@ Widget confirmTextFieldWithToggle(
                   controller: fieldController,
                   keyboardType: TextInputType.text,
                   obscureText: obscureText,
-                   decoration: InputDecoration(
-                labelText: "Confirm Password",
-                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18) ,
-                filled: true,
-                fillColor:Color(0xffDDDDDD),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(11),
-                ),
-               
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-              ),
+                  decoration: InputDecoration(
+                    labelText: "Confirm Password",
+                    labelStyle:
+                        TextStyle(color: Color(0xff939393), fontSize: 18),
+                    filled: true,
+                    fillColor: Color(0xffDDDDDD),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
                   textAlign: TextAlign.start,
                 ),
                 IconButton(
@@ -298,18 +291,6 @@ Widget confirmTextFieldWithToggle(
       ),
     );
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
   Widget buildTextField(String label, TextEditingController fieldController) {
     return Padding(
@@ -336,14 +317,13 @@ Widget confirmTextFieldWithToggle(
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 labelText: "Email",
-                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18) ,
+                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18),
                 filled: true,
-                fillColor:Color(0xffDDDDDD),
+                fillColor: Color(0xffDDDDDD),
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(11),
                 ),
-               
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
               ),
               textAlign: TextAlign.start,
@@ -354,7 +334,7 @@ Widget confirmTextFieldWithToggle(
     );
   }
 
-Widget userTextField(String label, TextEditingController fieldController) {
+  Widget userTextField(String label, TextEditingController fieldController) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -379,14 +359,13 @@ Widget userTextField(String label, TextEditingController fieldController) {
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 labelText: "Username",
-                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18) ,
+                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18),
                 filled: true,
-                fillColor:Color(0xffDDDDDD),
+                fillColor: Color(0xffDDDDDD),
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(11),
                 ),
-               
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
               ),
               textAlign: TextAlign.start,
@@ -396,21 +375,6 @@ Widget userTextField(String label, TextEditingController fieldController) {
       ),
     );
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /*Widget buildButton(String label, BuildContext context) {
     return Align(

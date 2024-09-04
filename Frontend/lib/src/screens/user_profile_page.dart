@@ -221,123 +221,105 @@ class UserProfileState extends State<UserProfile>
 
   @override
   Widget build(BuildContext context) {
+    //bool isCurrentUserProfile = widget.userID == prefs?.getString('userID');
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            PreferredSize(
-              preferredSize: const Size.fromHeight(kToolbarHeight),
-              child: FutureBuilder(
-                future: prefsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    prefs = snapshot.data as SharedPreferences;
-                    isCurrentUserProfile = widget.userID == currentUserID;
-                    return Container(
-                      color: const Color(0xff435f49),
-                      padding: const EdgeInsets.only(
-                          right: 16.0, left: 16.0, top: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          if (isCurrentUserProfile) ...[
-                            Text(
-                              username,
-                              style: GoogleFonts.raleway(
-                                textStyle:
-                                    Theme.of(context).textTheme.displaySmall,
-                                fontSize: 25,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const SettingsPage(),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(Icons.settings_rounded),
-                              color: Colors.white,
-                            ),
-                          ] else ...[
-                            IconButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              icon: const Icon(
-                                Icons.arrow_back_ios_rounded,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                username,
-                                style: GoogleFonts.raleway(
-                                  textStyle:
-                                      Theme.of(context).textTheme.displaySmall,
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                // Add your desired action here
-                              },
-                              icon: const Icon(
-                                Icons.more_horiz,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    );
-                  } else {
-                    return const SizedBox(); // Return empty box while loading
-                  }
-                },
-              ),
-            ),
-            FutureBuilder(
-              future: prefsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Container(
-                    color: Colors.white,
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
-                      ),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: FutureBuilder(
+          future: prefsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              prefs = snapshot.data as SharedPreferences;
+              isCurrentUserProfile = widget.userID == currentUserID;
+              if (isCurrentUserProfile) {
+                return AppBar(
+                  title: Text(
+                    '@' + username,
+                    textAlign: TextAlign.left,
+                    style: GoogleFonts.raleway(
+                      textStyle: Theme.of(context).textTheme.displaySmall,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
                     ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                } else if (snapshot.connectionState == ConnectionState.done) {
-                  final prefs = snapshot.data;
-                  if (prefs != null) {
-                    return buildUserProfile(prefs);
-                  } else {
-                    return const Center(
-                      child: Text('SharedPreferences is null'),
-                    );
-                  }
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
-            ),
-          ],
+                  ),
+                  backgroundColor: const Color(0xFF3B5F43),
+                  leadingWidth: 0.0,
+                  automaticallyImplyLeading: false,
+                  actions: [
+                    IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsPage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.settings_rounded),
+                        color: Colors.white // const Color(0xFF3B5F43),
+                        ),
+                  ],
+                );
+              } else {
+                return AppBar(
+                  title: Text(
+                    '@' + username,
+                    textAlign: TextAlign.left,
+                    style: GoogleFonts.raleway(
+                      textStyle: Theme.of(context).textTheme.displaySmall,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF3B5F43),
+                    ),
+                  ),
+                  leadingWidth: 40.0,
+                  leading: IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.black,
+                    ),
+                  ),
+                );
+              }
+            } else {
+              return const SizedBox(); // Return empty box while loading
+            }
+          },
         ),
+      ),
+      body: FutureBuilder(
+        future: prefsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container(
+              color: Colors.white,
+              child: const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
+                ),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else if (snapshot.connectionState == ConnectionState.done) {
+            final prefs = snapshot.data;
+            if (prefs != null) {
+              return buildUserProfile(prefs);
+            } else {
+              return const Center(
+                child: Text('SharedPreferences is null'),
+              );
+            }
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
       ),
     );
   }
@@ -350,6 +332,7 @@ class UserProfileState extends State<UserProfile>
           return [
             SliverToBoxAdapter(
               child: Stack(
+                alignment: Alignment.topCenter,
                 children: [
                   Image.asset(
                     'assets/images/header_bg.png',
@@ -360,38 +343,33 @@ class UserProfileState extends State<UserProfile>
                     children: [
                       buildProfileHeader(context, isCurrentUserProfile,
                           widget.userID, currentUserID),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: TabBar(
-                              overlayColor:
-                                  MaterialStateProperty.all(Colors.transparent),
-                              dividerColor: Colors.transparent,
-                              tabAlignment: TabAlignment.start,
-                              labelStyle: GoogleFonts.raleway(
-                                  fontSize: 20, fontWeight: FontWeight.w700),
-                              labelColor: const Color(0xFF3B5F43),
-                              indicator: UnderlineTabIndicator(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: const BorderSide(
-                                    width: 10, color: Color(0xFFFED154)),
-                              ),
-                              indicatorColor: Colors.transparent,
-                              unselectedLabelColor: Colors.grey,
-                              indicatorWeight: 7,
-                              controller: _tabController,
-                              tabs: const [
-                                Tab(text: 'About'),
-                                Tab(text: 'Posts'),
-                              ],
-                              isScrollable:
-                                  true, // Add this line to make the tabs scrollable
-                              indicatorPadding:
-                                  EdgeInsets.zero, // Add this line to remove
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: TabBar(
+                            overlayColor:
+                                MaterialStateProperty.all(Colors.transparent),
+                            dividerColor: Colors.transparent,
+                            tabAlignment: TabAlignment.start,
+                            labelStyle: GoogleFonts.raleway(
+                                fontSize: 20, fontWeight: FontWeight.w700),
+                            labelColor: const Color(0xFF3B5F43),
+                            indicator: UnderlineTabIndicator(
+                              borderRadius: BorderRadius.circular(30),
+                              borderSide: const BorderSide(
+                                  width: 10, color: Color(0xFFFED154)),
                             ),
+                            indicatorColor: Colors.transparent,
+                            unselectedLabelColor: Color(0xFF939393),
+                            indicatorWeight: 7,
+                            controller: _tabController,
+                            tabs: const [
+                              Tab(text: 'About'),
+                              Tab(text: 'Posts'),
+                            ],
+                            isScrollable: true,
+                            indicatorPadding: EdgeInsets.zero,
                           ),
                         ),
                       ),
@@ -402,7 +380,7 @@ class UserProfileState extends State<UserProfile>
             ),
           ];
         },
-        body: AutoScaleTabBarView(
+        body: TabBarView(
           controller: _tabController,
           children: [
             // Content for About tab
@@ -626,7 +604,7 @@ class UserProfileState extends State<UserProfile>
               const SizedBox(height: 11),
               // Apply maximum width constraint and handle overflow
               Text(
-                pronouns,
+                '@' + username,
                 style: GoogleFonts.raleway(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -825,24 +803,27 @@ class UserProfileState extends State<UserProfile>
       children: [
         buildBondButton(userID, currentUserID),
         SizedBox(
-          width: 130,
-          height: 51,
+          width: 180,
+          height: 40,
           child: ElevatedButton(
             onPressed: () {
               // Add your follow button logic here
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF435F49),
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
+                borderRadius: BorderRadius.circular(8.0),
+                side: const BorderSide(
+                  color: Color(0xFF3B5F43),
+                ),
               ),
             ),
-            child: Text(
+            child: const Text(
               "Message",
-              style: GoogleFonts.raleway(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black),
             ),
           ),
         ),
@@ -855,26 +836,24 @@ class UserProfileState extends State<UserProfile>
   */
   Widget buildBondButton(String userID, String? currentUserID) {
     String buttonText = '';
-    Color buttonColor = const Color(0xFFFED154);
-    Color textColor = const Color(0xFF435F49);
+    Color buttonColor = const Color(0xFF3B5F43);
+    Color textColor = Colors.white;
     if (isBonded) {
       // if users are bonded already, show "unbond"
       buttonText = 'Unbond';
       buttonColor = const Color(0xFFABABAB);
-      textColor = Colors.white;
     } else if (isRequested) {
       // if users are only requested but not friends, show "requested"
       buttonText = 'Requested';
       buttonColor = const Color(0xFFABABAB);
-      textColor = Colors.white;
     } else {
       // if users are not bonded, show "bond"
       buttonText = 'Bond';
     }
 
     return SizedBox(
-      width: isRequested ? 145 : 130,
-      height: 51,
+      width: 180,
+      height: 40,
       child: ElevatedButton(
         onPressed: () {
           if (isBonded) {
@@ -888,14 +867,14 @@ class UserProfileState extends State<UserProfile>
         style: ElevatedButton.styleFrom(
           backgroundColor: buttonColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: BorderRadius.circular(8.0),
           ),
         ),
         child: Text(
           buttonText,
-          style: GoogleFonts.raleway(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
             color: textColor,
           ),
         ),
