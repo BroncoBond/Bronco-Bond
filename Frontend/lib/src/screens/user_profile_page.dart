@@ -234,7 +234,7 @@ class UserProfileState extends State<UserProfile>
               if (isCurrentUserProfile) {
                 return AppBar(
                   title: Text(
-                    '@' + username,
+                    username,
                     textAlign: TextAlign.left,
                     style: GoogleFonts.raleway(
                       textStyle: Theme.of(context).textTheme.displaySmall,
@@ -264,15 +264,16 @@ class UserProfileState extends State<UserProfile>
               } else {
                 return AppBar(
                   title: Text(
-                    '@' + username,
+                    username,
                     textAlign: TextAlign.left,
                     style: GoogleFonts.raleway(
                       textStyle: Theme.of(context).textTheme.displaySmall,
                       fontSize: 25,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF3B5F43),
+                      color: Colors.white,
                     ),
                   ),
+                  backgroundColor: const Color(0xFF3B5F43),
                   leadingWidth: 40.0,
                   leading: IconButton(
                     onPressed: () {
@@ -280,7 +281,7 @@ class UserProfileState extends State<UserProfile>
                     },
                     icon: const Icon(
                       Icons.arrow_back_ios_new_rounded,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                 );
@@ -380,7 +381,7 @@ class UserProfileState extends State<UserProfile>
             ),
           ];
         },
-        body: TabBarView(
+        body: AutoScaleTabBarView(
           controller: _tabController,
           children: [
             // Content for About tab
@@ -604,7 +605,7 @@ class UserProfileState extends State<UserProfile>
               const SizedBox(height: 11),
               // Apply maximum width constraint and handle overflow
               Text(
-                '@' + username,
+                pronouns,
                 style: GoogleFonts.raleway(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -799,31 +800,28 @@ class UserProfileState extends State<UserProfile>
 
   Widget buildOtherProfileButtons(String userID, String? currentUserID) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         buildBondButton(userID, currentUserID),
         SizedBox(
-          width: 180,
-          height: 40,
+          width: 140,
+          height: 50,
           child: ElevatedButton(
             onPressed: () {
               // Add your follow button logic here
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
+              backgroundColor: Color(0xFF435F49),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-                side: const BorderSide(
-                  color: Color(0xFF3B5F43),
-                ),
+                borderRadius: BorderRadius.circular(30.0),
               ),
             ),
-            child: const Text(
+            child: Text(
               "Message",
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black),
+              style: GoogleFonts.raleway(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white),
             ),
           ),
         ),
@@ -836,24 +834,26 @@ class UserProfileState extends State<UserProfile>
   */
   Widget buildBondButton(String userID, String? currentUserID) {
     String buttonText = '';
-    Color buttonColor = const Color(0xFF3B5F43);
-    Color textColor = Colors.white;
+    Color buttonColor = const Color(0xFFFED154);
+    Color textColor = const Color(0xFF435F49);
     if (isBonded) {
       // if users are bonded already, show "unbond"
       buttonText = 'Unbond';
       buttonColor = const Color(0xFFABABAB);
+      textColor = Colors.white;
     } else if (isRequested) {
       // if users are only requested but not friends, show "requested"
       buttonText = 'Requested';
       buttonColor = const Color(0xFFABABAB);
+      textColor = Colors.white;
     } else {
       // if users are not bonded, show "bond"
       buttonText = 'Bond';
     }
 
     return SizedBox(
-      width: 180,
-      height: 40,
+      width: 140,
+      height: 50,
       child: ElevatedButton(
         onPressed: () {
           if (isBonded) {
@@ -867,14 +867,14 @@ class UserProfileState extends State<UserProfile>
         style: ElevatedButton.styleFrom(
           backgroundColor: buttonColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(30.0),
           ),
         ),
         child: Text(
           buttonText,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
+          style: GoogleFonts.raleway(
+            fontSize: isRequested ? 17 : 18,
+            fontWeight: FontWeight.w700,
             color: textColor,
           ),
         ),
