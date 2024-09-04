@@ -245,15 +245,17 @@ class UserProfileState extends State<UserProfile>
 
             return NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) {
+                // Return app bar that scrolls with content
                 return [
                   SliverAppBar(
                     pinned: false,
-                    leadingWidth: isCurrentUserProfile ? 0.0 : 60.0,
+                    leadingWidth: isCurrentUserProfile ? 0.0 : 60,
                     automaticallyImplyLeading: false,
                     // isCurrentUserProfile ? false : true,
-                    // centerTitle: false,
+                    centerTitle: false,
                     expandedHeight: 40.0,
                     backgroundColor: const Color(0xff435f49),
+                    // If this is another user, provide a back button
                     leading: isCurrentUserProfile
                         ? null
                         : IconButton(
@@ -266,6 +268,9 @@ class UserProfileState extends State<UserProfile>
                             ),
                           ),
                     flexibleSpace: FlexibleSpaceBar(
+                      centerTitle: false,
+                      titlePadding:
+                          EdgeInsetsDirectional.only(start: 30, bottom: 12),
                       title: Text(
                         username,
                         style: GoogleFonts.raleway(
@@ -277,6 +282,8 @@ class UserProfileState extends State<UserProfile>
                         textAlign: TextAlign.left,
                       ),
                     ),
+                    // If this is the current user, show the settings icon button
+                    // If this is not the current user, show a horizontal more button instead
                     actions: [
                       isCurrentUserProfile
                           ? IconButton(
@@ -304,75 +311,80 @@ class UserProfileState extends State<UserProfile>
                   ),
                 ];
               },
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      Image.asset(
-                        'assets/images/header_bg.png',
-                        width: MediaQuery.of(context).size.width,
-                        fit: BoxFit.cover,
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          buildProfileHeader(context, isCurrentUserProfile,
-                              widget.userID, currentUserID),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 16.0),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              child: TabBar(
-                                overlayColor: MaterialStateProperty.all(
-                                    Colors.transparent),
-                                dividerColor: Colors.transparent,
-                                tabAlignment: TabAlignment.start,
-                                labelStyle: GoogleFonts.raleway(
-                                    fontSize: 20, fontWeight: FontWeight.w700),
-                                labelColor: const Color(0xFF3B5F43),
-                                indicator: UnderlineTabIndicator(
-                                  borderRadius: BorderRadius.circular(30),
-                                  borderSide: const BorderSide(
-                                      width: 10, color: Color(0xFFFED154)),
+              body: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Stack(
+                      alignment: Alignment.topCenter,
+                      children: [
+                        Image.asset(
+                          'assets/images/header_bg.png',
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.cover,
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            buildProfileHeader(context, isCurrentUserProfile,
+                                widget.userID, currentUserID),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                child: TabBar(
+                                  overlayColor: MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  dividerColor: Colors.transparent,
+                                  tabAlignment: TabAlignment.start,
+                                  labelStyle: GoogleFonts.raleway(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700),
+                                  labelColor: const Color(0xFF3B5F43),
+                                  indicator: UnderlineTabIndicator(
+                                    borderRadius: BorderRadius.circular(30),
+                                    borderSide: const BorderSide(
+                                        width: 10, color: Color(0xFFFED154)),
+                                  ),
+                                  indicatorColor: Colors.transparent,
+                                  unselectedLabelColor: Color(0xFF939393),
+                                  indicatorWeight: 7,
+                                  controller: _tabController,
+                                  tabs: const [
+                                    Tab(text: 'About'),
+                                    Tab(text: 'Posts'),
+                                  ],
+                                  isScrollable: true,
+                                  indicatorPadding: EdgeInsets.zero,
                                 ),
-                                indicatorColor: Colors.transparent,
-                                unselectedLabelColor: Color(0xFF939393),
-                                indicatorWeight: 7,
-                                controller: _tabController,
-                                tabs: const [
-                                  Tab(text: 'About'),
-                                  Tab(text: 'Posts'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          // Content for About tab
+                          SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.all(30.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  buildAboutContent(),
                                 ],
-                                isScrollable: true,
-                                indicatorPadding: EdgeInsets.zero,
                               ),
                             ),
                           ),
+                          // Content for Posts tab
+                          buildPosts(),
                         ],
                       ),
-                    ],
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        // Content for About tab
-                        SingleChildScrollView(
-                          child: Padding(
-                            padding: const EdgeInsets.all(30.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                buildAboutContent(),
-                              ],
-                            ),
-                          ),
-                        ),
-                        // Content for Posts tab
-                        buildPosts(),
-                      ],
                     ),
                   ),
                 ],
