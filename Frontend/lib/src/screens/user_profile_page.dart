@@ -223,75 +223,6 @@ class UserProfileState extends State<UserProfile>
   Widget build(BuildContext context) {
     //bool isCurrentUserProfile = widget.userID == prefs?.getString('userID');
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: FutureBuilder(
-          future: prefsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              prefs = snapshot.data as SharedPreferences;
-              isCurrentUserProfile = widget.userID == currentUserID;
-              if (isCurrentUserProfile) {
-                return AppBar(
-                  title: Text(
-                    username,
-                    textAlign: TextAlign.left,
-                    style: GoogleFonts.raleway(
-                      textStyle: Theme.of(context).textTheme.displaySmall,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                  backgroundColor: const Color(0xFF3B5F43),
-                  leadingWidth: 0.0,
-                  automaticallyImplyLeading: false,
-                  actions: [
-                    IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SettingsPage(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.settings_rounded),
-                        color: Colors.white // const Color(0xFF3B5F43),
-                        ),
-                  ],
-                );
-              } else {
-                return AppBar(
-                  title: Text(
-                    username,
-                    textAlign: TextAlign.left,
-                    style: GoogleFonts.raleway(
-                      textStyle: Theme.of(context).textTheme.displaySmall,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                  backgroundColor: const Color(0xFF3B5F43),
-                  leadingWidth: 40.0,
-                  leading: IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: Colors.white,
-                    ),
-                  ),
-                );
-              }
-            } else {
-              return const SizedBox(); // Return empty box while loading
-            }
-          },
-        ),
-      ),
       body: FutureBuilder(
         future: prefsFuture,
         builder: (context, snapshot) {
@@ -309,26 +240,193 @@ class UserProfileState extends State<UserProfile>
               child: Text('Error: ${snapshot.error}'),
             );
           } else if (snapshot.connectionState == ConnectionState.done) {
-            final prefs = snapshot.data;
-            if (prefs != null) {
-              return buildUserProfile(prefs);
-            } else {
-              return const Center(
-                child: Text('SharedPreferences is null'),
-              );
-            }
+            prefs = snapshot.data as SharedPreferences;
+            isCurrentUserProfile = widget.userID == currentUserID;
+
+            return NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  SliverAppBar(
+                    pinned: false,
+                    leadingWidth: isCurrentUserProfile ? 0.0 : 60.0,
+                    automaticallyImplyLeading: false,
+                    // isCurrentUserProfile ? false : true,
+                    // centerTitle: false,
+                    expandedHeight: 40.0,
+                    backgroundColor: const Color(0xff435f49),
+                    leading: isCurrentUserProfile
+                        ? null
+                        : IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(
+                              Icons.arrow_back_ios_rounded,
+                              color: Colors.white,
+                            ),
+                          ),
+                    flexibleSpace: FlexibleSpaceBar(
+                      title: Text(
+                        username,
+                        style: GoogleFonts.raleway(
+                          textStyle: Theme.of(context).textTheme.displaySmall,
+                          fontSize: 25,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                    actions: [
+                      isCurrentUserProfile
+                          ? IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SettingsPage()),
+                                );
+                              },
+                              icon: const Icon(Icons.settings_rounded),
+                              color: Colors.white,
+                            )
+                          : IconButton(
+                              onPressed: () {
+                                // Add your desired action here
+                              },
+                              icon: const Icon(
+                                Icons.more_horiz,
+                                color: Colors.white,
+                              ),
+                            ),
+                    ],
+                  ),
+                ];
+              },
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      Image.asset(
+                        'assets/images/header_bg.png',
+                        width: MediaQuery.of(context).size.width,
+                        fit: BoxFit.cover,
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          buildProfileHeader(context, isCurrentUserProfile,
+                              widget.userID, currentUserID),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: TabBar(
+                                overlayColor: MaterialStateProperty.all(
+                                    Colors.transparent),
+                                dividerColor: Colors.transparent,
+                                tabAlignment: TabAlignment.start,
+                                labelStyle: GoogleFonts.raleway(
+                                    fontSize: 20, fontWeight: FontWeight.w700),
+                                labelColor: const Color(0xFF3B5F43),
+                                indicator: UnderlineTabIndicator(
+                                  borderRadius: BorderRadius.circular(30),
+                                  borderSide: const BorderSide(
+                                      width: 10, color: Color(0xFFFED154)),
+                                ),
+                                indicatorColor: Colors.transparent,
+                                unselectedLabelColor: Color(0xFF939393),
+                                indicatorWeight: 7,
+                                controller: _tabController,
+                                tabs: const [
+                                  Tab(text: 'About'),
+                                  Tab(text: 'Posts'),
+                                ],
+                                isScrollable: true,
+                                indicatorPadding: EdgeInsets.zero,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // Content for About tab
+                        SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.all(30.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buildAboutContent(),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Content for Posts tab
+                        buildPosts(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
           } else {
-            return const Center(child: CircularProgressIndicator());
+            return const SizedBox(); // Return empty box while loading
           }
         },
       ),
     );
   }
 
+  /*
+
+  if (isCurrentUserProfile) ...[
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SettingsPage()),
+                                );
+                              },
+                              icon: const Icon(Icons.settings_rounded),
+                              color: Colors.white,
+                            ),
+                          ] else ...[
+                            IconButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              icon: const Icon(
+                                Icons.arrow_back_ios_rounded,
+                                color: Colors.white,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                // Add your desired action here
+                              },
+                              icon: const Icon(
+                                Icons.more_horiz,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+  * cant use this anymore but saving for reference
   Widget buildUserProfile(SharedPreferences prefs) {
     bool isCurrentUserProfile = widget.userID == currentUserID;
-    return Scaffold(
-      body: NestedScrollView(
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      child: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             SliverToBoxAdapter(
@@ -341,6 +439,7 @@ class UserProfileState extends State<UserProfile>
                     fit: BoxFit.cover,
                   ),
                   Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       buildProfileHeader(context, isCurrentUserProfile,
                           widget.userID, currentUserID),
@@ -403,6 +502,7 @@ class UserProfileState extends State<UserProfile>
       ),
     );
   }
+  */
 
   Widget buildAboutContent() {
     return Column(
