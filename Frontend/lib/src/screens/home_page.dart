@@ -129,7 +129,7 @@ class HomePageState extends State<HomePage> {
           title: Text(
             'BroncoBond',
             style: GoogleFonts.raleway(
-                textStyle: Theme.of(context).textTheme.bodyMedium,
+                textStyle: Theme.of(context).textTheme.displaySmall,
                 fontSize: 25,
                 fontWeight: FontWeight.w800,
                 color: Colors.white),
@@ -139,6 +139,7 @@ class HomePageState extends State<HomePage> {
             labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             labelColor: Color(0xffFED053),
             indicatorColor: Color(0xffFED053),
+            indicatorSize: TabBarIndicatorSize.tab,
             unselectedLabelColor: Colors.white,
             indicatorWeight: 3,
             tabs: [
@@ -150,30 +151,6 @@ class HomePageState extends State<HomePage> {
         ),
         body: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: RichText(
-                text: TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: 'Welcome ',
-                      style: TextStyle(
-                        fontSize: 17.0,
-                        color: Colors.black,
-                      ),
-                    ),
-                    TextSpan(
-                      text: '$fullName!',
-                      style: TextStyle(
-                        fontSize: 17.0,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF3B5F43),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
             Expanded(
               child: TabBarView(
                 children: [
@@ -185,17 +162,6 @@ class HomePageState extends State<HomePage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget buildTabContent(String tabName) {
-    return ListView(
-      children: [
-        buildCard(tabName, 'Card 1'),
-        buildCard(tabName, 'Card 2'),
-        buildCard(tabName, 'Card 3'),
-        // Add more cards as needed
-      ],
     );
   }
 
@@ -216,6 +182,32 @@ class HomePageState extends State<HomePage> {
   Widget buildTabContentForYou(String tabName) {
     return ListView(
       children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: RichText(
+              text: TextSpan(
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'Welcome ',
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      color: Colors.black,
+                    ),
+                  ),
+                  TextSpan(
+                    text: '$fullName!',
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF3B5F43),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
         buildCardForYou(
             tabName,
             'Study Abroad 101',

@@ -32,56 +32,68 @@ class BottomNavBarState extends State<BottomNavBar> {
           UserProfile(userID: widget.userID)
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        selectedItemColor: const Color(0xffFED053),
-        unselectedItemColor: const Color(0xffABABAB),
-        backgroundColor: const Color(0xff3B5F43),
-        //showSelectedLabels: true,
-        //showUnselectedLabels: false,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.only(top: 8.0),
-              child: Icon(Icons.home_rounded),
-            ),
-            label: '',
+      bottomNavigationBar: Theme(
+        data: ThemeData(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(30),
           ),
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.only(top: 8.0),
-              child: Icon(Icons.forum_rounded),
-            ),
-            label: '',
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            currentIndex: _currentIndex,
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            iconSize: 30.0,
+            selectedItemColor: const Color(0xffFED053),
+            unselectedItemColor: const Color(0xff55685A),
+            backgroundColor: const Color(0xff2E4233),
+            //showSelectedLabels: true,
+            //showUnselectedLabels: false,
+            items: const [
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.home_rounded),
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.forum_rounded),
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.explore),
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.calendar_today_rounded),
+                ),
+                label: '',
+              ),
+              BottomNavigationBarItem(
+                icon: Padding(
+                  padding: EdgeInsets.only(top: 15.0),
+                  child: Icon(Icons.person_rounded),
+                ),
+                label: '',
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.only(top: 8.0),
-              child: Icon(Icons.explore),
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.only(top: 8.0),
-              child: Icon(Icons.calendar_today_rounded),
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.only(top: 8.0),
-              child: Icon(Icons.person_rounded),
-            ),
-            label: '',
-          ),
-        ],
+        ),
       ),
     );
   }
