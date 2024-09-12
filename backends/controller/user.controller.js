@@ -306,10 +306,9 @@ exports.getFollowedOrganizations = async (req, res) => {
 };
 
 exports.getById = async (req, res) => {
-  const currentUserId = (await extractAndDecodeToken(req)).data._id;
   const bodyId = req.body._id;
   let user;
-  if (currentUserId == bodyId) {
+
     try {
       user = await User.findById(bodyId).select('-email -password');
     } catch (error) {
@@ -319,10 +318,7 @@ exports.getById = async (req, res) => {
       return res.status(404).json({ message: 'No User Found' });
     }
     return res.status(200).json({ user });
-  } else {
-    return res.status(403).json({ message: 'Forbidden' });
-  }
-};
+}; 
 
 // DEVELOPMENT BUILD ONLY
 if (process.env.NODE_ENV === 'development') {
