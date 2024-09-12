@@ -115,6 +115,7 @@ class UserInfoPageState extends State<UserInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded),
@@ -131,25 +132,17 @@ class UserInfoPageState extends State<UserInfoPage> {
             }
           },
         ),
-        title: Text(
-          "BroncoBond",
-          style: GoogleFonts.raleway(
-            textStyle: Theme.of(context).textTheme.displaySmall,
-            fontSize: 25,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF3B5F43),
-          ),
-        ),
-        centerTitle: true,
+    
       ),
       body: SingleChildScrollView(
         child: Column(
+          
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 8.0),
-            buildTextField("Full Name", fullNameController),
+            buildTextField("", fullNameController),
             const SizedBox(height: 8.0),
-            buildTextField("Preferred Name", prefNameController),
+            buildTextFieldPref("", prefNameController),
             buildCheckBox("Display Name on Profile", displayNameOnProfile,
                 (value) {
               setState(() {
@@ -211,9 +204,52 @@ class UserInfoPageState extends State<UserInfoPage> {
             controller: fieldController,
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: const BorderSide(color: Color(0xFFABABAB)),
-                borderRadius: BorderRadius.circular(8.0),
+                labelText: "Full Name",
+                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18) ,
+                filled: true,
+                fillColor:Color(0xffDDDDDD),
+                border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+            ),
+            textAlign: TextAlign.start,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildTextFieldPref(String label, TextEditingController fieldController) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Text label
+        Text(
+          label,
+          style: GoogleFonts.raleway(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: Colors.black,
+          ),
+          textAlign: TextAlign.start,
+        ),
+        // Text field
+        SizedBox(
+          width: 327,
+          height: 43,
+          child: TextField(
+            controller: fieldController,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+                labelText: "Preferred Name",
+                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18) ,
+                filled: true,
+                fillColor:Color(0xffDDDDDD),
+                border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(11),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12),
             ),
@@ -294,17 +330,18 @@ class UserInfoPageState extends State<UserInfoPage> {
                   onPressed: () {
                     pickImage();
                   },
+                  
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: Color(0xffDDDDDD),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: BorderRadius.circular(11.0),
                       side: const BorderSide(
-                        color: Color(0xFFABABAB),
+                        color: Color(0xffDDDDDD)
                       ),
                     ),
                   ),
                   child: Text(
-                    "Upload",
+                    "Select",
                     style: GoogleFonts.raleway(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
