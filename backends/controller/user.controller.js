@@ -578,6 +578,10 @@ exports.sendBondRequest = async (req, res) => {
         return res.status(403).json('Users are already friended');
       }
 
+      if (recipient.bondRequestsReceived.includes(sender.id)) {
+        return res.status(402).json('Already sent User request')
+      }
+
       await sender.updateOne({ $push: { bondRequestsSent: recipient.id } });
       await recipient.updateOne({ $push: { bondRequestsReceived: sender.id } });
 
