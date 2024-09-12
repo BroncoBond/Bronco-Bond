@@ -92,7 +92,7 @@ class RegisterPageState extends State<RegisterPage> {
       backgroundColor: Colors.white,
       
       appBar: AppBar(
-        title: Text('BroncoBond'),
+       
       ),
       body: Stack(
         children: <Widget>[
@@ -102,8 +102,8 @@ class RegisterPageState extends State<RegisterPage> {
                 
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 50.0),
+                  const Padding(
+                    padding:  EdgeInsets.only(left: 50.0),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -121,11 +121,11 @@ class RegisterPageState extends State<RegisterPage> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
-                        margin: EdgeInsets.only(top: 1.0, left: 15.0),
+                        margin: const EdgeInsets.only(top: 1.0, left: 15.0),
                         height: 12.0,
                         width: 190.0,
                         decoration: BoxDecoration(
-                          color: Color(0xffFED154),
+                          color: const Color(0xffFED154),
                           borderRadius: BorderRadius.circular(6.0),
                         ),
                       ),
@@ -154,16 +154,17 @@ class RegisterPageState extends State<RegisterPage> {
             right: 20,
             child: GestureDetector(
               onTap: () {
-                // Add your onTap code here!
+                 Navigator.push(context,MaterialPageRoute(builder: (context) => const UserInfoPage()),
+  );
               },
               child: Container(
                 width: 60.0,
                 height: 60.0,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color(0xff435F49),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.arrow_forward,
                   color: Color(0xffFED154),
                 ),
@@ -210,9 +211,9 @@ class RegisterPageState extends State<RegisterPage> {
                   obscureText: obscureText,
                    decoration: InputDecoration(
                 labelText: "Password",
-                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18) ,
+                labelStyle: const TextStyle(color: Color(0xff939393), fontSize: 18) ,
                 filled: true,
-                fillColor:Color(0xffDDDDDD),
+                fillColor:const Color(0xffDDDDDD),
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(11),
@@ -254,7 +255,7 @@ Widget confirmTextFieldWithToggle(
             style: GoogleFonts.raleway(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: Color(0xff939393),
+              color: const Color(0xff939393),
             ),
             textAlign: TextAlign.start,
           ),
@@ -271,9 +272,9 @@ Widget confirmTextFieldWithToggle(
                   obscureText: obscureText,
                    decoration: InputDecoration(
                 labelText: "Confirm Password",
-                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18) ,
+                labelStyle: const TextStyle(color: Color(0xff939393), fontSize: 18) ,
                 filled: true,
-                fillColor:Color(0xffDDDDDD),
+                fillColor:const Color(0xffDDDDDD),
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(11),
@@ -321,7 +322,7 @@ Widget confirmTextFieldWithToggle(
             style: GoogleFonts.raleway(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: Color(0xff939393),
+              color: const Color(0xff939393),
             ),
             textAlign: TextAlign.start,
           ),
@@ -334,9 +335,9 @@ Widget confirmTextFieldWithToggle(
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 labelText: "Email",
-                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18) ,
+                labelStyle: const TextStyle(color: Color(0xff939393), fontSize: 18) ,
                 filled: true,
-                fillColor:Color(0xffDDDDDD),
+                fillColor:const Color(0xffDDDDDD),
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(11),
@@ -364,7 +365,7 @@ Widget userTextField(String label, TextEditingController fieldController) {
             style: GoogleFonts.raleway(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: Color(0xff939393),
+              color: const Color(0xff939393),
             ),
             textAlign: TextAlign.start,
           ),
@@ -377,9 +378,9 @@ Widget userTextField(String label, TextEditingController fieldController) {
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 labelText: "Username",
-                labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18) ,
+                labelStyle: const TextStyle(color: Color(0xff939393), fontSize: 18) ,
                 filled: true,
-                fillColor:Color(0xffDDDDDD),
+                fillColor:const Color(0xffDDDDDD),
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(11),
