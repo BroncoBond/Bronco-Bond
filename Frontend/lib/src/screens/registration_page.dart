@@ -156,7 +156,13 @@ class RegisterPageState extends State<RegisterPage> {
             right: 20,
             child: GestureDetector(
               onTap: () {
-                registerUser(context);
+                //registerUser(context);
+                // UNCOMMENT AFTER TESTING
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            VerificationPage(email: emailController.text)));
               },
               child: Container(
                 width: 60.0,
