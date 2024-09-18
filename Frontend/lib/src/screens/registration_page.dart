@@ -166,8 +166,9 @@ class RegisterPageState extends State<RegisterPage> {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.arrow_forward,
+                  Icons.arrow_forward_rounded,
                   color: Color(0xffFED154),
+                  size: 35.0,
                 ),
               ),
             ),
@@ -209,6 +210,12 @@ class RegisterPageState extends State<RegisterPage> {
                   controller: fieldController,
                   keyboardType: TextInputType.text,
                   obscureText: obscureText,
+                  cursorColor: Color(0xFF2E4233),
+                  style: GoogleFonts.raleway(
+                    color: Color(0xFF2E4233),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
                   decoration: InputDecoration(
                     hintText: label,
                     hintStyle: GoogleFonts.raleway(
@@ -240,65 +247,6 @@ class RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // Widget confirmTextFieldWithToggle(
-  //     String label,
-  //     TextEditingController fieldController,
-  //     bool obscureText,
-  //     VoidCallback toggleVisibility) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 0.0),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         // Text label
-  //         Text(
-  //           label,
-  //           style: GoogleFonts.raleway(
-  //             fontSize: 16,
-  //             fontWeight: FontWeight.w800,
-  //             color: Color(0xff939393),
-  //           ),
-  //           textAlign: TextAlign.start,
-  //         ),
-  //         // Text field
-  //         SizedBox(
-  //           width: 327,
-  //           height: 48,
-  //           child: Stack(
-  //             alignment: Alignment.centerRight,
-  //             children: [
-  //               TextField(
-  //                 controller: fieldController,
-  //                 keyboardType: TextInputType.text,
-  //                 obscureText: obscureText,
-  //                 decoration: InputDecoration(
-  //                   labelText: "Confirm Password",
-  //                   labelStyle:
-  //                       TextStyle(color: Color(0xff939393), fontSize: 18),
-  //                   filled: true,
-  //                   fillColor: Color(0xffDDDDDD),
-  //                   border: OutlineInputBorder(
-  //                     borderSide: BorderSide.none,
-  //                     borderRadius: BorderRadius.circular(11),
-  //                   ),
-  //                   contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-  //                 ),
-  //                 textAlign: TextAlign.start,
-  //               ),
-  //               IconButton(
-  //                   onPressed: toggleVisibility,
-  //                   icon: Icon(
-  //                     obscureText ? Icons.visibility : Icons.visibility_off,
-  //                     color: Colors.grey,
-  //                   ))
-  //             ],
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget buildTextField(String label, TextEditingController fieldController) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -322,6 +270,12 @@ class RegisterPageState extends State<RegisterPage> {
             child: TextField(
               controller: fieldController,
               keyboardType: TextInputType.text,
+              cursorColor: Color(0xFF2E4233),
+              style: GoogleFonts.raleway(
+                color: Color(0xFF2E4233),
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
               decoration: InputDecoration(
                 hintText: label,
                 hintStyle: GoogleFonts.raleway(
@@ -344,48 +298,6 @@ class RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
-
-  // // Widget userTextField(String label, TextEditingController fieldController) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 0.0),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         // Text label
-  //         Text(
-  //           label,
-  //           style: GoogleFonts.raleway(
-  //             fontSize: 16,
-  //             fontWeight: FontWeight.w800,
-  //             color: Color(0xff939393),
-  //           ),
-  //           textAlign: TextAlign.start,
-  //         ),
-  //         // Text field
-  //         SizedBox(
-  //           width: 327,
-  //           height: 48,
-  //           child: TextField(
-  //             controller: fieldController,
-  //             keyboardType: TextInputType.text,
-  //             decoration: InputDecoration(
-  //               labelText: "Username",
-  //               labelStyle: TextStyle(color: Color(0xff939393), fontSize: 18),
-  //               filled: true,
-  //               fillColor: Color(0xffDDDDDD),
-  //               border: OutlineInputBorder(
-  //                 borderSide: BorderSide.none,
-  //                 borderRadius: BorderRadius.circular(11),
-  //               ),
-  //               contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-  //             ),
-  //             textAlign: TextAlign.start,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   /*Widget buildButton(String label, BuildContext context) {
     return Align(
