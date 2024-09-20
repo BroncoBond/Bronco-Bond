@@ -274,7 +274,8 @@ class VerificationPageState extends State<VerificationPage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        // Resend OTP
+                        resendOTP();
+                        snackBar("OTP Sent!")
                         debugPrint('Resend pressed');
                       },
                       style: ButtonStyle(
