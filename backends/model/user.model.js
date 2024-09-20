@@ -1,10 +1,7 @@
+const db = require('../config/db');
 const mongoose = require('mongoose');
 const bcrypt = require("bcrypt");
-
-const db = require('../config/db');
-
 const { Schema } = mongoose;
-
 
 const userSchema = new Schema({
         email:{
@@ -26,7 +23,7 @@ const userSchema = new Schema({
             min: 6,
             required: true
         },
-        is_online:{
+        isOnline:{
             type:String,
             default: '0'
         },
@@ -78,9 +75,22 @@ const userSchema = new Schema({
             type: Number,
             default: 0
         },
-        interests: {
+        eventInterests: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Event',
+            default: []
+        }],
+        numOfEventInterests: {
+            type: Number,
+            default: 0
+        },
+        interests: { // This "interest" is specifically for a user's interests (activities, hobbies, etc.)
             type: [String],
             default:[]
+        },
+        calendar: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Calendar'
         },
         isAdmin: {
             type: Boolean,
@@ -109,11 +119,7 @@ const userSchema = new Schema({
                 return (currentYear + 4).toString();
             })()
         },
-        is_online: {
-            type: String,
-            default: '0'
-        },
-        verified: {
+        isVerified: {
             type: Boolean,
             default: false
         },

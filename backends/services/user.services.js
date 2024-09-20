@@ -14,7 +14,7 @@ class UserService {
     try {
       const newUser = await createUser.save();
       // Log the newly created user
-      console.log('User registered:', newUser);
+      console.log('User has been registered');
 
       return newUser;
     } catch (error) {
@@ -47,7 +47,7 @@ class UserService {
         if (error) {
             console.log(error);
         } else {
-            console.log('Ready for messages');
+            console.log('Ready for OTP message');
             console.log(success);
         }
     });

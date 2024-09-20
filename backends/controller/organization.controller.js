@@ -58,7 +58,7 @@ exports.createOrganization = async (req, res) => {
 };
 
 // (REQUIRES ADMIN)
-exports.updateOrganizationInformation = async (req, res) => {
+exports.updateOrganization = async (req, res) => {
   try {
     const currentUser = await userController.extractAndDecodeToken(req);
     const tokenUserId = currentUser.data._id;
@@ -102,10 +102,9 @@ exports.updateOrganizationInformation = async (req, res) => {
         );
     }
   } catch (error) {
-    console.error('Error editing organization:', error);
     return res
       .status(500)
-      .json({ error: 'Error editing organization', details: error });
+      .json({ error: 'Error updating organization', details: error });
   }
 };
 
@@ -200,7 +199,7 @@ exports.deleteOrganization = async (req, res) => {
       try {
         await Organization.findByIdAndDelete(givenOrganizationId);
 
-        res.status(200).json('Organization has been deleted');
+        return res.status(200).json('Organization has been deleted');
       } catch (error) {
         return res.status(500).json(error);
       }
