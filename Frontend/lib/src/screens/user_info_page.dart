@@ -80,10 +80,10 @@ class UserInfoPageState extends State<UserInfoPage> {
             },
             body: jsonEncode(regBody));
 
-        print('Response body: ${response.body}');
+        // print('Response body: ${response.body}');
         var jsonResponse = jsonDecode(response.body);
 
-        print("http request made");
+        // print("http request made");
 
         if (jsonResponse['status']) {
           Navigator.push(context,

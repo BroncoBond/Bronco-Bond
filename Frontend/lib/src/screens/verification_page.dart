@@ -1,11 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:bronco_bond/src/config.dart';
 import 'package:bronco_bond/src/screens/login_page.dart';
+import 'package:bronco_bond/src/screens/services.dart';
+import 'package:bronco_bond/src/screens/user_info_page.dart';
 import 'package:bronco_bond/src/screens/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Displays detailed information about a SampleItem.
 class VerificationPage extends StatefulWidget {
@@ -21,6 +27,8 @@ class VerificationPageState extends State<VerificationPage> {
   TextEditingController textEditingController = TextEditingController();
   bool hasError = false;
   String currentText = "";
+  String otp = "";
+  late SharedPreferences prefs;
 
   final formKey = GlobalKey<FormState>();
   StreamController<ErrorAnimationType>? errorController;
@@ -28,7 +36,12 @@ class VerificationPageState extends State<VerificationPage> {
   @override
   void initState() {
     errorController = StreamController<ErrorAnimationType>();
+    initSharedPref();
     super.initState();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
   }
 
   @override
@@ -45,6 +58,65 @@ class VerificationPageState extends State<VerificationPage> {
         backgroundColor: Color(0xFF435F49),
       ),
     );
+  }
+
+  void verifyUser() async {
+    String? token = prefs.getString('token');
+
+    print('Entered pin: $otp');
+    var regBody = {
+      "otp": otp,
+    };
+
+    try {
+      var response = await http.post(Uri.parse(checkIsVerified),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
+          body: jsonEncode(regBody));
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse['message'] != null) {
+          snackBar("OTP Verified!");
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => UserInfoPage()),
+          );
+        } else {
+          print("Something went wrong: ${jsonResponse['error']}");
+          snackBar("Error: ${jsonResponse['error']}");
+        }
+      } else {
+        print("Failed request with status code: ${response.statusCode}");
+        snackBar("Failed request with status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error during HTTP request: $e");
+      snackBar("An error occurred. Please try again.");
+    }
+  }
+
+  void resendOTP() async {
+    String? token = prefs.getString('token');
+
+    print('Entered pin: $otp');
+    var regBody = {
+      "otp": otp,
+    };
+
+    try {
+      var response = await http.post(Uri.parse(resendVerification),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $token",
+          },
+          body: jsonEncode(regBody));
+      snackBar("OTP Sent!");
+    } catch (e) {
+      print('Error during HTTP request: $e');
+    }
   }
 
   @override
@@ -151,6 +223,7 @@ class VerificationPageState extends State<VerificationPage> {
                           keyboardType: TextInputType.number,
                           onCompleted: (v) {
                             debugPrint("Completed");
+                            otp = v;
                           },
                           onChanged: (value) {
                             debugPrint(value);
@@ -230,8 +303,7 @@ class VerificationPageState extends State<VerificationPage> {
                       setState(() => hasError = true);
                     } else {
                       setState(() => hasError = false);
-                      snackBar("OTP Verified!");
-                      // Add backend function here
+                      verifyUser();
                     }
                   },
                 ),
