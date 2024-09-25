@@ -354,6 +354,11 @@ class LoginPageState extends State<LoginPage>
             keyboardType: TextInputType.text,
             obscureText: obscureText ? hidePassword : obscureText,
             cursorColor: Color(0xFFFED154),
+            style: GoogleFonts.raleway(
+              color: Color(0xFF2E4233),
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
             decoration: InputDecoration(
               prefixIcon: Icon(
                 icon,
