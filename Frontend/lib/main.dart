@@ -49,6 +49,7 @@ class MyApp extends StatelessWidget {
 
 /*
   Dev Notes (set up emulator first):
+    Step 0: Ensure the folder is named "frontend" (all lowercase), not "Frontend".
     Step 1: In terminal [flutter pub get]
     Step 2: In terminal [flutter pub upgrade]
     Step 3: In terminal [flutter create .]
