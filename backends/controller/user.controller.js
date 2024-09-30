@@ -403,6 +403,21 @@ exports.updateUserInfo = async (req, res) => {
           return res.status(400).json({ error: 'Username already exists' });
         }
       }
+      // Validate fullName to ensure it only contains alphabetic characters and spaces
+      if (req.body.fullName) {
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        if (!nameRegex.test(req.body.fullName)) {
+          return res.status(400).json({ error: 'Full name can only contain alphabetic characters and spaces' });
+        }
+      }
+
+      // Validate prefName to ensure it only contains alphabetic characters and spaces
+      if (req.body.prefName) {
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        if (!nameRegex.test(req.body.prefName)) {
+          return res.status(400).json({ error: 'Preferred name can only contain alphabetic characters and spaces' });
+        }
+      }
       const {
         username,
         password,
