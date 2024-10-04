@@ -12,7 +12,7 @@ Personalized Networking: Discover and engage with peers who share your major/min
 
 Stay Informed: Never miss out on campus events again. BroncoBond keeps you updated on all the exciting happenings at CPP, ensuring you're always in the loop.
 
-Convenient Services: Need a tutor, a study group, or a ride to campus? BroncoBond has you covered. Find the services you need and seamlessly apply, making student life a breeze.
+Convenient Services: Need a tutor, a study group, or a ride to campus? BroncoBond has you covered. Find the services you need and seamlessly apply them, making student life a breeze.
 
 Comprehensive Information: Explore all that CPP has to offer in one convenient place. From club listings to academic resources, BroncoBond is your go-to guide for navigating campus life.
 
