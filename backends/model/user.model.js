@@ -24,7 +24,7 @@ const userSchema = new Schema({
             required: true
         },
         isOnline:{
-            type:String,
+            type:Boolean,
             default: '0'
         },
         fullName:{
