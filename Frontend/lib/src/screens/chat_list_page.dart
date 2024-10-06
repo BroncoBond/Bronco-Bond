@@ -27,6 +27,7 @@ class ChatListPageState extends State<ChatListPage>
   late Future<SharedPreferences> prefsFuture;
   int selectedUserIndex = -1;
   late TabController tabController;
+  TextEditingController searchController = TextEditingController();
 
   Future<void> fetchDataUsingUserID(String userID) async {
     String? token = prefs.getString('token');
@@ -50,9 +51,10 @@ class ChatListPageState extends State<ChatListPage>
 
         setState(() {
           username = userData['user']['username'] ?? 'Unknown';
-          bonds = (userData['user']['bonds'] ?? []).where((bond) {
-            return bond['is_online'] == '1';
-          }).toList();
+          bonds = (userData['user']['bonds'] ?? [])
+              .where((bond) => bond['isOnline'] == 1)
+              .toList();
+          print(bonds);
         });
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
@@ -133,18 +135,20 @@ class ChatListPageState extends State<ChatListPage>
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Container(
-          color: const Color(0xFF3B5F43),
+          color: const Color(0xff435f49),
           child: Padding(
             padding: EdgeInsets.only(left: 30.0),
             child: SafeArea(
               child: TabBar(
                 controller: tabController,
                 unselectedLabelColor: Colors.white,
+                dividerHeight: 0.0,
+                dividerColor: const Color(0xff435f49),
                 labelColor: const Color(0xFFFED154),
                 labelStyle: GoogleFonts.raleway(
                     fontSize: 16.0, fontWeight: FontWeight.w700),
                 indicatorColor: const Color(0xFFFED154),
-                indicatorWeight: 7,
+                indicatorWeight: 7.0,
                 tabs: const [
                   Tab(text: 'Chat'),
                   Tab(text: 'Bonds'),
@@ -160,29 +164,36 @@ class ChatListPageState extends State<ChatListPage>
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
+        color: const Color(0xff435f49),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.0),
+              topRight: Radius.circular(30.0),
+            ),
           ),
-          color: Colors.white,
-        ),
-        child: TabBarView(
-          controller: tabController,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                'Messages',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Color(0xff3B5F43),
+          child: TabBarView(
+            controller: tabController,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(30.0),
+                child: Text(
+                  'Messages',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Color(0xff435f49),
+                  ),
                 ),
               ),
-            ),
-            buildBondsTab(bonds),
-          ],
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 30.0, bottom: 30.0, left: 25.0, right: 25.0),
+                child: buildBondsTab(bonds),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -201,7 +212,7 @@ class ChatListPageState extends State<ChatListPage>
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff435f49)),
             ),
           );
         } else if (snapshot.hasError) {
@@ -209,6 +220,13 @@ class ChatListPageState extends State<ChatListPage>
         } else {
           // Wrap the ListView.builder with a Container to constrain its height
           return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30.0),
+                topRight: Radius.circular(30.0),
+              ),
+            ),
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height *
                   0.8, // Adjust the height as needed
@@ -234,17 +252,39 @@ class ChatListPageState extends State<ChatListPage>
                           ? Colors.grey.withOpacity(0.5)
                           : null, // Default background color when not tapped
                       child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          backgroundImage:
-                              profilePicture != null && profilePicture != ''
+                        leading: Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 24,
+                              backgroundColor: Colors.white,
+                              backgroundImage: profilePicture != null &&
+                                      profilePicture != ''
                                   ? MemoryImage(
                                       decodeProfilePicture(profilePicture))
                                   : const AssetImage(
                                           'assets/images/user_profile_icon.png')
                                       as ImageProvider,
+                            ),
+                            const Positioned(
+                              bottom: 1.5,
+                              right: 2,
+                              child: CircleAvatar(
+                                radius: 5,
+                                backgroundColor: Color(0xFFFED154),
+                              ),
+                            ),
+                          ],
                         ),
-                        title: Text(username ?? 'Unknown'),
+                        title: Padding(
+                          padding: const EdgeInsets.only(left: 6.0),
+                          child: Text(
+                            username ?? 'Unknown',
+                            style: GoogleFonts.raleway(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF435F49)),
+                          ),
+                        ),
                       ),
                     ),
                   ),
