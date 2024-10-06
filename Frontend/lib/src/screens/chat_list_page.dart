@@ -19,12 +19,14 @@ class ChatListPage extends StatefulWidget {
   ChatListPageState createState() => ChatListPageState();
 }
 
-class ChatListPageState extends State<ChatListPage> {
+class ChatListPageState extends State<ChatListPage>
+    with SingleTickerProviderStateMixin {
   late String username = '';
   late List<dynamic> bonds = [];
   late SharedPreferences prefs;
   late Future<SharedPreferences> prefsFuture;
   int selectedUserIndex = -1;
+  late TabController tabController;
 
   Future<void> fetchDataUsingUserID(String userID) async {
     String? token = prefs.getString('token');
@@ -48,7 +50,9 @@ class ChatListPageState extends State<ChatListPage> {
 
         setState(() {
           username = userData['user']['username'] ?? 'Unknown';
-          bonds = userData['user']['bonds'] ?? [];
+          bonds = (userData['user']['bonds'] ?? []).where((bond) {
+            return bond['is_online'] == '1';
+          }).toList();
         });
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
@@ -105,6 +109,7 @@ class ChatListPageState extends State<ChatListPage> {
   void initState() {
     super.initState();
     prefsFuture = initSharedPref();
+    tabController = TabController(length: 2, vsync: this);
     prefsFuture.then((value) {
       prefs = value;
       // Get user data using the userID
@@ -114,6 +119,7 @@ class ChatListPageState extends State<ChatListPage> {
 
   @override
   void dispose() {
+    tabController.dispose();
     super.dispose();
   }
 
@@ -124,35 +130,60 @@ class ChatListPageState extends State<ChatListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'BroncoBond',
-          style: GoogleFonts.raleway(
-              textStyle: Theme.of(context).textTheme.displaySmall,
-              fontSize: 25,
-              fontWeight: FontWeight.w800,
-              color: Colors.white),
-        ),
-        backgroundColor: const Color(0xFF3B5F43),
-        automaticallyImplyLeading: false,
-      ),
-      body: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Messages',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Color(0xff3B5F43),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: Container(
+          color: const Color(0xFF3B5F43),
+          child: Padding(
+            padding: EdgeInsets.only(left: 30.0),
+            child: SafeArea(
+              child: TabBar(
+                controller: tabController,
+                unselectedLabelColor: Colors.white,
+                labelColor: const Color(0xFFFED154),
+                labelStyle: GoogleFonts.raleway(
+                    fontSize: 16.0, fontWeight: FontWeight.w700),
+                indicatorColor: const Color(0xFFFED154),
+                indicatorWeight: 7,
+                tabs: const [
+                  Tab(text: 'Chat'),
+                  Tab(text: 'Bonds'),
+                ],
+                labelPadding:
+                    const EdgeInsets.only(left: 55.0), // Adjust the value here
+                isScrollable: true,
+                indicatorSize: TabBarIndicatorSize.label,
+                indicatorPadding: EdgeInsets.zero,
               ),
             ),
           ),
-          Expanded(
-            child: buildBondsTab(bonds),
+        ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
           ),
-        ],
+          color: Colors.white,
+        ),
+        child: TabBarView(
+          controller: tabController,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Messages',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Color(0xff3B5F43),
+                ),
+              ),
+            ),
+            buildBondsTab(bonds),
+          ],
+        ),
       ),
     );
   }
@@ -163,6 +194,7 @@ class ChatListPageState extends State<ChatListPage> {
         child: Text('No bonds found'),
       );
     }
+
     return FutureBuilder(
       future: Future.wait(bonds.map((bond) => fetchBondUsernames(bond))),
       builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
@@ -175,42 +207,50 @@ class ChatListPageState extends State<ChatListPage> {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final userData = snapshot.data![index];
-              final profilePicture = userData['user']['profilePicture'];
-              final username = userData['user']['username'];
-              return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      selectedUserIndex = index;
-                    });
-                    navigateToUserProfile(bonds[index]);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.only(top: 5.0),
-                    color: selectedUserIndex == index
-                        ? Colors.grey.withOpacity(0.5) // Grey when tapped
-                        : null, // Default background color when not tapped
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: profilePicture != null &&
-                                profilePicture != ''
-                            ? MemoryImage(decodeProfilePicture(profilePicture))
-                            : const AssetImage(
-                                    'assets/images/user_profile_icon.png')
-                                as ImageProvider,
+          // Wrap the ListView.builder with a Container to constrain its height
+          return Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height *
+                  0.8, // Adjust the height as needed
+            ),
+            child: ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final userData = snapshot.data![index];
+                final profilePicture = userData['user']['profilePicture'];
+                final username = userData['user']['username'];
+                return MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedUserIndex = index;
+                      });
+                      navigateToUserProfile(bonds[index]);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      color: selectedUserIndex == index
+                          ? Colors.grey.withOpacity(0.5)
+                          : null, // Default background color when not tapped
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          backgroundImage:
+                              profilePicture != null && profilePicture != ''
+                                  ? MemoryImage(
+                                      decodeProfilePicture(profilePicture))
+                                  : const AssetImage(
+                                          'assets/images/user_profile_icon.png')
+                                      as ImageProvider,
+                        ),
+                        title: Text(username ?? 'Unknown'),
                       ),
-                      title: Text(username ?? 'Unknown'),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         }
       },
