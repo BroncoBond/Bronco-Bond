@@ -52,7 +52,7 @@ class ChatListPageState extends State<ChatListPage>
         setState(() {
           username = userData['user']['username'] ?? 'Unknown';
           bonds = (userData['user']['bonds'] ?? [])
-              .where((bond) => bond['isOnline'] == 1)
+              .where((bond) => bond['isOnline'] == '1')
               .toList();
           print(bonds);
         });
