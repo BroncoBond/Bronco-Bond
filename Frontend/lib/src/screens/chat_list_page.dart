@@ -25,9 +25,11 @@ class ChatListPageState extends State<ChatListPage>
   late List<dynamic> bonds = [];
   late SharedPreferences prefs;
   late Future<SharedPreferences> prefsFuture;
-  int selectedUserIndex = -1;
   late TabController tabController;
   TextEditingController searchController = TextEditingController();
+  List<Map<String, dynamic>> searchResults = [];
+  int selectedUserIndex = -1;
+  int selectedResultIndex = -1;
 
   Future<void> fetchDataUsingUserID(String userID) async {
     String? token = prefs.getString('token');
@@ -51,10 +53,7 @@ class ChatListPageState extends State<ChatListPage>
 
         setState(() {
           username = userData['user']['username'] ?? 'Unknown';
-          bonds = (userData['user']['bonds'] ?? [])
-              .where((bond) => bond['isOnline'] == '1')
-              .toList();
-          print(bonds);
+          bonds = (userData['user']['bonds'] ?? []);
         });
       } else {
         print('Failed to fetch user data. Status code: ${response.statusCode}');
@@ -65,7 +64,7 @@ class ChatListPageState extends State<ChatListPage>
     }
   }
 
-  Future<Map<String, dynamic>> fetchBondUsernames(String userID) async {
+  Future<Map<String, dynamic>> fetchBondUsername(String userID) async {
     String? token = prefs.getString('token');
     var regBody = {"_id": userID};
     try {
@@ -100,6 +99,25 @@ class ChatListPageState extends State<ChatListPage>
     return Uint8List.fromList(decodedImageBytes);
   }
 
+  void performSearch() async {
+    String searchText = searchController.text.toLowerCase();
+
+    // Fetch all bond usernames
+    List<Map<String, dynamic>> fetchedUsernames = await Future.wait(
+      bonds.map((bond) => fetchBondUsername(bond)),
+    );
+
+    // Filter bonds by the fetched usernames
+    searchResults = fetchedUsernames.where((userData) {
+      final username = userData['user']['username']?.toLowerCase() ?? '';
+      return username.contains(searchText);
+    }).toList();
+
+    setState(() {
+      selectedResultIndex = -1;
+    });
+  }
+
   void navigateToUserProfile(String userID) {
     Navigator.push(
       context,
@@ -116,6 +134,9 @@ class ChatListPageState extends State<ChatListPage>
       prefs = value;
       // Get user data using the userID
       fetchDataUsingUserID(widget.userID);
+    });
+    searchController.addListener(() {
+      setState(() {}); // Rebuild the widget on search input change
     });
   }
 
@@ -137,7 +158,7 @@ class ChatListPageState extends State<ChatListPage>
         child: Container(
           color: const Color(0xff435f49),
           child: Padding(
-            padding: EdgeInsets.only(left: 30.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: SafeArea(
               child: TabBar(
                 controller: tabController,
@@ -153,8 +174,7 @@ class ChatListPageState extends State<ChatListPage>
                   Tab(text: 'Chat'),
                   Tab(text: 'Bonds'),
                 ],
-                labelPadding:
-                    const EdgeInsets.only(left: 55.0), // Adjust the value here
+                labelPadding: const EdgeInsets.only(left: 55.0),
                 isScrollable: true,
                 indicatorSize: TabBarIndicatorSize.label,
                 indicatorPadding: EdgeInsets.zero,
@@ -206,94 +226,241 @@ class ChatListPageState extends State<ChatListPage>
       );
     }
 
-    return FutureBuilder(
-      future: Future.wait(bonds.map((bond) => fetchBondUsernames(bond))),
-      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff435f49)),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          // Wrap the ListView.builder with a Container to constrain its height
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30.0),
-                topRight: Radius.circular(30.0),
-              ),
-            ),
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height *
-                  0.8, // Adjust the height as needed
-            ),
-            child: ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final userData = snapshot.data![index];
-                final profilePicture = userData['user']['profilePicture'];
-                final username = userData['user']['username'];
-                return MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        selectedUserIndex = index;
-                      });
-                      navigateToUserProfile(bonds[index]);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.only(top: 5.0),
-                      color: selectedUserIndex == index
-                          ? Colors.grey.withOpacity(0.5)
-                          : null, // Default background color when not tapped
-                      child: ListTile(
-                        leading: Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 24,
-                              backgroundColor: Colors.white,
-                              backgroundImage: profilePicture != null &&
-                                      profilePicture != ''
-                                  ? MemoryImage(
-                                      decodeProfilePicture(profilePicture))
-                                  : const AssetImage(
-                                          'assets/images/user_profile_icon.png')
-                                      as ImageProvider,
-                            ),
-                            const Positioned(
-                              bottom: 1.5,
-                              right: 2,
-                              child: CircleAvatar(
-                                radius: 5,
-                                backgroundColor: Color(0xFFFED154),
-                              ),
-                            ),
-                          ],
-                        ),
-                        title: Padding(
-                          padding: const EdgeInsets.only(left: 6.0),
-                          child: Text(
-                            username ?? 'Unknown',
-                            style: GoogleFonts.raleway(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFF435F49)),
-                          ),
-                        ),
-                      ),
-                    ),
+    return Column(
+      children: [
+        // Add the search bar above the list
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12.0, left: 8.0, right: 8.0),
+          child: buildSearchBar('Search Bonds', searchController),
+        ),
+        Expanded(
+          child: FutureBuilder(
+            future: Future.wait(bonds.map((bond) => fetchBondUsername(bond))),
+            builder:
+                (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xff435f49)),
                   ),
                 );
-              },
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                // Sort and group the fetched data alphabetically based on the first letter of the username
+                List<Map<String, dynamic>> sortedBonds = snapshot.data!;
+
+                // Check if there's an active search, and filter the sortedBonds
+                if (searchController.text.isNotEmpty) {
+                  sortedBonds = sortedBonds.where((userData) {
+                    String username =
+                        userData['user']['username']?.toLowerCase() ?? '';
+                    return username
+                        .contains(searchController.text.toLowerCase());
+                  }).toList();
+                }
+
+                // If search results are empty, show 'No bonds found'
+                if (sortedBonds.isEmpty) {
+                  return const Center(
+                    child: Text('No bonds found'),
+                  );
+                }
+
+                // Sort the bonds alphabetically
+                sortedBonds.sort((a, b) {
+                  String usernameA = a['user']['username'] ?? '';
+                  String usernameB = b['user']['username'] ?? '';
+                  return usernameA
+                      .toLowerCase()
+                      .compareTo(usernameB.toLowerCase());
+                });
+
+                // Group the bonds by the first letter of the username
+                Map<String, List<Map<String, dynamic>>> groupedBonds = {};
+                for (var bond in sortedBonds) {
+                  String username = bond['user']['username'] ?? 'Unknown';
+                  String firstLetter = username[0].toUpperCase();
+
+                  if (!groupedBonds.containsKey(firstLetter)) {
+                    groupedBonds[firstLetter] = [];
+                  }
+                  groupedBonds[firstLetter]!.add(bond);
+                }
+
+                // Wrap the ListView.builder with a Container to constrain its height
+                return Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0),
+                    ),
+                  ),
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height *
+                        0.8, // Adjust the height as needed
+                  ),
+                  child: ListView.builder(
+                    itemCount: groupedBonds.keys.length,
+                    itemBuilder: (context, index) {
+                      String firstLetter = groupedBonds.keys.elementAt(index);
+                      List<Map<String, dynamic>> bondsForLetter =
+                          groupedBonds[firstLetter]!;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Header for the letter
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 16.0, bottom: 8.0),
+                            child: Text(
+                              firstLetter,
+                              style: GoogleFonts.raleway(
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF435F49),
+                              ),
+                            ),
+                          ),
+                          // List of users under the current letter
+                          ...bondsForLetter.map((userData) {
+                            final profilePicture =
+                                userData['user']['profilePicture'];
+                            final username = userData['user']['username'];
+                            final isOnline = userData['user']['isOnline'];
+                            return MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    selectedUserIndex = index;
+                                  });
+                                  navigateToUserProfile(bonds[index]);
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.only(top: 5.0),
+                                  color: selectedUserIndex == index
+                                      ? Colors.grey.withOpacity(0.5)
+                                      : null, // Default background color when not tapped
+                                  child: ListTile(
+                                    leading: Stack(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 24,
+                                          backgroundColor: Colors.white,
+                                          backgroundImage: profilePicture !=
+                                                      null &&
+                                                  profilePicture != ''
+                                              ? MemoryImage(
+                                                  decodeProfilePicture(
+                                                      profilePicture))
+                                              : const AssetImage(
+                                                      'assets/images/user_profile_icon.png')
+                                                  as ImageProvider,
+                                        ),
+                                        if (isOnline)
+                                          const Positioned(
+                                            bottom: 1.5,
+                                            right: 2,
+                                            child: CircleAvatar(
+                                              radius: 5,
+                                              backgroundColor:
+                                                  Color(0xFFFED154),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    title: Padding(
+                                      padding: const EdgeInsets.only(left: 6.0),
+                                      child: Text(
+                                        username ?? 'Unknown',
+                                        style: GoogleFonts.raleway(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.w700,
+                                            color: const Color(0xFF435F49)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                      );
+                    },
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildSearchBar(String label, TextEditingController fieldController) {
+    bool showCancelButton =
+        searchResults.isNotEmpty || searchController.text.isNotEmpty;
+
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15.0),
+        color: Colors.grey[300],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextField(
+                controller: fieldController,
+                keyboardType: TextInputType.text,
+                cursorColor: const Color(0xFF435F49),
+                decoration: InputDecoration(
+                  hintText: 'Search',
+                  hintStyle: GoogleFonts.raleway(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF939393)),
+                  border: InputBorder.none,
+                  icon: const Padding(
+                    padding: EdgeInsets.only(left: 8.0),
+                    child: Icon(
+                      Icons.search_rounded,
+                      color: Color(0xFF939393),
+                    ),
+                  ),
+                ),
+                onChanged: (String value) {
+                  performSearch();
+                },
+              ),
             ),
-          );
-        }
-      },
+          ),
+          if (showCancelButton)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    searchController.clear();
+                    searchResults.clear();
+                    selectedResultIndex = -1;
+                  });
+                },
+                child: Text('Cancel',
+                    style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal)),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
