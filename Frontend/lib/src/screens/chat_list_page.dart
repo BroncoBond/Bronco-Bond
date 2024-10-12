@@ -2,9 +2,6 @@ import 'dart:typed_data';
 
 import 'package:bronco_bond/src/config.dart';
 import 'package:bronco_bond/src/screens/chat_page.dart';
-import 'package:bronco_bond/src/screens/friends_list_page.dart';
-import 'package:bronco_bond/src/screens/services.dart';
-import 'package:bronco_bond/src/screens/user_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -228,7 +225,6 @@ class ChatListPageState extends State<ChatListPage>
 
     return Column(
       children: [
-        // Add the search bar above the list
         Padding(
           padding: const EdgeInsets.only(bottom: 12.0, left: 8.0, right: 8.0),
           child: buildSearchBar('Search Bonds', searchController),
@@ -289,7 +285,6 @@ class ChatListPageState extends State<ChatListPage>
                   groupedBonds[firstLetter]!.add(bond);
                 }
 
-                // Wrap the ListView.builder with a Container to constrain its height
                 return Container(
                   decoration: const BoxDecoration(
                     color: Colors.white,
@@ -299,8 +294,7 @@ class ChatListPageState extends State<ChatListPage>
                     ),
                   ),
                   constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height *
-                        0.8, // Adjust the height as needed
+                    maxHeight: MediaQuery.of(context).size.height * 0.8,
                   ),
                   child: ListView.builder(
                     itemCount: groupedBonds.keys.length,
