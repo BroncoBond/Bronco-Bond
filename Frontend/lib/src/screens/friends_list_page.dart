@@ -284,13 +284,13 @@ class FriendsListPageState extends State<FriendsListPage> {
       builder:
           (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Show a loading spinner while waiting
+          return const CircularProgressIndicator(); // Show a loading spinner while waiting
         } else if (snapshot.hasError) {
           return Text(
               'Error: ${snapshot.error}'); // Show error message if something went wrong
         } else {
           if (snapshot.data == null) {
-            return Text(
+            return const Text(
                 'Error: SharedPreferences not initialized'); // Show error message
           } else {
             prefs =
@@ -302,42 +302,79 @@ class FriendsListPageState extends State<FriendsListPage> {
             return DefaultTabController(
               length: 3,
               child: Scaffold(
+                backgroundColor: const Color.fromARGB(255, 67, 95, 73),
                 appBar: AppBar(
+                  backgroundColor: const Color.fromARGB(255, 67, 95, 73),
                   leading: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded),
-                    color: Colors.black,
+                    padding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
+                    icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
+                    color: Colors.white,
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  title: Text(
-                    username,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
+                  actions: <Widget>[
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          showSearchBar = !showSearchBar;
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.person_add,
+                        color: Color.fromARGB(255, 67, 95, 73),
+                        size: 20,
+                      ),
+                      label: const Text(
+                        'Add',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 67, 95, 73),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            height: 0),
+                      ),
+                      style: const ButtonStyle(
+                        elevation: WidgetStatePropertyAll(0),
+                        padding: WidgetStatePropertyAll(
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
+                        minimumSize: WidgetStatePropertyAll(Size(72, 32)),
+                        backgroundColor: WidgetStatePropertyAll(
+                            Color.fromARGB(255, 254, 209, 84)),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 30)
+                  ],
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(
                         kToolbarHeight), // Adjust the height as needed
                     child: Row(
                       children: [
                         //const SizedBox(width: 8.0),
-                        const Expanded(
+                        Expanded(
                           child: TabBar(
-                            labelStyle: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
-                            labelColor: Color(0xFF3B5F43),
-                            indicatorColor: Color(0xFF3B5F43),
+                            dividerColor: const Color.fromARGB(255, 67, 95, 73),
+                            tabAlignment: TabAlignment.center,
+                            isScrollable: true,
+                            indicator: UnderlineTabIndicator(
+                                borderRadius: BorderRadius.circular(5),
+                                borderSide: const BorderSide(
+                                  color: Color.fromARGB(255, 254, 209, 84),
+                                  width: 7,
+                                )),
+                            labelStyle: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                            labelColor: const Color.fromARGB(255, 254, 209, 84),
+                            indicatorColor:
+                                const Color.fromARGB(255, 254, 209, 84),
                             indicatorSize: TabBarIndicatorSize.tab,
-                            unselectedLabelColor: Colors.grey,
-                            unselectedLabelStyle:
-                                TextStyle(fontWeight: FontWeight.w500),
-                            indicatorWeight: 3,
-                            tabs: [
+                            unselectedLabelColor: Colors.white,
+                            unselectedLabelStyle: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            indicatorWeight: 5,
+                            tabs: const [
                               Tab(
-                                child: Align(
-                                  alignment: Alignment.center,
+                                child: Center(
                                   child: Text('Bonds'),
                                 ),
                               ),
@@ -354,33 +391,6 @@ class FriendsListPageState extends State<FriendsListPage> {
                                 ),
                               ),
                             ],
-                          ),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                showSearchBar = !showSearchBar;
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: showSearchBar
-                                  ? const Color(0xFFABABAB)
-                                  : const Color(0xff3B5F43),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                            child: Text(
-                              "Add Bond",
-                              style: GoogleFonts.raleway(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
                           ),
                         ),
                       ],
@@ -427,223 +437,353 @@ class FriendsListPageState extends State<FriendsListPage> {
 
   Widget buildBondsTab(List<dynamic> bonds) {
     if (bonds.isEmpty) {
-      return const Center(
-        child: Text('No bonds found'),
-      );
+      return Stack(children: [
+        Container(
+          margin: const EdgeInsets.only(top: 50),
+          color: Colors.white,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(40),
+          ),
+          child: const Center(
+            child: Text('No bonds found'),
+          ),
+        ),
+      ]);
     }
-    return FutureBuilder(
-      future: Future.wait(bonds.map((bond) => fetchBondUsernames(bond))),
-      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting ||
-            snapshot.hasError) {
-          return const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final userData = snapshot.data![index];
-              final profilePicture = userData['user']['profilePicture'];
-              final username = userData['user']['username'];
-              return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      selectedUserIndex = index;
-                    });
-                    navigateToUserProfile(bonds[index]);
-                  },
-                  child: Container(
-                    color: selectedUserIndex == index
-                        ? Colors.grey.withOpacity(0.5) // Grey when tapped
-                        : null, // Default background color when not tapped
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: profilePicture != null &&
-                                profilePicture != ''
-                            ? MemoryImage(decodeProfilePicture(profilePicture))
-                            : const AssetImage(
-                                    'assets/images/user_profile_icon.png')
-                                as ImageProvider,
-                      ),
-                      title: Text(username ?? 'Unknown'),
-                    ),
+    return Stack(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 50),
+          color: Colors.white,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(40),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 15),
+          child: FutureBuilder(
+            future: Future.wait(bonds.map((bond) => fetchBondUsernames(bond))),
+            builder:
+                (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  snapshot.hasError) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Color.fromARGB(255, 59, 95, 67)),
                   ),
-                ),
-              );
-            },
-          );
-        }
-      },
-    );
-  }
-
-  Widget buildRequestsTab(List<dynamic> requests) {
-    if (requests.isEmpty) {
-      return const Center(
-        child: Text('No bond requests'),
-      );
-    }
-    return FutureBuilder(
-      future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
-      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final userData = snapshot.data![index];
-              final profilePicture = userData['user']['profilePicture'];
-              final username = userData['user']['username'];
-              final userID = userData['user']['_id'];
-              return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      selectedUserIndex = index;
-                    });
-                    navigateToUserProfile(requests[index]);
-                  },
-                  child: Container(
-                    color: selectedUserIndex == index
-                        ? Colors.grey.withOpacity(0.5) // Grey when tapped
-                        : null, // Default background color when not tapped
-                    child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          backgroundImage:
-                              profilePicture != null && profilePicture != ''
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final userData = snapshot.data![index];
+                    final profilePicture = userData['user']['profilePicture'];
+                    final username = userData['user']['username'];
+                    return MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedUserIndex = index;
+                          });
+                          navigateToUserProfile(bonds[index]);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.only(bottom: 15),
+                          color: selectedUserIndex == index
+                              ? Colors.grey.withOpacity(0.5) // Grey when tapped
+                              : null, // Default background color when not tapped
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              radius: 24,
+                              backgroundColor: Colors.white,
+                              backgroundImage: profilePicture != null &&
+                                      profilePicture != ''
                                   ? MemoryImage(
                                       decodeProfilePicture(profilePicture))
                                   : const AssetImage(
                                           'assets/images/user_profile_icon.png')
                                       as ImageProvider,
-                        ),
-                        title: Text(
-                          username ?? 'Unknown',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                acceptRequest(userID);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xff3B5F43),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
-                              child: const Text('Accept'),
                             ),
-                            const SizedBox(width: 8.0),
-                            ElevatedButton(
-                              onPressed: () {
-                                declineRequest(userID);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFABABAB),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
-                              child: const Text('Decline'),
+                            title: Text(
+                              username ?? 'Unknown',
+                              style: const TextStyle(
+                                  color: Color(0xFF435E49),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700),
                             ),
-                          ],
-                        )),
-                  ),
-                ),
-              );
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
             },
-          );
-        }
-      },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildRequestsTab(List<dynamic> requests) {
+    if (requests.isEmpty) {
+      return Stack(children: [
+        Container(
+          margin: const EdgeInsets.only(top: 50),
+          color: Colors.white,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(40),
+          ),
+          child: const Center(
+            child: Text('No bond requests'),
+          ),
+        ),
+      ]);
+    }
+    return Stack(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 50),
+          color: Colors.white,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(40),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 15),
+          child: FutureBuilder(
+            future:
+                Future.wait(requests.map((user) => fetchBondUsernames(user))),
+            builder:
+                (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final userData = snapshot.data![index];
+                    final profilePicture = userData['user']['profilePicture'];
+                    final username = userData['user']['username'];
+                    final userID = userData['user']['_id'];
+                    return MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedUserIndex = index;
+                          });
+                          navigateToUserProfile(requests[index]);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.only(bottom: 15),
+                          color: selectedUserIndex == index
+                              ? Colors.grey.withOpacity(0.5) // Grey when tapped
+                              : null, // Default background color when not tapped
+                          child: ListTile(
+                              leading: CircleAvatar(
+                                radius: 24,
+                                backgroundColor: Colors.white,
+                                backgroundImage: profilePicture != null &&
+                                        profilePicture != ''
+                                    ? MemoryImage(
+                                        decodeProfilePicture(profilePicture))
+                                    : const AssetImage(
+                                            'assets/images/user_profile_icon.png')
+                                        as ImageProvider,
+                              ),
+                              title: Text(
+                                username ?? 'Unknown',
+                                style: const TextStyle(
+                                    color: Color(0xFF435E49),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      declineRequest(userID);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 0,
+                                      minimumSize: const Size.fromRadius(15),
+                                      backgroundColor: const Color(0xFFDDDDDD),
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    child: const Text(
+                                      'Decline',
+                                      style: TextStyle(
+                                          color: Color(0xFF929292),
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      acceptRequest(userID);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 0,
+                                      minimumSize: const Size.fromRadius(15),
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 85, 104, 90),
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    child: const Text(
+                                      'Accept',
+                                      style: TextStyle(
+                                          color: Color(0xFFFED154),
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  )
+                                ],
+                              )),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 
   Widget buildPendingTab(List<dynamic> requests) {
     if (requests.isEmpty) {
-      return const Center(
-        child: Text('No pending requests'),
-      );
+      return Stack(children: [
+        Container(
+          margin: const EdgeInsets.only(top: 50),
+          color: Colors.white,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(40),
+          ),
+          child: const Center(
+            child: Text('No pending requests'),
+          ),
+        ),
+      ]);
     }
-    return FutureBuilder(
-      future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
-      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final userData = snapshot.data![index];
-              final profilePicture = userData['user']['profilePicture'];
-              final username = userData['user']['username'];
-              final userID = userData['user']['_id'];
-              return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      selectedUserIndex = index;
-                    });
-                    navigateToUserProfile(requests[index]);
-                  },
-                  child: Container(
-                    color: selectedUserIndex == index
-                        ? Colors.grey.withOpacity(0.5) // Grey when tapped
-                        : null, // Default background color when not tapped
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: profilePicture != null &&
-                                profilePicture != ''
-                            ? MemoryImage(decodeProfilePicture(profilePicture))
-                            : const AssetImage(
-                                    'assets/images/user_profile_icon.png')
-                                as ImageProvider,
-                      ),
-                      title: Text(username ?? 'Unknown'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.close_rounded),
-                        color: Colors.black,
-                        onPressed: () {
-                          revokeRequest(userID);
-                        },
-                      ),
-                    ),
+    return Stack(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 50),
+          color: Colors.white,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(40),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 24,horizontal: 15),
+          child: FutureBuilder(
+            future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
+            builder:
+                (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
                   ),
-                ),
-              );
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final userData = snapshot.data![index];
+                    final profilePicture = userData['user']['profilePicture'];
+                    final username = userData['user']['username'];
+                    final userID = userData['user']['_id'];
+                    return MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedUserIndex = index;
+                          });
+                          navigateToUserProfile(requests[index]);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.only(bottom: 15),
+                          color: selectedUserIndex == index
+                              ? Colors.grey.withOpacity(0.5) // Grey when tapped
+                              : null, // Default background color when not tapped
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              radius: 24,
+                              backgroundColor: Colors.white,
+                              backgroundImage: profilePicture != null &&
+                                      profilePicture != ''
+                                  ? MemoryImage(
+                                      decodeProfilePicture(profilePicture))
+                                  : const AssetImage(
+                                          'assets/images/user_profile_icon.png')
+                                      as ImageProvider,
+                            ),
+                            title: Text(
+                              username ?? 'Unknown',
+                              style: const TextStyle(
+                                  color: Color(0xFF435E49),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(
+                                Icons.close_rounded,
+                                size: 45,
+                              ),
+                              color: const Color.fromARGB(255, 147, 147, 147),
+                              onPressed: () {
+                                revokeRequest(userID);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
             },
-          );
-        }
-      },
+          ),
+        ),
+      ],
     );
   }
 
