@@ -26,7 +26,6 @@ class ChatListPageState extends State<ChatListPage>
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> searchResults = [];
   int selectedUserIndex = -1;
-  int selectedResultIndex = -1;
 
   Future<void> fetchDataUsingUserID(String userID) async {
     String? token = prefs.getString('token');
@@ -99,6 +98,10 @@ class ChatListPageState extends State<ChatListPage>
   void performSearch() async {
     String searchText = searchController.text.toLowerCase();
 
+    setState(() {
+      selectedUserIndex = -1;
+    });
+
     // Fetch all bond usernames
     List<Map<String, dynamic>> fetchedUsernames = await Future.wait(
       bonds.map((bond) => fetchBondUsername(bond)),
@@ -109,13 +112,12 @@ class ChatListPageState extends State<ChatListPage>
       final username = userData['user']['username']?.toLowerCase() ?? '';
       return username.contains(searchText);
     }).toList();
-
-    setState(() {
-      selectedResultIndex = -1;
-    });
   }
 
   void navigateToUserProfile(String userID) {
+    setState(() {
+      selectedUserIndex = -1;
+    });
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ChatPage(userID: userID)),
@@ -244,7 +246,6 @@ class ChatListPageState extends State<ChatListPage>
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else {
-                // Sort and group the fetched data alphabetically based on the first letter of the username
                 List<Map<String, dynamic>> sortedBonds = snapshot.data!;
 
                 // Check if there's an active search, and filter the sortedBonds
@@ -320,25 +321,30 @@ class ChatListPageState extends State<ChatListPage>
                             ),
                           ),
                           // List of users under the current letter
-                          ...bondsForLetter.map((userData) {
+                          ...bondsForLetter.asMap().entries.map((entry) {
+                            final bondIndex =
+                                entry.key; // Bond in the current group
+                            final userData = entry.value;
                             final profilePicture =
                                 userData['user']['profilePicture'];
                             final username = userData['user']['username'];
                             final isOnline = userData['user']['isOnline'];
+                            // Find the original bond from the unsorted list
                             return MouseRegion(
                               cursor: SystemMouseCursors.click,
                               child: InkWell(
                                 onTap: () {
                                   setState(() {
-                                    selectedUserIndex = index;
+                                    selectedUserIndex = bondIndex;
                                   });
-                                  navigateToUserProfile(bonds[index]);
+                                  navigateToUserProfile(
+                                      sortedBonds[bondIndex]['user']['_id']);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.only(top: 5.0),
-                                  color: selectedUserIndex == index
+                                  color: selectedUserIndex == bondIndex
                                       ? Colors.grey.withOpacity(0.5)
-                                      : null, // Default background color when not tapped
+                                      : null, // Highlight only the selected user
                                   child: ListTile(
                                     leading: Stack(
                                       children: [
@@ -443,14 +449,14 @@ class ChatListPageState extends State<ChatListPage>
                   setState(() {
                     searchController.clear();
                     searchResults.clear();
-                    selectedResultIndex = -1;
+                    selectedUserIndex = -1;
                   });
                 },
                 child: Text('Cancel',
-                    style: TextStyle(
+                    style: GoogleFonts.raleway(
                         color: Colors.grey[600],
                         fontSize: 15,
-                        fontWeight: FontWeight.normal)),
+                        fontWeight: FontWeight.w500)),
               ),
             ),
         ],
