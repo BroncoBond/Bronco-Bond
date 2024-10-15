@@ -344,35 +344,29 @@ class FriendsListPageState extends State<FriendsListPage> {
                     ),
                     const SizedBox(width: 30)
                   ],
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(
+                  bottom: const PreferredSize(
+                    preferredSize: Size.fromHeight(
                         kToolbarHeight), // Adjust the height as needed
                     child: Row(
                       children: [
                         //const SizedBox(width: 8.0),
                         Expanded(
                           child: TabBar(
-                            dividerColor: const Color.fromARGB(255, 67, 95, 73),
+                            dividerColor: Color.fromARGB(255, 67, 95, 73),
                             tabAlignment: TabAlignment.center,
                             isScrollable: true,
-                            indicator: UnderlineTabIndicator(
-                                borderRadius: BorderRadius.circular(5),
-                                borderSide: const BorderSide(
-                                  color: Color.fromARGB(255, 254, 209, 84),
-                                  width: 7,
-                                )),
-                            labelStyle: const TextStyle(
+                            labelStyle: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
-                            labelColor: const Color.fromARGB(255, 254, 209, 84),
+                            labelColor: Color.fromARGB(255, 254, 209, 84),
                             indicatorColor:
-                                const Color.fromARGB(255, 254, 209, 84),
-                            indicatorSize: TabBarIndicatorSize.tab,
+                                Color.fromARGB(255, 254, 209, 84),
+                            indicatorSize: TabBarIndicatorSize.label,
                             unselectedLabelColor: Colors.white,
-                            unselectedLabelStyle: const TextStyle(
+                            unselectedLabelStyle: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
-                            indicatorWeight: 5,
-                            tabs: const [
+                            indicatorWeight: 7,
+                            tabs: [
                               Tab(
                                 child: Center(
                                   child: Text('Bonds'),
@@ -445,7 +439,7 @@ class FriendsListPageState extends State<FriendsListPage> {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(30),
           ),
           child: const Center(
             child: Text('No bonds found'),
@@ -462,7 +456,7 @@ class FriendsListPageState extends State<FriendsListPage> {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(30),
           ),
         ),
         Padding(
@@ -545,7 +539,7 @@ class FriendsListPageState extends State<FriendsListPage> {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(30),
           ),
           child: const Center(
             child: Text('No bond requests'),
@@ -562,7 +556,7 @@ class FriendsListPageState extends State<FriendsListPage> {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(30),
           ),
         ),
         Padding(
@@ -688,7 +682,7 @@ class FriendsListPageState extends State<FriendsListPage> {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(30),
           ),
           child: const Center(
             child: Text('No pending requests'),
@@ -705,7 +699,7 @@ class FriendsListPageState extends State<FriendsListPage> {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(30),
           ),
         ),
         Padding(
