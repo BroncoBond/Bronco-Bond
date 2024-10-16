@@ -122,61 +122,43 @@ class UserInfoPageState extends State<UserInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-          color: Colors.black,
-          onPressed: () {
-            if (_selectedMajor != null &&
-                _selectedMajor!.isNotEmpty &&
-                _selectedGradDate != null &&
-                _selectedGradDate!.isNotEmpty) {
-              Navigator.of(context).pop();
-            } else {
-              LoginPageState.buildDialog(context, "Registration failed!",
-                  "Major & Grad Date are required!");
-            }
-          },
-        ),
-      ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 45),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment:
                 CrossAxisAlignment.start, // Align all children to the start
             children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 30.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Tell us more about you',
-                    style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff55685A)),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 270.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 0.0, left: 15.0),
-                    height: 12.0,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      color: const Color(0xffFED154),
-                      borderRadius: BorderRadius.circular(6.0),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    top: 28,
+                    right: 38,
+                    child: Container(
+                      height: 10.0,
+                      width: 50.0,
+                      decoration: BoxDecoration(
+                        color: Color(0xffFED154),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
                     ),
                   ),
-                ),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Text(
+                      'Tell us more about you',
+                      style: GoogleFonts.raleway(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xff2E4233),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8.0),
+              const SizedBox(height: 30.0),
               buildTextField("Full Name", fullNameController),
               const SizedBox(height: 8.0),
               buildTextField("Preferred Name", prefNameController),
@@ -263,8 +245,8 @@ class UserInfoPageState extends State<UserInfoPage> {
           label,
           style: GoogleFonts.raleway(
             fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: Color(0xff435F49),
+            fontWeight: FontWeight.w700,
+            color: Color(0xff2E4233),
           ),
         ),
         const SizedBox(height: 8),
@@ -274,12 +256,20 @@ class UserInfoPageState extends State<UserInfoPage> {
           child: TextField(
             controller: fieldController,
             keyboardType: TextInputType.text,
+            style: GoogleFonts.raleway(
+              color: Color(0xFF2E4233),
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
             decoration: InputDecoration(
-              labelText: label,
-              labelStyle:
-                  const TextStyle(color: Color(0xff939393), fontSize: 18),
+              hintText: label,
+              hintStyle: GoogleFonts.raleway(
+                color: Color(0xff939393),
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
               filled: true,
-              fillColor: const Color(0xffDDDDDD),
+              fillColor: Color(0xffDDDDDD),
               border: OutlineInputBorder(
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(11),
@@ -339,8 +329,8 @@ class UserInfoPageState extends State<UserInfoPage> {
               "Profile Icon",
               style: GoogleFonts.raleway(
                 fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: Color(0xff435F49),
+                fontWeight: FontWeight.w700,
+                color: Color(0xff2E4233),
               ),
             ),
             const SizedBox(height: 10),
@@ -357,13 +347,14 @@ class UserInfoPageState extends State<UserInfoPage> {
                     borderRadius: BorderRadius.circular(11.0),
                     side: const BorderSide(color: Color(0xffDDDDDD)),
                   ),
+                  elevation: 0,
                 ),
                 child: Text(
                   "Select",
                   style: GoogleFonts.raleway(
+                    color: Color(0xff939393),
                     fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -383,8 +374,8 @@ class UserInfoPageState extends State<UserInfoPage> {
           "Bio",
           style: GoogleFonts.raleway(
             fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: Color(0xff435F49),
+            fontWeight: FontWeight.w700,
+            color: Color(0xff2E4233),
           ),
         ),
         const SizedBox(height: 8.0),
@@ -396,10 +387,11 @@ class UserInfoPageState extends State<UserInfoPage> {
             minLines: 3,
             maxLines: 3,
             decoration: InputDecoration(
-              labelText: "type here",
-              labelStyle: const TextStyle(
+              hintText: "Type here...",
+              hintStyle: GoogleFonts.raleway(
                 color: Color(0xff939393),
-                fontSize: 18,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
               filled: true,
               fillColor: const Color(0xffDDDDDD),
@@ -407,8 +399,7 @@ class UserInfoPageState extends State<UserInfoPage> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(11),
               ),
-              contentPadding: const EdgeInsets.all(10),
-              alignLabelWithHint: true,
+              contentPadding: const EdgeInsets.all(12),
             ),
             textAlign: TextAlign.start,
           ),
@@ -432,8 +423,8 @@ class UserInfoPageState extends State<UserInfoPage> {
           label,
           style: GoogleFonts.raleway(
             fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: Color(0xff435F49),
+            fontWeight: FontWeight.w700,
+            color: Color(0xff2E4233),
           ),
         ),
         const SizedBox(height: 8),
@@ -466,7 +457,7 @@ class UserInfoPageState extends State<UserInfoPage> {
                           ))
                   .toList(),
               hint: Text(
-                "select",
+                "Select",
                 style: GoogleFonts.raleway(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
