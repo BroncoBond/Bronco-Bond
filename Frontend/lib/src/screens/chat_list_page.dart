@@ -220,8 +220,15 @@ class ChatListPageState extends State<ChatListPage>
 
   Widget buildBondsTab(List<dynamic> bonds) {
     if (bonds.isEmpty) {
-      return const Center(
-        child: Text('No bonds found'),
+      return Center(
+        child: Text(
+          'No bonds found',
+          style: GoogleFonts.raleway(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFF939393),
+          ),
+        ),
       );
     }
 
@@ -260,8 +267,15 @@ class ChatListPageState extends State<ChatListPage>
 
                 // If search results are empty, show 'No bonds found'
                 if (sortedBonds.isEmpty) {
-                  return const Center(
-                    child: Text('No bonds found'),
+                  return Center(
+                    child: Text(
+                      'No bonds found',
+                      style: GoogleFonts.raleway(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF939393),
+                      ),
+                    ),
                   );
                 }
 
