@@ -12,7 +12,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Displays detailed information about a SampleItem.
 class UserInfoPage extends StatefulWidget {
   const UserInfoPage({super.key});
 
@@ -29,6 +28,9 @@ class UserInfoPageState extends State<UserInfoPage> {
   String? _selectedMajor;
   String? _selectedMinor;
   String? _selectedGradDate;
+  String? _selectedPronouns;
+  String? _selectedGender;
+  String? _selectedAgeGroup;
   File? _imageFile;
   late SharedPreferences prefs;
 
@@ -52,7 +54,8 @@ class UserInfoPageState extends State<UserInfoPage> {
       List<int> imageBytes = await _imageFile!.readAsBytes();
       base64Image = base64Encode(imageBytes);
     }
-    // check if major is empty or null since it is required
+
+    // Check if major and grad date are not empty
     if (_selectedMajor != null &&
         _selectedMajor!.isNotEmpty &&
         _selectedGradDate != null &&
@@ -112,77 +115,145 @@ class UserInfoPageState extends State<UserInfoPage> {
     }
   }
 
+  final List<String> pronouns = ['He/Him', 'She/Her', 'They/Them', 'Other'];
+  final List<String> genders = ['Male', 'Female', 'Non-Binary', 'Other'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_rounded),
-          color: Colors.black,
-          onPressed: () {
-            if (_selectedMajor != null &&
-                _selectedMajor!.isNotEmpty &&
-                _selectedGradDate != null &&
-                _selectedMajor!.isNotEmpty) {
-              Navigator.of(context).pop();
-            } else {
-              LoginPageState.buildDialog(context, "Registration failed!",
-                  "Major & Grad Date are required!");
-            }
-          },
-        ),
-        title: Text(
-          "BroncoBond",
-          style: GoogleFonts.raleway(
-            textStyle: Theme.of(context).textTheme.displaySmall,
-            fontSize: 25,
-            fontWeight: FontWeight.w800,
-            color: const Color(0xFF3B5F43),
-          ),
-        ),
-        centerTitle: true,
-      ),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 8.0),
-            buildTextField("Full Name", fullNameController),
-            const SizedBox(height: 8.0),
-            buildTextField("Preferred Name", prefNameController),
-            buildCheckBox("Display Name on Profile", displayNameOnProfile,
-                (value) {
-              setState(() {
-                displayNameOnProfile = value ?? false;
-              });
-            }),
-            buildProfileIcon(),
-            const SizedBox(height: 10),
-            buildDropDown("Major*", majors, _selectedMajor, (newValue) {
-              setState(() {
-                _selectedMajor = newValue;
-              });
-            }),
-            const SizedBox(height: 8.0),
-            buildDropDown("Minor", minors, _selectedMinor, (newValue) {
-              setState(() {
-                _selectedMinor = newValue;
-              });
-            }),
-            const SizedBox(height: 8.0),
-            buildDropDown("Expected Graduation Year*", years, _selectedGradDate,
-                (newValue) {
-              setState(() {
-                _selectedGradDate = newValue;
-              });
-            }),
-            const SizedBox(height: 10),
-            buildTextArea(),
-            LoginPageState.buildMainButton("Next", "green", context,
-                (BuildContext context) {
-              addInfoToUser(context);
-            }),
-          ],
+        child: Padding(
+          padding:
+              const EdgeInsets.only(left: 30, right: 30, top: 45, bottom: 30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment:
+                CrossAxisAlignment.center, // Align all children to the start
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    top: 28,
+                    right: 38,
+                    child: Container(
+                      height: 10.0,
+                      width: 50.0,
+                      decoration: BoxDecoration(
+                        color: Color(0xffFED154),
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Text(
+                      'Tell us more about you',
+                      style: GoogleFonts.raleway(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xff2E4233),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 30.0),
+              buildTextField("Full Name", fullNameController),
+              const SizedBox(height: 9.0),
+              buildTextField("Preferred Name", prefNameController),
+              const SizedBox(height: 9.0),
+              buildCheckBox("Display Name on Profile", displayNameOnProfile,
+                  (value) {
+                setState(() {
+                  displayNameOnProfile = value ?? false;
+                });
+              }),
+              // const SizedBox(height: 10),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: buildDropDown(
+                      "Gender",
+                      genders,
+                      _selectedGender,
+                      (newValue) {
+                        setState(() {
+                          _selectedGender = newValue;
+                        });
+                      },
+                      width: double.infinity,
+                    ),
+                  ),
+                  const SizedBox(width: 15.0),
+                  Expanded(
+                    child: buildDropDown(
+                      "Pronouns",
+                      pronouns,
+                      _selectedPronouns,
+                      (newValue) {
+                        setState(() {
+                          _selectedPronouns = newValue;
+                        });
+                      },
+                      width: double.infinity,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12.0),
+              buildProfileIcon(),
+              const SizedBox(height: 9.0),
+              buildDropDown("Major", majors, _selectedMajor, (newValue) {
+                setState(() {
+                  _selectedMajor = newValue;
+                });
+              }),
+              const SizedBox(height: 9.0),
+              buildDropDown("Minor", minors, _selectedMinor, (newValue) {
+                setState(() {
+                  _selectedMinor = newValue;
+                });
+              }),
+              const SizedBox(height: 9.0),
+              buildDropDown(
+                  "Expected Graduation Year", years, _selectedGradDate,
+                  (newValue) {
+                setState(() {
+                  _selectedGradDate = newValue;
+                });
+              }),
+              const SizedBox(height: 9.0),
+              buildTextArea(),
+              const SizedBox(height: 30.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      addInfoToUser(context);
+                    },
+                    child: Container(
+                      width: 60.0,
+                      height: 60.0,
+                      decoration: const BoxDecoration(
+                        color: Color(0xff435F49),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Color(0xffFED154),
+                        size: 35.0,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -193,29 +264,40 @@ class UserInfoPageState extends State<UserInfoPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Text label
         Text(
           label,
           style: GoogleFonts.raleway(
             fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: Colors.black,
+            fontWeight: FontWeight.w700,
+            color: Color(0xff2E4233),
           ),
-          textAlign: TextAlign.start,
         ),
-        // Text field
+        const SizedBox(height: 3.0),
         SizedBox(
-          width: 327,
-          height: 43,
+          width: double.infinity,
+          height: 50,
           child: TextField(
             controller: fieldController,
             keyboardType: TextInputType.text,
+            style: GoogleFonts.raleway(
+              color: Color(0xFF2E4233),
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
             decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: const BorderSide(color: Color(0xFFABABAB)),
-                borderRadius: BorderRadius.circular(8.0),
+              hintText: label,
+              hintStyle: GoogleFonts.raleway(
+                color: Color(0xff939393),
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              filled: true,
+              fillColor: Color(0xffDDDDDD),
+              border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             ),
             textAlign: TextAlign.start,
           ),
@@ -224,193 +306,125 @@ class UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-  // Widget for Display Name on Profile checkbox
+  // Widget for Display Name on Profile checkbox (Updated to use Row for alignment)
   Widget buildCheckBox(
       String label, bool currentVal, Function(bool?) onChanged) {
-    return Column(
+    return Row(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 15, top: 0, right: 5),
-          child: CheckboxListTile(
-            title: Text(
-              label,
-              style: GoogleFonts.raleway(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-              ),
-            ),
-            value: currentVal, // Set default value of checkbox to false
-            onChanged: onChanged,
-            controlAffinity: ListTileControlAffinity.leading,
-            activeColor: const Color(0xFF3B5F43),
+        Checkbox(
+          value: currentVal,
+          onChanged: onChanged,
+          activeColor: const Color(0xFF3B5F43),
+        ),
+        Text(
+          label,
+          style: GoogleFonts.raleway(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: Color(0xff435F49),
           ),
         ),
-        const SizedBox(height: 20),
       ],
     );
   }
 
-  // Widget for Profile Icon upload section
+  // Updated Widget for Profile Icon to align with left
   Widget buildProfileIcon() {
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Profile Icon. Check if image is uploaded or not
-          _imageFile != null
-              ? CircleAvatar(
-                  backgroundImage: FileImage(_imageFile!),
-                  radius: 37.5,
-                )
-              : Image.asset(
-                  'assets/images/user_profile_icon.png',
-                  width: 75.0,
-                  height: 75.0,
-                ),
-          // Padding in between image and column
-          const SizedBox(width: 15),
-          // Column that contains text and upload button
-          Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start, // Align to the start (left)
+      children: [
+        // Profile Icon. Check if image is uploaded or not
+        _imageFile != null
+            ? CircleAvatar(
+                backgroundImage: FileImage(_imageFile!),
+                radius: 37.5,
+              )
+            : Image.asset(
+                'assets/images/user_profile_icon.png',
+                width: 75.0,
+                height: 75.0,
+              ),
+        const SizedBox(width: 20),
+        Expanded(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Text
               Text(
                 "Profile Icon",
                 style: GoogleFonts.raleway(
                   fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xff2E4233),
                 ),
-                textAlign: TextAlign.start,
               ),
-              // Padding in between text and button
-              const SizedBox(height: 10),
-              // Upload button
+              const SizedBox(height: 3.0),
               SizedBox(
-                width: 239,
-                height: 43,
+                width: double.infinity,
+                height: 50,
                 child: ElevatedButton(
                   onPressed: () {
                     pickImage();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: const Color(0xffDDDDDD),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      side: const BorderSide(
-                        color: Color(0xFFABABAB),
-                      ),
+                      borderRadius: BorderRadius.circular(11.0),
+                      side: const BorderSide(color: Color(0xffDDDDDD)),
                     ),
+                    elevation: 0,
                   ),
                   child: Text(
-                    "Upload",
+                    "Select",
                     style: GoogleFonts.raleway(
+                      color: Color(0xff939393),
                       fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
                     ),
-                    textAlign: TextAlign.start,
                   ),
                 ),
               ),
             ],
-          )
-        ],
-      ),
-    );
-  }
-
-  // Widget for Dropdown Buttons
-  Widget buildDropDown(String label, List<String> items, String? selectedValue,
-      Function(String?) onChanged) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.raleway(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: Colors.black,
-          ),
-          textAlign: TextAlign.start,
-        ),
-        SizedBox(
-          width: 327,
-          height: 43,
-          child: DropdownButton<String>(
-            isExpanded: true,
-            value: selectedValue, // Set default value
-            underline: Container(
-              // height: 1, uncomment to get rid of underline in dropdown
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color(0xFFABABAB),
-                  // width: 2, can't seem to get an outline to appear in the dropdown button
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            iconEnabledColor: const Color(0xFFABABAB),
-            items: items.map((String value) {
-              return buildDropDownItem(value);
-            }).toList(),
-            onChanged: onChanged,
           ),
         ),
       ],
     );
   }
 
-  DropdownMenuItem<String> buildDropDownItem(String value) {
-    return DropdownMenuItem<String>(
-      value: value,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        width: 300,
-        child: Text(
-          value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            color: Colors.black,
-          ),
-          textAlign: TextAlign.start,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    );
-  }
-
-  // Widget for Bio TextArea, uses multiple lines
+  // Widget for TextArea (Bio)
   Widget buildTextArea() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Text label
         Text(
           "Bio",
           style: GoogleFonts.raleway(
             fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: Colors.black,
+            fontWeight: FontWeight.w700,
+            color: Color(0xff2E4233),
           ),
-          textAlign: TextAlign.start,
         ),
-        // Text field
+        const SizedBox(height: 3.0),
         SizedBox(
-          width: 327,
-          height: 101,
+          width: double.infinity,
           child: TextField(
             controller: bioController,
-            maxLines: 4,
+            keyboardType: TextInputType.multiline,
+            minLines: 3,
+            maxLines: 3,
             decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderSide: const BorderSide(color: Color(0xFFABABAB)),
-                borderRadius: BorderRadius.circular(8.0),
+              hintText: "Type here...",
+              hintStyle: GoogleFonts.raleway(
+                color: Color(0xff939393),
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
-              contentPadding: const EdgeInsets.all(12.0),
+              filled: true,
+              fillColor: const Color(0xffDDDDDD),
+              border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              contentPadding: const EdgeInsets.all(16),
             ),
             textAlign: TextAlign.start,
           ),
@@ -419,33 +433,73 @@ class UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-/* Widget buildButton(String label, BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Container(
-          width: 329,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            color: const Color(0xFF3B5F43),
+  // Widget for DropDowns
+  Widget buildDropDown(
+    String label,
+    List<String> items,
+    String? selectedItem,
+    ValueChanged<String?> onChanged, {
+    double width = double.infinity,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.raleway(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: Color(0xff2E4233),
           ),
-          child: TextButton(
-            onPressed: () {
-              addInfoToUser(context, widget.userID);
-            },
-            child: Text(
-              label,
-              style: GoogleFonts.raleway(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+        ),
+        const SizedBox(height: 3.0),
+        Container(
+          width: width,
+          height: 50,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          decoration: BoxDecoration(
+            color: const Color(0xffDDDDDD),
+            borderRadius: BorderRadius.circular(11),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedItem,
+              isExpanded: true,
+              icon: const Icon(Icons.arrow_drop_down, color: Color(0xff3B5F43)),
+              onChanged: onChanged,
+              items: items
+                  .map<DropdownMenuItem<String>>(
+                      (String value) => DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: GoogleFonts.raleway(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ))
+                  .toList(),
+              hint: Text(
+                "Select",
+                style: GoogleFonts.raleway(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  color: const Color(0xff939393),
+                ),
               ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
-*/
+
+  // // Extract User ID from token
+  // String getUserIDFromToken(String token) {
+  //   Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+  //   String userID = decodedToken['_id'];
+  //   return userID;
+  // }
 }

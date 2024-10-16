@@ -401,7 +401,6 @@ packages:
     dependency: transitive
     description:
       name: leak_tracker_flutter_testing
-
       sha256: "932549fb305594d82d7183ecd9fa93463e9914e1b67cacc34bc40906594a1806"
       url: "https://pub.dev"
     source: hosted
