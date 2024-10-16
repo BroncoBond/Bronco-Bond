@@ -1,3 +1,4 @@
+import 'package:bronco_bond/src/screens/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bronco_bond/src/screens/welcome_page.dart';
 import 'package:bronco_bond/src/screens/nav_bar.dart';
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
                   ? BottomNavBar(
                       userID: userID,
                     )
-                  : const SigninPage(),
+                  : const LoginPage(),
         });
   }
 }
@@ -48,10 +49,12 @@ class MyApp extends StatelessWidget {
 
 /*
   Dev Notes (set up emulator first):
+    Step 0: Ensure the folder is named "frontend" (all lowercase), not "Frontend".
     Step 1: In terminal [flutter pub get]
-    Step 2: In terminal [flutter create .]
-    Step 3: In terminal [dart run flutter_launcher_icons]
-    Step 4: In terminal [dart run flutter_native_splash:create]
+    Step 2: In terminal [flutter pub upgrade]
+    Step 3: In terminal [flutter create .]
+    Step 4: In terminal [dart run flutter_launcher_icons]
+    Step 5: In terminal [dart run flutter_native_splash:create]
 
     To run in ios
     Step 1: In terminal cd into ios

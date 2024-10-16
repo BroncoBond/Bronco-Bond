@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bronco_bond/src/config.dart';
 import 'package:bronco_bond/src/school_data.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +29,8 @@ class EditProfilePageState extends State<EditProfile> {
   late String username = '';
   late String fullName = '';
   late String prefName = '';
+  late String pronouns = '';
+  late String gender = '';
   late String descriptionMajor = '';
   late String descriptionMinor = '';
   late String descriptionBio = '';
@@ -37,17 +41,8 @@ class EditProfilePageState extends State<EditProfile> {
   late Uint8List pfp;
   File? _imageFile;
 
-  final List<String> clubSuggestions = [
-    'CSS',
-    'sheCodes',
-    'Flutter Club',
-    'Coding Club',
-    'Art Club'
-  ];
   late TextEditingController _clubController;
   late TextEditingController _textController;
-  List<String> selectedClubs = [];
-  List<String> addedInterests = [];
 
   @override
   void initState() {
@@ -100,6 +95,8 @@ class EditProfilePageState extends State<EditProfile> {
           username = userData['user']['username'] ?? 'Unknown';
           fullName = userData['user']['fullName'] ?? 'Unknown';
           prefName = userData['user']['prefName'] ?? 'Unknown';
+          pronouns = userData['user']['pronouns'] ?? 'Unknown';
+          gender = userData['user']['gender'] ?? 'Unknown';
           descriptionMajor = userData['user']['descriptionMajor'] ?? 'Unknown';
           descriptionMinor = userData['user']['descriptionMinor'] ?? 'Unknown';
           descriptionBio = userData['user']['descriptionBio'] ?? 'Unknown';
@@ -204,26 +201,7 @@ class EditProfilePageState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon:
-              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
-        ),
-        title: Text(
-          'Edit Profile',
-          style: GoogleFonts.raleway(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-      ),
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xff435f49),
       body: FutureBuilder<void>(
           future: _dataFuture ?? Future.value(null),
           builder: (context, snapshot) {
@@ -236,244 +214,183 @@ class EditProfilePageState extends State<EditProfile> {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
               return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 20), // Add space from the top
-
-                      // Profile icon
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 55,
-                            backgroundColor: Colors.white,
-                            child: ClipOval(
-                              child: profilePictureData.isNotEmpty
-                                  ? Image.memory(
-                                      pfp,
-                                      width: 110.0,
-                                      height: 110.0,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.asset(
-                                      'assets/images/user_profile_icon.png',
-                                      width: 110.0,
-                                      height: 110.0,
-                                      fit: BoxFit.cover,
-                                    ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(
+                      height: 16,
+                    ),
+                    // App bar
+                    Container(
+                      color: const Color(0xff435f49),
+                      child: Stack(children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                                color: Colors.white),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: Text(
+                              'Edit Profile',
+                              style: GoogleFonts.raleway(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                          Positioned(
-                            //top: 0,
-                            right: 130,
-                            bottom: 0,
-                            //left: 0,
-                            child: Container(
-                              width: 30,
-                              height: 30,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(0xff3B5F43),
-                                //border:
-                                //Border.all(color: Colors.white, width: 3.0),
-                              ),
-                              child: Center(
-                                child: IconButton(
-                                  iconSize: 16,
-                                  icon: const Icon(Icons.edit,
-                                      color: Colors.white),
-                                  onPressed: () {
-                                    pickImage();
-                                  },
+                        ),
+                      ]),
+                    ),
+
+                    const SizedBox(height: 20), // Add space from the top
+
+                    // Profile icon
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 55,
+                          backgroundColor: Colors.white,
+                          child: ClipOval(
+                            child: profilePictureData.isNotEmpty
+                                ? Image.memory(
+                                    pfp,
+                                    width: 110.0,
+                                    height: 110.0,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.asset(
+                                    'assets/images/user_profile_icon.png',
+                                    width: 110.0,
+                                    height: 110.0,
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                        ),
+                        Positioned(
+                          //top: 0,
+                          right: 150,
+                          bottom: 0,
+                          //left: 0,
+                          child: Container(
+                            width: 30,
+                            height: 30,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xfffed154),
+                              //border:
+                              //Border.all(color: Colors.white, width: 3.0),
+                            ),
+                            child: Center(
+                              child: IconButton(
+                                iconSize: 20,
+                                icon: ImageIcon(
+                                  AssetImage('assets/images/edit.png'),
+                                  color: Color(0xff3B5F43),
                                 ),
+                                onPressed: () {
+                                  pickImage();
+                                },
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
 
-                      const SizedBox(
-                          height: 30), // Add space below the profile icon
+                    const SizedBox(
+                        height: 30), // Add space below the profile icon
 
-                      // Rows for editing profile information
-                      EditableRow(
-                        label: 'Username',
-                        initialValue: username,
-                        userID: widget.userID,
-                      ),
-                      const Divider(
-                          color: Colors.grey,
-                          thickness: 1), // Add a horizontal line
-
-                      EditableRow(
-                        label: 'Full Name',
-                        initialValue: fullName,
-                        userID: widget.userID,
-                      ),
-                      const Divider(
-                          color: Colors.grey,
-                          thickness: 1), // Add a horizontal line
-
-                      EditableRow(
-                        label: 'Preferred Name',
-                        initialValue: prefName,
-                        userID: widget.userID,
-                      ),
-                      const Divider(
-                          color: Colors.grey,
-                          thickness: 1), // Add a horizontal line
-
-                      EditableRow(
-                        label: 'Major',
-                        initialValue: descriptionMajor,
-                        userID: widget.userID,
-                      ),
-                      const Divider(
-                          color: Colors.grey,
-                          thickness: 1), // Add a horizontal line
-
-                      EditableRow(
-                        label: 'Minor',
-                        initialValue: descriptionMinor,
-                        userID: widget.userID,
-                      ),
-                      const Divider(
-                          color: Colors.grey,
-                          thickness: 1), // Add a horizontal line
-
-                      EditableRow(
-                        label: 'Graduation Date',
-                        initialValue: graduationDate,
-                        userID: widget.userID,
-                      ),
-                      const Divider(
-                          color: Colors.grey,
-                          thickness: 1), // Add a horizontal line
-
-                      EditableRow(
-                        label: 'Bio',
-                        initialValue: descriptionBio,
-                        userID: widget.userID,
-                      ),
-                      const Divider(color: Colors.grey, thickness: 1),
-
-                      const SizedBox(height: 10),
-                      // Add space between profile info and selection widgets
-                      AddTextWidget(
-                        initialInterests: addedInterests,
-                        onInterestsChanged: (interests) {
-                          setState(() {
-                            addedInterests = interests;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      const Divider(color: Colors.grey),
-                      // Selected clubs widget
-                      const SizedBox(height: 20),
-                      SelectedClubsList(
-                        selectedClubs: selectedClubs,
-                        onDelete: (club) {
-                          setState(() {
-                            selectedClubs.remove(club);
-                          });
-                        },
-                      ), // Add space between selected clubs and added texts
-
-                      // Added texts widge
-
-                      const SizedBox(
-                          height:
-                              20), // Add space between added texts and selection dropdown
-
-                      // Dropdown menu for club selection
-                      DropdownButtonFormField<String>(
-                        value: null,
-                        items: clubSuggestions.map((String suggestion) {
-                          return DropdownMenuItem<String>(
-                            value: suggestion,
-                            child: Text(suggestion),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          if (newValue != null &&
-                              !selectedClubs.contains(newValue)) {
-                            setState(() {
-                              selectedClubs.add(newValue);
-                            });
-                          }
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Select Club',
-                          border: OutlineInputBorder(),
-                          isDense: true,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32.0),
+                          topRight: Radius.circular(32.0),
                         ),
                       ),
-                    ],
-                  ),
+                      child: Column(
+                        children: [
+                          // Rows for editing profile information
+                          EditableRow(
+                            label: 'User Name',
+                            initialValue: username,
+                            userID: widget.userID,
+                          ),
+
+                          EditableRow(
+                            label: 'Full Name',
+                            initialValue: fullName,
+                            userID: widget.userID,
+                          ),
+
+                          EditableRow(
+                            label: 'Preferred Name',
+                            initialValue: prefName,
+                            userID: widget.userID,
+                          ),
+
+                          Row(
+                            children: [
+                              Expanded(
+                                child: EditableRow(
+                                  label: 'Pronouns',
+                                  initialValue: pronouns,
+                                  userID: widget.userID,
+                                ),
+                              ),
+                              Expanded(
+                                child: EditableRow(
+                                  label: 'Gender',
+                                  initialValue: gender,
+                                  userID: widget.userID,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          EditableRow(
+                            label: 'Major',
+                            initialValue: descriptionMajor,
+                            userID: widget.userID,
+                          ),
+
+                          EditableRow(
+                            label: 'Minor',
+                            initialValue: descriptionMinor,
+                            userID: widget.userID,
+                          ),
+
+                          EditableRow(
+                            label: 'Graduation Date',
+                            initialValue: graduationDate,
+                            userID: widget.userID,
+                          ),
+
+                          EditableRow(
+                            label: 'Bio',
+                            initialValue: descriptionBio,
+                            userID: widget.userID,
+                          ),
+
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               );
             }
           }),
-    );
-  }
-}
-
-class SelectedClubsList extends StatelessWidget {
-  final List<String> selectedClubs;
-  final void Function(String) onDelete;
-
-  const SelectedClubsList(
-      {Key? key, required this.selectedClubs, required this.onDelete})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Selected Clubs',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
-        ),
-        const SizedBox(height: 8),
-        if (selectedClubs.isEmpty)
-          const Text(
-            'No clubs selected',
-            style: TextStyle(
-              fontStyle: FontStyle.italic,
-              color: Colors.grey,
-            ),
-          )
-        else
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: selectedClubs
-                .map((club) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(club),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              onDelete(club);
-                            },
-                          ),
-                        ],
-                      ),
-                    ))
-                .toList(),
-          ),
-      ],
     );
   }
 }
@@ -496,24 +413,31 @@ class EditableRow extends StatefulWidget {
 
 class _EditableRowState extends State<EditableRow> {
   bool isEditing = false;
+  final FocusNode _focusNode = FocusNode();
   late TextEditingController textController;
   String? _selectedMajor;
   String? _selectedMinor;
   String? _selectedGradDate;
+  String? _selectedPronouns;
+  String? _selectedGender;
   late SharedPreferences prefs;
 
   @override
   void initState() {
     super.initState();
     initSharedPref();
-    textController = TextEditingController(text: widget.initialValue);
+    textController = TextEditingController();
     if (widget.initialValue != "Unknown") {
       if (widget.label == 'Major') {
         _selectedMajor = widget.initialValue;
       } else if (widget.label == 'Minor') {
         _selectedMinor = widget.initialValue;
-      } else {
+      } else if (widget.label == 'Graduation Date') {
         _selectedGradDate = widget.initialValue;
+      } else if (widget.label == 'Pronouns') {
+        _selectedPronouns = widget.initialValue;
+      } else {
+        _selectedGender = widget.initialValue;
       }
     }
   }
@@ -521,6 +445,7 @@ class _EditableRowState extends State<EditableRow> {
   @override
   void dispose() {
     textController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -542,14 +467,14 @@ class _EditableRowState extends State<EditableRow> {
 
     print('${widget.label} has the text ${textController.text}');
     switch (widget.label) {
-      case 'Username':
+      case 'User Name':
         if (textController.text.isNotEmpty) {
           regBody["username"] = textController.text;
         } else {
           // empty username
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-                content: Text("Username cannot be empty!"),
+                content: Text("User Name cannot be empty!"),
                 duration: Duration(seconds: 2),
                 backgroundColor: Colors.red),
           );
@@ -572,6 +497,12 @@ class _EditableRowState extends State<EditableRow> {
         break;
       case 'Bio':
         regBody["descriptionBio"] = textController.text;
+        break;
+      case 'Pronouns':
+        regBody["pronouns"] = _selectedPronouns!;
+        break;
+      case 'Gender':
+        regBody["gender"] = _selectedGender!;
         break;
     }
 
@@ -611,89 +542,115 @@ class _EditableRowState extends State<EditableRow> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1.0),
-      child: Row(
+      padding: EdgeInsets.only(
+        top: 12.0,
+        left: widget.label == 'Gender' ? 12.0 : 30.0,
+        right: widget.label == 'Pronouns' ? 10.0 : 30.0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 2,
-            child: Text(widget.label),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(
+                  widget.label,
+                  style: GoogleFonts.raleway(
+                      fontSize: 16.0,
+                      color: const Color(0xff2e4233),
+                      fontWeight: FontWeight.w700),
+                ),
+              ),
+              if (isEditing)
+                IconButton(
+                  icon: const Icon(Icons.check_rounded),
+                  color: const Color(0xff2e4233),
+                  onPressed: _saveChanges,
+                )
+              else
+                IconButton(
+                  icon: const ImageIcon(
+                    AssetImage('assets/images/edit.png'),
+                  ),
+                  color: const Color(0xffABABAB),
+                  onPressed: _toggleEdit,
+                ),
+            ],
           ),
-          Expanded(
-            flex: 3,
-            child: Stack(
-              children: [
-                if (widget.label == 'Major' ||
-                    widget.label == 'Minor' ||
-                    widget.label == 'Graduation Date')
-                  buildDropDown(
-                    widget.label == 'Major'
-                        ? majors
-                        : widget.label == 'Minor'
-                            ? minors
-                            : years,
-                    widget.label == 'Major'
-                        ? _selectedMajor
-                        : widget.label == 'Minor'
-                            ? _selectedMinor
-                            : _selectedGradDate,
-                    (newValue) {
-                      setState(() {
-                        if (widget.label == 'Major') {
-                          _selectedMajor = newValue;
-                        } else if (widget.label == 'Minor') {
-                          _selectedMinor = newValue;
-                        } else {
-                          _selectedGradDate = newValue;
-                        }
-                      });
-                    },
-                  ),
-                if (!(widget.label == 'Major' ||
-                    widget.label == 'Minor' ||
-                    widget.label == 'Graduation Date'))
-                  TextFormField(
-                    readOnly: !isEditing,
-                    controller: textController,
-                    style: const TextStyle(fontSize: 14),
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.all(10.0),
-                      border: isEditing
-                          ? OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              borderSide:
-                                  const BorderSide(color: Color(0xff3B5F43)),
-                            )
-                          : InputBorder.none,
-                      focusedBorder: isEditing
-                          ? OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              borderSide: const BorderSide(
-                                  color: Color(0xff3B5F43), width: 1),
-                            )
-                          : InputBorder.none,
-                    ),
-                  ),
-                if (isEditing)
-                  Positioned(
-                    right: 0,
-                    child: IconButton(
-                      icon: const Icon(Icons.check_rounded),
-                      color: const Color(0xff3B5F43),
-                      onPressed: _saveChanges,
-                    ),
-                  )
-                else
-                  Positioned(
-                    right: 0,
-                    child: IconButton(
-                      icon: const Icon(Icons.edit_rounded),
-                      color: const Color(0xffABABAB),
-                      onPressed: _toggleEdit,
-                    ),
-                  ),
-              ],
+          if (widget.label == 'Major' ||
+              widget.label == 'Minor' ||
+              widget.label == 'Graduation Date' ||
+              widget.label == 'Pronouns' ||
+              widget.label == 'Gender')
+            buildDropDown(
+              widget.label == 'Major'
+                  ? majors
+                  : widget.label == 'Minor'
+                      ? minors
+                      : widget.label == 'Graduation Date'
+                          ? years
+                          : widget.label == 'Pronouns'
+                              ? pronouns
+                              : genders,
+              widget.label == 'Major'
+                  ? _selectedMajor
+                  : widget.label == 'Minor'
+                      ? _selectedMinor
+                      : widget.label == 'Graduation Date'
+                          ? _selectedGradDate
+                          : widget.label == 'Pronouns'
+                              ? _selectedPronouns
+                              : _selectedGender,
+              (newValue) {
+                setState(() {
+                  if (widget.label == 'Major') {
+                    _selectedMajor = newValue;
+                  } else if (widget.label == 'Minor') {
+                    _selectedMinor = newValue;
+                  } else if (widget.label == 'Graduation Date') {
+                    _selectedGradDate = newValue;
+                  } else if (widget.label == 'Pronouns') {
+                    _selectedPronouns = newValue;
+                  } else {
+                    _selectedGender = newValue;
+                  }
+                });
+              },
+            )
+          else
+            TextFormField(
+              readOnly: !isEditing,
+              controller: textController,
+              style: GoogleFonts.raleway(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xff3B5F43)),
+              decoration: InputDecoration(
+                hintText: widget.initialValue,
+                hintStyle: GoogleFonts.raleway(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xff939393)),
+                filled: true,
+                fillColor: const Color(0xffdddddd),
+                contentPadding: const EdgeInsets.all(10.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: isEditing
+                    ? OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                            color: Color(0xff3B5F43), width: 2.5),
+                      )
+                    : OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide.none,
+                      ),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -703,37 +660,60 @@ class _EditableRowState extends State<EditableRow> {
       List<String> items, String? selectedValue, Function(String?) onChanged) {
     String? dropdownValue =
         selectedValue?.isEmpty ?? true ? null : selectedValue;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: 170,
-          height: 43,
-          child: DropdownButton<String>(
-            isExpanded: true,
-            value: dropdownValue,
-            underline: Container(
-              height: 1,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color(0xFFABABAB),
-                  // width: 2, can't seem to get an outline to appear in the dropdown button
+        Focus(
+          focusNode: _focusNode,
+          child: Builder(
+            builder: (context) {
+              final isFocused = Focus.of(context).hasFocus;
+              return Container(
+                width: double.infinity,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: const Color(0xffdddddd),
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(
+                    color: isFocused
+                        ? const Color(0xff3B5F43)
+                        : Colors.transparent,
+                    width: 2.0,
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            iconEnabledColor: const Color(0xFFABABAB),
-            items: items.map((String value) {
-              return buildDropDownItem(value);
-            }).toList(),
-            onChanged: isEditing ? onChanged : null,
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: dropdownValue,
+                  icon: const Padding(
+                    padding: EdgeInsets.only(right: 8.0),
+                    child: Icon(
+                      Icons.arrow_drop_down,
+                      color: Color(0xff2e4233),
+                    ),
+                  ),
+                  iconEnabledColor: const Color(0xff939393),
+                  iconDisabledColor: const Color(0xff939393),
+                  underline: const SizedBox(),
+                  items: items.map((String value) {
+                    return buildDropDownItem(
+                        value, value == widget.initialValue);
+                  }).toList(),
+                  onChanged: isEditing ? onChanged : null,
+                  onTap: () {
+                    _focusNode.requestFocus();
+                  },
+                ),
+              );
+            },
           ),
         ),
       ],
     );
   }
 
-  DropdownMenuItem<String> buildDropDownItem(String value) {
+  DropdownMenuItem<String> buildDropDownItem(
+      String value, bool isInitialValue) {
     return DropdownMenuItem<String>(
       value: value,
       child: Container(
@@ -741,112 +721,17 @@ class _EditableRowState extends State<EditableRow> {
         width: 300,
         child: Text(
           value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: Colors.black,
+          style: GoogleFonts.raleway(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: isInitialValue
+                ? const Color(0xff939393)
+                : const Color(0xff3B5F43),
           ),
           textAlign: TextAlign.start,
           overflow: TextOverflow.ellipsis,
         ),
       ),
-    );
-  }
-}
-
-class AddTextWidget extends StatefulWidget {
-  final List<String> initialInterests;
-  final void Function(List<String>) onInterestsChanged;
-
-  const AddTextWidget({
-    Key? key,
-    required this.initialInterests,
-    required this.onInterestsChanged,
-  }) : super(key: key);
-
-  @override
-  _AddTextWidgetState createState() => _AddTextWidgetState();
-}
-
-class _AddTextWidgetState extends State<AddTextWidget> {
-  late TextEditingController _textController;
-  final List<String> _interests = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _interests.addAll(widget.initialInterests);
-    _textController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Selected Interests',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
-        ),
-        const SizedBox(height: 8),
-        if (_interests.isEmpty)
-          const Text(
-            'No interests added',
-            style: TextStyle(
-              fontStyle: FontStyle.italic,
-              color: Colors.grey,
-            ),
-          )
-        else
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: _interests
-                .map((interest) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(interest),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              setState(() {
-                                _interests.remove(interest);
-                                widget.onInterestsChanged(_interests);
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ))
-                .toList(),
-          ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: _textController,
-          decoration: const InputDecoration(
-            labelText: 'Enter Interest',
-            border: OutlineInputBorder(),
-          ),
-          onSubmitted: (interest) {
-            setState(() {
-              _interests.add(interest);
-              widget.onInterestsChanged(_interests);
-              _textController.clear();
-            });
-          },
-        ),
-      ],
     );
   }
 }

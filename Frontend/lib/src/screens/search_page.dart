@@ -79,12 +79,14 @@ class SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("BroncoBond",
-            style: GoogleFonts.raleway(
-                textStyle: Theme.of(context).textTheme.displaySmall,
-                fontSize: 25,
-                fontWeight: FontWeight.w800,
-                color: Colors.white)),
+        title: Text(
+          "BroncoBond",
+          style: GoogleFonts.raleway(
+              textStyle: Theme.of(context).textTheme.displaySmall,
+              fontSize: 25,
+              fontWeight: FontWeight.w800,
+              color: Colors.white),
+        ),
         backgroundColor: const Color(0xFF3B5F43),
         automaticallyImplyLeading: false,
       ),
@@ -184,7 +186,7 @@ class SearchPageState extends State<SearchPage> {
                 child: Text('Cancel',
                     style: TextStyle(
                         color: Colors.grey[600],
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.normal)),
               ),
             ),
@@ -201,11 +203,12 @@ class SearchPageState extends State<SearchPage> {
             width: 175,
             height: 175,
             child: Card(
-              clipBehavior: Clip.hardEdge,
+              clipBehavior: Clip.none,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border.all(width: 1, color: const Color(0xff3B5F43)),
                   borderRadius: BorderRadius.circular(8.0),
+                  color: Colors.white,
                 ),
                 child: Icon(
                   iconData,

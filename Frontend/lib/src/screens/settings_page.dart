@@ -220,7 +220,7 @@ class SettingsPageState extends State<SettingsPage> {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(5.0),
           child: TextButton(
             onPressed: () {
               //create dump for all user info

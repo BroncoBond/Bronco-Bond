@@ -248,3 +248,7 @@ const List<String> interests = [
   "Spanish",
   "Korean",
 ];
+
+List<String> pronouns = ['he/him', 'she/her', 'prefer not to say'];
+
+List<String> genders = ['male', 'female', 'prefer not to say'];

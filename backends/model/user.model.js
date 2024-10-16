@@ -1,10 +1,7 @@
+const db = require('../config/db');
 const mongoose = require('mongoose');
 const bcrypt = require("bcrypt");
-
-const db = require('../config/db');
-
 const { Schema } = mongoose;
-
 
 const userSchema = new Schema({
         email:{
@@ -26,8 +23,8 @@ const userSchema = new Schema({
             min: 6,
             required: true
         },
-        is_online:{
-            type:String,
+        isOnline:{
+            type:Boolean,
             default: '0'
         },
         fullName:{
@@ -59,13 +56,45 @@ const userSchema = new Schema({
             type: Number,
             default:0
         },
-        interests: {
+        pronouns: {
+            type: String,
+            lowercase:true,
+            default: "Prefer Not To Say"
+        },
+        gender: {
+            type: String,
+            lowercase:true,
+            default: "Prefer Not To Say"
+        },
+        followedOrganizations: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Organization',
+            default: []
+        }],
+        numOfFollowedOrganizations: {
+            type: Number,
+            default: 0
+        },
+        eventInterests: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Event',
+            default: []
+        }],
+        numOfEventInterests: {
+            type: Number,
+            default: 0
+        },
+        interests: { // This "interest" is specifically for a user's interests (activities, hobbies, etc.)
             type: [String],
             default:[]
         },
+        calendar: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Calendar'
+        },
         isAdmin: {
             type: Boolean,
-            default: false,
+            default: false
         },
         descriptionMajor: {
             type: String,
@@ -90,9 +119,9 @@ const userSchema = new Schema({
                 return (currentYear + 4).toString();
             })()
         },
-        is_online: {
-            type: String,
-            default: '0'
+        isVerified: {
+            type: Boolean,
+            default: false
         },
         tokens: [{ type: Object }]
     }, {timestamps:true} 
