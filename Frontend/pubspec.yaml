@@ -27,6 +27,7 @@ dependencies:
   flutter_week_view: ^1.3.0
   sliding_up_panel: ^2.0.0+1
   velocity_x: null
+  win32: ^5.6.0
   pin_code_fields: ^8.0.1
   win32: ^5.6.0
 
