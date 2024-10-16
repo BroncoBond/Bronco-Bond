@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:bronco_bond/src/screens/services.dart';
@@ -146,37 +145,37 @@ class UserInfoPageState extends State<UserInfoPage> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start, // Align all children to the start
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // Align all children to the start
             children: [
               const Padding(
-                    padding:  EdgeInsets.only(left: 30.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Tell us more about you',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xff55685A)
-                        ),
-                      ),
+                padding: EdgeInsets.only(left: 30.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Tell us more about you',
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xff55685A)),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 270.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 0.0, left: 15.0),
+                    height: 12.0,
+                    width: 60,
+                    decoration: BoxDecoration(
+                      color: const Color(0xffFED154),
+                      borderRadius: BorderRadius.circular(6.0),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 270.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 0.0, left: 15.0),
-                        height: 12.0,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          color: const Color(0xffFED154),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                      ),
-                    ),
-                  ),
+                ),
+              ),
               const SizedBox(height: 8.0),
               buildTextField("Full Name", fullNameController),
               const SizedBox(height: 8.0),
@@ -235,7 +234,8 @@ class UserInfoPageState extends State<UserInfoPage> {
                 });
               }),
               const SizedBox(height: 8.0),
-              buildDropDown("Expected Graduation Year", years, _selectedGradDate,
+              buildDropDown(
+                  "Expected Graduation Year", years, _selectedGradDate,
                   (newValue) {
                 setState(() {
                   _selectedGradDate = newValue;
@@ -243,12 +243,13 @@ class UserInfoPageState extends State<UserInfoPage> {
               }),
               const SizedBox(height: 10),
               buildTextArea(),
-              LoginPageState.buildMainButton("Next", context,
+              LoginPageState.buildMainButton("Next", "green", context,
                   (BuildContext context) {
                 addInfoToUser(context);
               }),
             ],
           ),
+        ),
       ),
     );
   }
@@ -275,7 +276,8 @@ class UserInfoPageState extends State<UserInfoPage> {
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
               labelText: label,
-              labelStyle: const TextStyle(color: Color(0xff939393), fontSize: 18),
+              labelStyle:
+                  const TextStyle(color: Color(0xff939393), fontSize: 18),
               filled: true,
               fillColor: const Color(0xffDDDDDD),
               border: OutlineInputBorder(
@@ -292,7 +294,8 @@ class UserInfoPageState extends State<UserInfoPage> {
   }
 
   // Widget for Display Name on Profile checkbox (Updated to use Row for alignment)
-  Widget buildCheckBox(String label, bool currentVal, Function(bool?) onChanged) {
+  Widget buildCheckBox(
+      String label, bool currentVal, Function(bool?) onChanged) {
     return Row(
       children: [
         Checkbox(
@@ -449,18 +452,18 @@ class UserInfoPageState extends State<UserInfoPage> {
               icon: const Icon(Icons.arrow_drop_down, color: Color(0xff3B5F43)),
               onChanged: onChanged,
               items: items
-                  .map<DropdownMenuItem<String>>((String value) =>
-                      DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: GoogleFonts.raleway(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ))
+                  .map<DropdownMenuItem<String>>(
+                      (String value) => DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: GoogleFonts.raleway(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ))
                   .toList(),
               hint: Text(
                 "select",
