@@ -249,7 +249,7 @@ class UserProfileState extends State<UserProfile>
                 return [
                   SliverAppBar(
                     pinned: false,
-                    leadingWidth: isCurrentUserProfile ? 0.0 : 60,
+                    //leadingWidth: isCurrentUserProfile ? 0.0 : 60.0,
                     automaticallyImplyLeading: false,
                     // isCurrentUserProfile ? false : true,
                     centerTitle: false,
@@ -269,8 +269,11 @@ class UserProfileState extends State<UserProfile>
                           ),
                     flexibleSpace: FlexibleSpaceBar(
                       centerTitle: false,
-                      titlePadding:
-                          EdgeInsetsDirectional.only(start: 30, bottom: 12),
+                      titlePadding: isCurrentUserProfile
+                          ? const EdgeInsetsDirectional.only(
+                              start: 30, bottom: 12)
+                          : const EdgeInsetsDirectional.only(
+                              start: 50, bottom: 12),
                       title: Text(
                         username,
                         style: GoogleFonts.raleway(
