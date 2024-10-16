@@ -124,11 +124,12 @@ class UserInfoPageState extends State<UserInfoPage> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 45),
+          padding:
+              const EdgeInsets.only(left: 30, right: 30, top: 45, bottom: 30),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment:
-                CrossAxisAlignment.start, // Align all children to the start
+                CrossAxisAlignment.center, // Align all children to the start
             children: [
               Stack(
                 clipBehavior: Clip.none,
@@ -160,9 +161,9 @@ class UserInfoPageState extends State<UserInfoPage> {
               ),
               const SizedBox(height: 30.0),
               buildTextField("Full Name", fullNameController),
-              const SizedBox(height: 8.0),
+              const SizedBox(height: 9.0),
               buildTextField("Preferred Name", prefNameController),
-              const SizedBox(height: 8.0),
+              const SizedBox(height: 9.0),
               buildCheckBox("Display Name on Profile", displayNameOnProfile,
                   (value) {
                 setState(() {
@@ -171,7 +172,8 @@ class UserInfoPageState extends State<UserInfoPage> {
               }),
               // const SizedBox(height: 10),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
                     child: buildDropDown(
@@ -183,10 +185,10 @@ class UserInfoPageState extends State<UserInfoPage> {
                           _selectedGender = newValue;
                         });
                       },
-                      width: 150,
+                      width: double.infinity,
                     ),
                   ),
-                  const SizedBox(width: 0),
+                  const SizedBox(width: 15.0),
                   Expanded(
                     child: buildDropDown(
                       "Pronouns",
@@ -197,25 +199,26 @@ class UserInfoPageState extends State<UserInfoPage> {
                           _selectedPronouns = newValue;
                         });
                       },
-                      width: 150,
+                      width: double.infinity,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12.0),
               buildProfileIcon(),
+              const SizedBox(height: 9.0),
               buildDropDown("Major", majors, _selectedMajor, (newValue) {
                 setState(() {
                   _selectedMajor = newValue;
                 });
               }),
-              const SizedBox(height: 8.0),
+              const SizedBox(height: 9.0),
               buildDropDown("Minor", minors, _selectedMinor, (newValue) {
                 setState(() {
                   _selectedMinor = newValue;
                 });
               }),
-              const SizedBox(height: 8.0),
+              const SizedBox(height: 9.0),
               buildDropDown(
                   "Expected Graduation Year", years, _selectedGradDate,
                   (newValue) {
@@ -223,12 +226,32 @@ class UserInfoPageState extends State<UserInfoPage> {
                   _selectedGradDate = newValue;
                 });
               }),
-              const SizedBox(height: 10),
+              const SizedBox(height: 9.0),
               buildTextArea(),
-              LoginPageState.buildMainButton("Next", "green", context,
-                  (BuildContext context) {
-                addInfoToUser(context);
-              }),
+              const SizedBox(height: 30.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      addInfoToUser(context);
+                    },
+                    child: Container(
+                      width: 60.0,
+                      height: 60.0,
+                      decoration: const BoxDecoration(
+                        color: Color(0xff435F49),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Color(0xffFED154),
+                        size: 35.0,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -249,7 +272,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             color: Color(0xff2E4233),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 3.0),
         SizedBox(
           width: double.infinity,
           height: 50,
@@ -274,7 +297,7 @@ class UserInfoPageState extends State<UserInfoPage> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(11),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             ),
             textAlign: TextAlign.start,
           ),
@@ -322,44 +345,46 @@ class UserInfoPageState extends State<UserInfoPage> {
                 height: 75.0,
               ),
         const SizedBox(width: 20),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Profile Icon",
-              style: GoogleFonts.raleway(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Color(0xff2E4233),
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 239,
-              height: 43,
-              child: ElevatedButton(
-                onPressed: () {
-                  pickImage();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xffDDDDDD),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(11.0),
-                    side: const BorderSide(color: Color(0xffDDDDDD)),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  "Select",
-                  style: GoogleFonts.raleway(
-                    color: Color(0xff939393),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Profile Icon",
+                style: GoogleFonts.raleway(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xff2E4233),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 3.0),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    pickImage();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xffDDDDDD),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(11.0),
+                      side: const BorderSide(color: Color(0xffDDDDDD)),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    "Select",
+                    style: GoogleFonts.raleway(
+                      color: Color(0xff939393),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -378,7 +403,7 @@ class UserInfoPageState extends State<UserInfoPage> {
             color: Color(0xff2E4233),
           ),
         ),
-        const SizedBox(height: 8.0),
+        const SizedBox(height: 3.0),
         SizedBox(
           width: double.infinity,
           child: TextField(
@@ -399,7 +424,7 @@ class UserInfoPageState extends State<UserInfoPage> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(11),
               ),
-              contentPadding: const EdgeInsets.all(12),
+              contentPadding: const EdgeInsets.all(16),
             ),
             textAlign: TextAlign.start,
           ),
@@ -427,11 +452,11 @@ class UserInfoPageState extends State<UserInfoPage> {
             color: Color(0xff2E4233),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 3.0),
         Container(
           width: width,
           height: 50,
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           decoration: BoxDecoration(
             color: const Color(0xffDDDDDD),
             borderRadius: BorderRadius.circular(11),
@@ -471,10 +496,10 @@ class UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
-  // Extract User ID from token
-  String getUserIDFromToken(String token) {
-    Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-    String userID = decodedToken['_id'];
-    return userID;
-  }
+  // // Extract User ID from token
+  // String getUserIDFromToken(String token) {
+  //   Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+  //   String userID = decodedToken['_id'];
+  //   return userID;
+  // }
 }
