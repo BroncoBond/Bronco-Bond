@@ -4,6 +4,10 @@ const Event = require('../model/event.model');
 const User = require('../model/user.model');
 const userController = require('../controller/user.controller');
 
+// Used for functions that involve adding/removing events from a user's calendar
+const Calendar = require('../model/calendar.model');
+const CalendarService = require('../services/calendar.services');
+
 exports.createEvent = async (req, res) => {
   // Public events can only be created by admins
   try {
@@ -99,6 +103,12 @@ exports.createEvent = async (req, res) => {
           { new: true }
         );
       }
+
+      // Add event to user's calendar
+      if (process.env.NODE_ENV === 'development') {
+        await CalendarService.checkCalendar(tokenUserId);
+      }
+      await CalendarService.addEvent(tokenUserId, newEvent.id);
 
       res.status(201).json({
         status: true,
@@ -391,6 +401,12 @@ exports.deleteEvent = async (req, res) => {
           .json('You must be the event creator to delete this public event!');
       }
     }
+
+    // Remove event from user's calendar
+    if (process.env.NODE_ENV === 'development') {
+      await CalendarService.checkCalendar(tokenUserId);
+    }
+    await CalendarService.removeEvent(tokenUserId, event._id);
 
     try {
       await Event.findByIdAndDelete(givenEventId);

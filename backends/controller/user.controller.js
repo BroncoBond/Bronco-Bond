@@ -7,9 +7,14 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+const UserOTP = require('../model/userOTP.model');
+
+// Used for functions that involve creating/deleting a user's calendar
+const Calendar = require('../model/calendar.model');
+const CalendarService = require('../services/calendar.services');
+
 // Used for functions that involve (un)following organizations
 const Organization = require('../model/organization.model');
-const UserOTP = require('../model/userOTP.model');
 
 // Used for functions that involve (un)interest events
 const Event = require('../model/event.model');
@@ -47,6 +52,7 @@ exports.register = async (req, res, next) => {
     const newUser = await UserService.registerUser(email, username, password);
     console.log('User created:', newUser);
 
+    // Creating the user model
     try {
       let tokenData = { _id: newUser._id };
       token = await generater.generateToken(tokenData, res, '10m');
@@ -60,6 +66,17 @@ exports.register = async (req, res, next) => {
       throw err;
     }
 
+    // Creating the user's calendar
+    try {
+      const calendar = await CalendarService.createCalendar(newUser._id);
+      await User.findByIdAndUpdate(newUser._id, { calendar: calendar });
+    } catch (err) {
+      console.log('Error creating calendar');
+      await User.findByIdAndDelete(newUser._id);
+      throw err;
+    }
+
+    // Generating OTP
     try {
       await UserService.sendUserOTP(newUser._id, newUser.email);
     } catch (err) {
@@ -111,11 +128,9 @@ exports.verifyOTP = async (req, res) => {
     });
 
     console.log(userOTPRecords);
-    
+
     if (!userOTPRecords) {
-      return res
-      .status(400)
-      .json({
+      return res.status(400).json({
         error: 'No OTP found. Perhaps the account is already verified?',
       });
     }
@@ -151,25 +166,27 @@ exports.verifyOTP = async (req, res) => {
     return res.status(200).json({ message: 'OTP verified successfully.' });
   } catch (error) {
     console.error('Error during OTP verification: ', error);
-    return res.status(500).json({ error: 'An error occurred during OTP verification.' });
+    return res
+      .status(500)
+      .json({ error: 'An error occurred during OTP verification.' });
   }
 };
 
 exports.resendOTP = async (req, res) => {
   try {
-    const { data: { _id: currentUserId, verified: checkVerify } } = await extractAndDecodeToken(req);
+    const {
+      data: { _id: currentUserId, verified: checkVerify },
+    } = await extractAndDecodeToken(req);
     const { email: currentUserEmail } = await User.findById(currentUserId);
     if (checkVerify) {
-      return res
-        .status(500)
-        .json({error: 'User already verified'});
+      return res.status(500).json({ error: 'User already verified' });
     }
 
     await UserOTP.deleteMany({ userId: currentUserId });
     await UserService.sendUserOTP(currentUserId, currentUserEmail);
     return res.json({
       status: true,
-      success: 'OTP resent successfully.'
+      success: 'OTP resent successfully.',
     });
   } catch (error) {
     console.error('Error during OTP resend: ', error);
@@ -177,7 +194,7 @@ exports.resendOTP = async (req, res) => {
       .status(500)
       .json({ error: 'An error occurred during OTP resend.' });
   }
-}
+};
 
 // This function is used to log in a user
 exports.login = async (req, res, next) => {
@@ -305,6 +322,18 @@ exports.getFollowedOrganizations = async (req, res) => {
   }
 };
 
+exports.getCalendar = async (req, res) => {
+  try {
+    const currentUserId = (await extractAndDecodeToken(req)).data._id;
+    const calendar = await Calendar.findOne({ userId: currentUserId });
+    return res.status(200).json(calendar);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: 'An error occured while fetching the calendar' });
+  }
+};
+
 exports.getById = async (req, res) => {
   const bodyId = req.body._id;
   let user;
@@ -341,7 +370,7 @@ if (process.env.NODE_ENV === 'development') {
       return res.status(500).json({ message: error.message });
     }
   };
-};
+}
 
 // This function is used to update a user's information
 exports.updateUserInfo = async (req, res) => {
@@ -374,6 +403,21 @@ exports.updateUserInfo = async (req, res) => {
           return res.status(400).json({ error: 'Username already exists' });
         }
       }
+      // Validate fullName to ensure it only contains alphabetic characters and spaces
+      if (req.body.fullName) {
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        if (!nameRegex.test(req.body.fullName)) {
+          return res.status(400).json({ error: 'Full name can only contain alphabetic characters and spaces' });
+        }
+      }
+
+      // Validate prefName to ensure it only contains alphabetic characters and spaces
+      if (req.body.prefName) {
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        if (!nameRegex.test(req.body.prefName)) {
+          return res.status(400).json({ error: 'Preferred name can only contain alphabetic characters and spaces' });
+        }
+      }
       const {
         username,
         password,
@@ -385,7 +429,7 @@ exports.updateUserInfo = async (req, res) => {
         fullName,
         prefName,
         gender,
-        pronouns
+        pronouns,
       } = req.body;
 
       // Log the data that will be used to update the user
@@ -406,7 +450,7 @@ exports.updateUserInfo = async (req, res) => {
             fullName,
             prefName,
             gender,
-            pronouns
+            pronouns,
           },
         },
         { new: true }
@@ -494,17 +538,24 @@ exports.deleteAccount = async (req, res) => {
   try {
     const currentUser = await extractAndDecodeToken(req);
     const tokenUserId = currentUser.data._id;
-    const givenUserId = req.body._id;
-
     const tokenUser = await User.findById(tokenUserId).select('isAdmin');
     const isAdmin = tokenUser.isAdmin;
+
+    const givenUserId = req.body._id;
+    const givenUser = await User.findById(givenUserId);
+    if (!givenUser) {
+      return res.status(404).json('User not found');
+    }
 
     // Check if the user is authorized to delete the account
     if (givenUserId === tokenUserId || isAdmin) {
       try {
-        const userId = req.user._id;
+        
         // Try to delete the user with the given ID
         await User.findByIdAndDelete(givenUserId);
+        
+        // Try to delete associated calendar with the given ID
+        await Calendar.deleteOne({ userId: givenUserId });
 
         const allUsers = await User.find();
 
@@ -762,7 +813,7 @@ exports.followOrganization = async (req, res) => {
 
     await currentUser.updateOne({
       $push: { followedOrganizations: givenOrganization.id },
-      $inc: { numOfFollowedOrganizations: +1 }
+      $inc: { numOfFollowedOrganizations: +1 },
     });
     await givenOrganization.updateOne({
       $push: { followers: currentUser.id },
@@ -819,24 +870,38 @@ exports.interestEvent = async (req, res) => {
     }
 
     if (givenEvent.type === 'Private') {
-      return res.status(403).json('You cannot express interest in a private event!');
+      return res
+        .status(403)
+        .json('You cannot express interest in a private event!');
+    }
+
+    if (givenEvent.eventCreator.toString() === currentUserId.toString()) {
+      return res
+        .status(403)
+        .json('You cannot express interest your own event!');
     }
 
     if (
-      currentUser.eventInterests.includes(givenEvent.id) &&
-      givenEvent.interest.includes(currentUser.id)
+      currentUser.eventInterests.includes(givenEventId) &&
+      givenEvent.interest.includes(currentUserId)
     ) {
       return res.status(403).json('You are already interested in this event!');
     }
 
     await currentUser.updateOne({
-      $push: { eventInterests: givenEvent.id },
+      $push: { eventInterests: givenEventId },
       $inc: { numOfEventInterests: +1 },
     });
     await givenEvent.updateOne({
-      $push: { interest: currentUser.id },
+      $push: { interest: currentUserId },
       $inc: { numOfInterest: +1 },
     });
+
+    // Add event to user's calendar
+    if (process.env.NODE_ENV === 'development') {
+      await CalendarService.checkCalendar(currentUserId);
+    }
+    await CalendarService.addEvent(currentUserId, givenEvent.id);
 
     return res.status(200).json('Event marked as interested');
   } catch (error) {
@@ -875,6 +940,12 @@ exports.uninterestEvent = async (req, res) => {
         $pull: { interest: currentUserId },
         $inc: { numOfInterest: -1 },
       });
+
+      // Remove event from user's calendar
+      if (process.env.NODE_ENV === 'development') {
+        await CalendarService.checkCalendar(currentUserId);
+      }
+      await CalendarService.removeEvent(currentUserId, givenEventId);
 
       return res.status(200).json('Interest from event has been retracted');
     } else {

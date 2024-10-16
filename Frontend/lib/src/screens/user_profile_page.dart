@@ -366,7 +366,7 @@ class UserProfileState extends State<UserProfile>
                       ],
                     ),
                   ),
-                  SliverToBoxAdapter(
+                  SliverFillRemaining(
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height,
                       child: TabBarView(

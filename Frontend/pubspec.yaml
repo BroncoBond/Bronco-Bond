@@ -28,6 +28,7 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   velocity_x: null
   win32: ^5.6.0
+  pin_code_fields: ^8.0.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

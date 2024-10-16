@@ -33,7 +33,10 @@ app.use(morgan('common'));
 app.use(express.static('public'));
 app.use(express.static('views'));
 app.use(cookieParser());
-app.use(rateLimit);
+
+// if (process.env.NODE_ENV !== 'development') {
+//   app.use(rateLimit);
+// }
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
