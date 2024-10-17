@@ -259,6 +259,7 @@ class UserProfileState extends State<UserProfile>
                     leading: isCurrentUserProfile
                         ? null
                         : IconButton(
+                            padding: EdgeInsets.only(left: 30.0),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
@@ -269,8 +270,11 @@ class UserProfileState extends State<UserProfile>
                           ),
                     flexibleSpace: FlexibleSpaceBar(
                       centerTitle: false,
-                      titlePadding:
-                          EdgeInsetsDirectional.only(start: 30, bottom: 12),
+                      titlePadding: isCurrentUserProfile
+                          ? const EdgeInsetsDirectional.only(
+                              start: 30, bottom: 14)
+                          : const EdgeInsetsDirectional.only(
+                              start: 70, bottom: 14),
                       title: Text(
                         username,
                         style: GoogleFonts.raleway(
@@ -287,6 +291,7 @@ class UserProfileState extends State<UserProfile>
                     actions: [
                       isCurrentUserProfile
                           ? IconButton(
+                              padding: EdgeInsets.only(right: 30.0),
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -299,6 +304,7 @@ class UserProfileState extends State<UserProfile>
                               color: Colors.white,
                             )
                           : IconButton(
+                              padding: EdgeInsets.only(right: 30.0),
                               onPressed: () {
                                 // Add your desired action here
                               },
