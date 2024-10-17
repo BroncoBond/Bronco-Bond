@@ -302,12 +302,12 @@ class FriendsListPageState extends State<FriendsListPage> {
             return DefaultTabController(
               length: 3,
               child: Scaffold(
-                backgroundColor: const Color.fromARGB(255, 67, 95, 73),
+                backgroundColor: const Color(0xFF435F49),
                 appBar: AppBar(
-                  backgroundColor: const Color.fromARGB(255, 67, 95, 73),
+                  backgroundColor: const Color(0xFF435F49),
                   leading: IconButton(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
-                    icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),
+                    padding: const EdgeInsets.only(left: 30),
+                    icon: const Icon(Icons.arrow_back_ios_rounded),
                     color: Colors.white,
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -322,29 +322,27 @@ class FriendsListPageState extends State<FriendsListPage> {
                       },
                       icon: const Icon(
                         Icons.person_add,
-                        color: Color.fromARGB(255, 67, 95, 73),
+                        color: Color(0xFF55685A),
                         size: 20,
                       ),
                       label: const Text(
                         'Add',
                         style: TextStyle(
-                            color: Color.fromARGB(255, 67, 95, 73),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            height: 0),
+                          color: Color(0xFF55685A),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                      style: const ButtonStyle(
-                        elevation: WidgetStatePropertyAll(0),
-                        padding: WidgetStatePropertyAll(
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
-                        minimumSize: WidgetStatePropertyAll(Size(72, 32)),
-                        backgroundColor: WidgetStatePropertyAll(
-                            Color.fromARGB(255, 254, 209, 84)),
-                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFED154),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12)),
                     ),
                     const SizedBox(width: 30)
                   ],
-                  bottom: const PreferredSize(
+                  bottom: PreferredSize(
                     preferredSize: Size.fromHeight(
                         kToolbarHeight), // Adjust the height as needed
                     child: Row(
@@ -352,24 +350,31 @@ class FriendsListPageState extends State<FriendsListPage> {
                         //const SizedBox(width: 8.0),
                         Expanded(
                           child: TabBar(
-                            dividerColor: Color.fromARGB(255, 67, 95, 73),
+                            dividerColor: Color(0xFF435F49),
                             tabAlignment: TabAlignment.center,
                             isScrollable: true,
-                            labelStyle: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                            labelColor: Color.fromARGB(255, 254, 209, 84),
-                            indicatorColor:
-                                Color.fromARGB(255, 254, 209, 84),
+                            labelStyle: GoogleFonts.raleway(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            labelColor: Color(0xFFFED154),
+                            indicatorColor: Color(0xFFFED154),
                             indicatorSize: TabBarIndicatorSize.label,
                             unselectedLabelColor: Colors.white,
-                            unselectedLabelStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
+                            unselectedLabelStyle: GoogleFonts.raleway(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
                             ),
                             indicatorWeight: 7,
                             tabs: [
                               Tab(
                                 child: Center(
-                                  child: Text('Bonds'),
+                                  child: Text(
+                                    'Bonds',
+                                    // style: GoogleFonts.raleway(
+                                    //     fontSize: 16,
+                                    //     fontWeight: FontWeight.w700),
+                                  ),
                                 ),
                               ),
                               Tab(
@@ -703,15 +708,17 @@ class FriendsListPageState extends State<FriendsListPage> {
           ),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(vertical: 24,horizontal: 15),
+          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 15),
           child: FutureBuilder(
-            future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
+            future:
+                Future.wait(requests.map((user) => fetchBondUsernames(user))),
             builder:
                 (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
                   ),
                 );
               } else if (snapshot.hasError) {
