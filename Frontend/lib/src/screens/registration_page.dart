@@ -167,7 +167,7 @@ class RegisterPageState extends State<RegisterPage> {
               child: Container(
                 width: 60.0,
                 height: 60.0,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color(0xff435F49),
                   shape: BoxShape.circle,
                 ),

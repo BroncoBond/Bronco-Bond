@@ -249,7 +249,7 @@ class UserProfileState extends State<UserProfile>
                 return [
                   SliverAppBar(
                     pinned: false,
-                    leadingWidth: isCurrentUserProfile ? 0.0 : 60,
+                    //leadingWidth: isCurrentUserProfile ? 0.0 : 60.0,
                     automaticallyImplyLeading: false,
                     // isCurrentUserProfile ? false : true,
                     centerTitle: false,
