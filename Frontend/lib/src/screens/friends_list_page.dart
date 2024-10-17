@@ -334,11 +334,13 @@ class FriendsListPageState extends State<FriendsListPage> {
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFED154),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 12)),
+                        backgroundColor: const Color(0xFFFED154),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        visualDensity: const VisualDensity(vertical: -1.5),
+                      ),
                     ),
                     const SizedBox(width: 30)
                   ],
@@ -502,7 +504,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                         ),
                         title: Text(
                           username ?? 'Unknown',
-                          style: const TextStyle(
+                          style: GoogleFonts.raleway(
                               color: Color(0xFF435E49),
                               fontSize: 18,
                               fontWeight: FontWeight.w700),
@@ -581,10 +583,12 @@ class FriendsListPageState extends State<FriendsListPage> {
                           ),
                           title: Text(
                             username ?? 'Unknown',
-                            style: const TextStyle(
-                                color: Color(0xFF435E49),
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700),
+                            style: GoogleFonts.raleway(
+                              color: Color(0xFF435E49),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            overflow: TextOverflow.fade,
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -595,34 +599,43 @@ class FriendsListPageState extends State<FriendsListPage> {
                                 },
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
-                                  minimumSize: const Size.fromRadius(15),
+                                  // minimumSize: const Size.fromRadius(15),
                                   backgroundColor: const Color(0xFFDDDDDD),
                                   foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  visualDensity:
+                                      const VisualDensity(vertical: -2.5),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Decline',
-                                  style: TextStyle(
-                                      color: Color(0xFF929292),
-                                      fontSize: 13,
+                                  style: GoogleFonts.raleway(
+                                      color: Color(0xFF939393),
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w700),
                                 ),
                               ),
-                              const SizedBox(width: 8.0),
+                              const SizedBox(width: 10.0),
                               ElevatedButton(
                                 onPressed: () {
                                   acceptRequest(userID);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
-                                  minimumSize: const Size.fromRadius(15),
                                   backgroundColor: Color(0xFF55685A),
                                   foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  visualDensity:
+                                      const VisualDensity(vertical: -2.5),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Accept',
-                                  style: TextStyle(
+                                  style: GoogleFonts.raleway(
                                       color: Color(0xFFFED154),
-                                      fontSize: 13,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w700),
                                 ),
                               )
@@ -701,7 +714,7 @@ class FriendsListPageState extends State<FriendsListPage> {
                         ),
                         title: Text(
                           username ?? 'Unknown',
-                          style: const TextStyle(
+                          style: GoogleFonts.raleway(
                               color: Color(0xFF435E49),
                               fontSize: 18,
                               fontWeight: FontWeight.w700),
@@ -709,9 +722,9 @@ class FriendsListPageState extends State<FriendsListPage> {
                         trailing: IconButton(
                           icon: const Icon(
                             Icons.close_rounded,
-                            size: 45,
+                            size: 35,
                           ),
-                          color: const Color.fromARGB(255, 147, 147, 147),
+                          color: const Color(0xFF939393),
                           onPressed: () {
                             revokeRequest(userID);
                           },
