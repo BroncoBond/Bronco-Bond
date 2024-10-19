@@ -123,6 +123,11 @@ const userSchema = new Schema({
             type: Boolean,
             default: false
         },
+        hiddenPosts: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Post',
+            default: []
+        }
         tokens: [{ type: Object }]
     }, {timestamps:true} 
 );
