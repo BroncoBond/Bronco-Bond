@@ -1,0 +1,12 @@
+{
+  "name": "bronco-bond",
+  "version": "1.0.0",
+  "description": "After a period of disconnection following Quarantine, BroncoBond emerges as a beacon of unity for the students of CPP. It's more than just an app; it's a community-driven platform designed to bridge the gap and foster meaningful connections among classmates and peers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

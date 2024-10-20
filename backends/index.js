@@ -15,13 +15,16 @@ const messageRouter = require('./routers/message.router');
 const eventRouter = require('./routers/event.router');
 const websiteRouter = require('./routers/website.router');
 const errorHandler = require('./middleware/errorHandler');
-const durationLogger = require('./middleware/durationLogger');
-const requestDurationLogger = require('./middleware/durationLogger');
+// const durationLogger = require('./middleware/durationLogger'); TODO- REMOVED TEMPORARILY BECAUSE OF DUPLICATED CODE
+const requestDurationLogger = require('./middleware/durationLogger'); 
 const rateLimit = require("./middleware/rateLimiter.js")
+
+const postModel = require('./model/post.model'); //TODO
+const postRouter = require('./routers/post.router'); //TODO
 
 // const app = express();
 const { app, server } = require('./socket/socket.js');
-const port = process.env.WEBSITES_PORT;
+const port = process.env.WEBSITES_PORT || 8000; //TODO
 
 // Enable trust proxy
 app.set('trust proxy', 1);
@@ -49,6 +52,8 @@ app.use('/api/professor', professorRouter);
 app.use('/api/message', messageRouter);
 app.use('/api/website', websiteRouter);
 app.use('/api/event', eventRouter);
+app.use('/api/post', postRouter); //TODO
+
 // Error Handler
 app.use(errorHandler);
 
@@ -81,6 +86,11 @@ function startServer(port) {
     });
   });
 }
+
+// //TODO
+// app.listen(port, () => {
+//   console.log(`Server is running on http://localhost:${port}`);
+// });
 
 /*
 
