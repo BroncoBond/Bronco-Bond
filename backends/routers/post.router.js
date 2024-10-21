@@ -26,4 +26,15 @@ router.put('/visibility/:id', protectRouter.protectRoute, postController.setPost
 // See All Posts on Forum Page
 router.get('/', protectRouter.protectRoute, postController.getPosts);
 
+/*
+Features to Implement:
+- Comments
+- Attachments and Media
+- Share Link
+- Impressions
+- See All Likes, Comments, and Saves 
+- Search Post (by ID or shareable link)
+- Filter Posts (by status or visibility)
+- And More... 
+*/
 module.exports = router;

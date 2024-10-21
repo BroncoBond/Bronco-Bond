@@ -27,7 +27,6 @@ const postSchema = new Schema({
         },
 
         //Note - likes should be an array; if a users like the post, the user's ID should be added to the array
-
         // // We could have a feature here where like you could see who liked the post
         // likedBy: [{
         //     type: mongoose.Schema.Types.ObjectId,
@@ -35,7 +34,7 @@ const postSchema = new Schema({
         //     default: []
         // }],
 
-        // Model in a model basically?
+        // Model in a model basically? - Ignore Comments for now
         comments: [{
             user: {
                 type: mongoose.Schema.Types.ObjectId,
