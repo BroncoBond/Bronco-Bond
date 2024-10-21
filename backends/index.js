@@ -24,7 +24,7 @@ const postRouter = require('./routers/post.router'); //TODO
 
 // const app = express();
 const { app, server } = require('./socket/socket.js');
-const port = process.env.WEBSITES_PORT || 8000; //TODO
+const port = process.env.WEBSITES_PORT;
 
 // Enable trust proxy
 app.set('trust proxy', 1);
@@ -86,11 +86,6 @@ function startServer(port) {
     });
   });
 }
-
-// //TODO
-// app.listen(port, () => {
-//   console.log(`Server is running on http://localhost:${port}`);
-// });
 
 /*
 

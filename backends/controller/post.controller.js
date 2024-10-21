@@ -1,37 +1,14 @@
-// Import necessary modules and dependencies
-const UserService = require('../services/user.services');
-const generater = require('../utils/generateToken');
-const decoder = require('../utils/decodeToken');
-const User = require('../model/user.model');
-const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
-require('dotenv').config();
-
 const Post = require('../model/post.model');
 
-const extractAndDecodeToken = async (req) => {
-    const token = req.headers.authorization.split(' ')[1];
-  
-    if (!token) {
-      throw new Error('Authorization fail!');
-    }
-  
-    try {
-      const decoded = await decoder.decodeToken(token);
-      return decoded;
-    } catch (err) {
-      if (err instanceof jwt.TokenExpiredError) {
-        throw new Error('Token expired!');
-      } else {
-        throw new Error('Invalid token!');
-      }
-    }
-};
+// Used for functions that require administrative permissions
+const User = require('../model/user.model');
+const userController = require('../controller/user.controller');
 
 exports.createPost = async (req, res) => {
 try {
     const currentUser = await extractAndDecodeToken(req);
     const currentUserId = currentUser.data._id;
+    
     const { title, content } = req.body;
 
     if (!title || !content) {
@@ -51,14 +28,16 @@ try {
 }
 };
 
-exports.getPosts = async (req, res) => {
-try {
-    const posts = await Post.find();
-    res.status(200).json(posts);
-} catch (error) {
-    res.status(500).json({ error: 'Internal server error.' });
-}
-};
+// Forum Page - will show all posts TODO
+// exports.getPosts = async (req, res) => {
+// try {
+//     console.log("Get Posts");
+//     // const posts = await Post.find(); TODO
+//     res.status(200).json(posts);
+// } catch (error) {
+//     res.status(500).json({ error: 'Internal server error.' });
+// }
+// };
 
 exports.updatePost = async (req, res) => {
 try {
@@ -87,23 +66,153 @@ try {
 };
 
 exports.deletePost = async (req, res) => {
-try {
+  try {
+      const currentUser = await extractAndDecodeToken(req);
+      const tokenUserId = currentUser.data._id;
+      const tokenUser = await User.findById(tokenUserId); //TODO - check tokenUser usage
+
+      const postId = req.body._id; // Corrected variable name
+
+      if (!postId) {
+          return res.status(400).json({ error: 'Post ID is required.' });
+      }
+
+      const post = await Post.findOneAndDelete({ _id: postId, userId: tokenUserId }); // Corrected variable name
+
+      if (!post) {
+          return res.status(404).json({ error: 'Post not found or you do not have permission to delete this post.' });
+      }
+
+      res.status(200).json({ message: 'Post deleted successfully.' });
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error.' });
+  }
+};
+
+exports.likePost = async (req, res) => {
+  try {
     const currentUser = await extractAndDecodeToken(req);
-    const currentUserId = currentUser.data._id;
-    const { postId } = req.body;
+    const userId = currentUser.data._id;
+    const postId = req.params.id;
 
     if (!postId) {
-    return res.status(400).json({ error: 'Post ID is required.' });
+      return res.status(400).json({ error: 'Post ID is required.' });
     }
 
-    const post = await Post.findOneAndDelete({ _id: postId, userId: currentUserId });
+    const post = await Post.findById(postId);
 
     if (!post) {
-    return res.status(404).json({ error: 'Post not found or you do not have permission to delete this post.' });
+      return res.status(404).json({ error: 'Post not found.' });
     }
 
-    res.status(200).json({ message: 'Post deleted successfully.' });
-} catch (error) {
+    const isLiked = post.likes.includes(userId);
+
+    if (isLiked) {
+      // Unlike the post
+      post.likes = post.likes.filter(id => id.toString() !== userId.toString());
+    } else {
+      // Like the post
+      post.likes.push(userId);
+    }
+
+    await post.save();
+
+    res.status(200).json({ message: isLiked ? 'Post unliked successfully.' : 'Post liked successfully.' });
+  } catch (error) {
     res.status(500).json({ error: 'Internal server error.' });
-}
+  }
+};
+
+exports.savePost = async (req, res) => {
+  try {
+    const currentUser = await extractAndDecodeToken(req);
+    const userId = currentUser.data._id;
+    const postId = req.params.id;
+
+    if (!postId) {
+      return res.status(400).json({ error: 'Post ID is required.' });
+    }
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found.' });
+    }
+
+    const isSaved = post.savedBy.includes(userId);
+
+    if (isSaved) {
+      // Unsave the post
+      post.savedBy = post.savedBy.filter(id => id.toString() !== userId.toString());
+    } else {
+      // Save the post
+      post.savedBy.push(userId);
+    }
+
+    await post.save();
+
+    res.status(200).json({ message: isSaved ? 'Post unsaved successfully.' : 'Post saved successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+};
+
+exports.setPostStatus = async (req, res) => {
+  try {
+    const currentUser = await extractAndDecodeToken(req);
+    const userId = currentUser.data._id;
+    const postId = req.params.id;
+    const { status } = req.body;
+
+    if (!postId) {
+      return res.status(400).json({ error: 'Post ID is required.' });
+    }
+
+    if (!status) {
+      return res.status(400).json({ error: 'Status is required.' });
+    }
+
+    const post = await Post.findOne({ _id: postId, userId });
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found or you do not have permission to update this post.' });
+    }
+
+    post.status = status;
+    await post.save();
+
+    res.status(200).json({ message: 'Post status updated successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+};
+
+exports.setPostVisibility = async (req, res) => {
+  try {
+    const currentUser = await extractAndDecodeToken(req);
+    const userId = currentUser.data._id;
+    const postId = req.params.id;
+    const { visibility } = req.body;
+
+    if (!postId) {
+      return res.status(400).json({ error: 'Post ID is required.' });
+    }
+
+    if (!visibility) {
+      return res.status(400).json({ error: 'Visibility is required.' });
+    }
+
+    const post = await Post.findOne({ _id: postId, userId });
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found or you do not have permission to update this post.' });
+    }
+
+    post.visibility = visibility;
+    await post.save();
+
+    res.status(200).json({ message: 'Post visibility updated successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error.' });
+  }
 };

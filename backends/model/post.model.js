@@ -22,15 +22,18 @@ const postSchema = new Schema({
         },
         
         likes: {
-            type: Number,
-            default: 0
-        },
-        // We could have a feature here where like you could see who liked the post
-        likedBy: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref:'User',
+            type: Array,
             default: []
-        }],
+        },
+
+        //Note - likes should be an array; if a users like the post, the user's ID should be added to the array
+
+        // // We could have a feature here where like you could see who liked the post
+        // likedBy: [{
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     ref:'User',
+        //     default: []
+        // }],
 
         // Model in a model basically?
         comments: [{
@@ -80,22 +83,21 @@ const postSchema = new Schema({
         // Maybe allow users to make drafts of posts before posting them?
         status: {
             type: String,
-            enum: ['Draft', 'Published'], 
-            required: true
+            enum: ['Draft', 'Published'],
+            default: 'Draft'
         },
 
         // Allow private (only you), friends (only your friends), or public (everyone) posts?
         visibility: {
             type: String,
             enum: ['Private', 'Friends', 'Public'], 
-            required: true
+            default: 'Friends',
         },
 
         // Might need a way to see every user who saved the specific post?
         savedBy: [{
-                type: mongoose.Schema.Types.ObjectId,
-                ref:'User',
-                default: []
+            type: Array,
+            default: []
         }],
 
         // Might need a way to store every user who has hidden the post, or maybe blocked the author?
