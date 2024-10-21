@@ -36,8 +36,9 @@ jobs:
       - name: Generate Deployment Package
         run: zip -r broncobond-build.zip .
 
-      - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v21
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v22
+        
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
