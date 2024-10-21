@@ -18,8 +18,8 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Run Build Script
+        run: npm run build
 
       - name: Set Environment Variables
         run: |
