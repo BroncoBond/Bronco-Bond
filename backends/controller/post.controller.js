@@ -28,17 +28,6 @@ try {
 }
 };
 
-// Forum Page - will show all posts TODO
-// exports.getPosts = async (req, res) => {
-// try {
-//     console.log("Get Posts");
-//     // const posts = await Post.find(); TODO
-//     res.status(200).json(posts);
-// } catch (error) {
-//     res.status(500).json({ error: 'Internal server error.' });
-// }
-// };
-
 exports.updatePost = async (req, res) => {
 try {
     const currentUser = await extractAndDecodeToken(req);
@@ -212,6 +201,29 @@ exports.setPostVisibility = async (req, res) => {
     await post.save();
 
     res.status(200).json({ message: 'Post visibility updated successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+};
+
+// Forum Page - Get All Posts
+exports.getPosts = async (req, res) => {
+  try {
+    const currentUser = await extractAndDecodeToken(req);
+    const userId = currentUser.data._id;
+    const user = await User.findById(userId).populate('friends');
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Find posts by the user and their friends
+    const friendIds = user.friends.map(friend => friend._id);
+    const posts = await Post.find({
+      author: { $in: [userId, ...friendIds] }
+    }).sort({ timestamp: -1 }); // Sort by timestamp in descending order - newest first
+
+    res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error.' });
   }
