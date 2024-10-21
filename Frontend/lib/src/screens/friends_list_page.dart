@@ -284,13 +284,13 @@ class FriendsListPageState extends State<FriendsListPage> {
       builder:
           (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // Show a loading spinner while waiting
+          return const CircularProgressIndicator(); // Show a loading spinner while waiting
         } else if (snapshot.hasError) {
           return Text(
               'Error: ${snapshot.error}'); // Show error message if something went wrong
         } else {
           if (snapshot.data == null) {
-            return Text(
+            return const Text(
                 'Error: SharedPreferences not initialized'); // Show error message
           } else {
             prefs =
@@ -299,98 +299,111 @@ class FriendsListPageState extends State<FriendsListPage> {
             if (username.isEmpty) {
               fetchDataUsingUserID(widget.userID);
             }
-            return DefaultTabController(
-              length: 3,
-              child: Scaffold(
-                appBar: AppBar(
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded),
-                    color: Colors.black,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  title: Text(
-                    username,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(
-                        kToolbarHeight), // Adjust the height as needed
-                    child: Row(
-                      children: [
-                        //const SizedBox(width: 8.0),
-                        const Expanded(
-                          child: TabBar(
-                            labelStyle: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
-                            labelColor: Color(0xFF3B5F43),
-                            indicatorColor: Color(0xFF3B5F43),
-                            indicatorSize: TabBarIndicatorSize.tab,
-                            unselectedLabelColor: Colors.grey,
-                            unselectedLabelStyle:
-                                TextStyle(fontWeight: FontWeight.w500),
-                            indicatorWeight: 3,
-                            tabs: [
-                              Tab(
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text('Bonds'),
-                                ),
-                              ),
-                              Tab(
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text('Requests'),
-                                ),
-                              ),
-                              Tab(
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Text('Pending'),
-                                ),
-                              ),
-                            ],
+            return Stack(
+              children: [
+                DefaultTabController(
+                  length: 3,
+                  child: Scaffold(
+                    backgroundColor: const Color(0xFF435F49),
+                    appBar: AppBar(
+                      backgroundColor: const Color(0xFF435F49),
+                      leading: IconButton(
+                        padding: const EdgeInsets.only(left: 30),
+                        icon: const Icon(Icons.arrow_back_ios_rounded),
+                        color: Colors.white,
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      actions: <Widget>[
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              showSearchBar = !showSearchBar;
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.person_add,
+                            color: Color(0xFF55685A),
+                            size: 20,
                           ),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                showSearchBar = !showSearchBar;
-                              });
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: showSearchBar
-                                  ? const Color(0xFFABABAB)
-                                  : const Color(0xff3B5F43),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                            child: Text(
-                              "Add Bond",
-                              style: GoogleFonts.raleway(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
+                          label: const Text(
+                            'Add',
+                            style: TextStyle(
+                              color: Color(0xFF55685A),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFFED154),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            visualDensity: const VisualDensity(vertical: -1.5),
+                          ),
                         ),
+                        const SizedBox(width: 30)
                       ],
+                      bottom: PreferredSize(
+                        preferredSize: Size.fromHeight(
+                            kToolbarHeight), // Adjust the height as needed
+                        child: Row(
+                          children: [
+                            //const SizedBox(width: 8.0),
+                            Expanded(
+                              child: TabBar(
+                                dividerColor: Color(0xFF435F49),
+                                tabAlignment: TabAlignment.center,
+                                isScrollable: true,
+                                labelStyle: GoogleFonts.raleway(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                labelColor: Color(0xFFFED154),
+                                indicatorColor: Color(0xFFFED154),
+                                indicatorSize: TabBarIndicatorSize.label,
+                                unselectedLabelColor: Colors.white,
+                                unselectedLabelStyle: GoogleFonts.raleway(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                indicatorWeight: 7,
+                                tabs: const [
+                                  Tab(
+                                    child: Center(
+                                      child: Text(
+                                        'Bonds',
+                                      ),
+                                    ),
+                                  ),
+                                  Tab(
+                                    child: Center(
+                                      child: Text('Requests'),
+                                    ),
+                                  ),
+                                  Tab(
+                                    child: Center(
+                                      child: Text('Pending'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      centerTitle: true,
                     ),
-                  ),
-                  centerTitle: true,
-                ),
-                body: Stack(
-                  children: [
-                    Positioned.fill(
+                    body: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30.0),
+                          topRight: Radius.circular(30.0),
+                        ),
+                      ),
                       child: TabBarView(
                         children: [
                           buildBondsTab(bonds), // Tab View for "Friends"
@@ -401,23 +414,16 @@ class FriendsListPageState extends State<FriendsListPage> {
                         ],
                       ),
                     ),
-                    if (showSearchBar)
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: Material(
-                          elevation: 3,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 12.0),
-                            child: buildSearchBar(searchController),
-                          ),
-                        ),
-                      ),
-                  ],
+                  ),
                 ),
-              ),
+                if (showSearchBar)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: buildSearchBar(searchController),
+                  ),
+              ],
             );
           }
         }
@@ -427,104 +433,55 @@ class FriendsListPageState extends State<FriendsListPage> {
 
   Widget buildBondsTab(List<dynamic> bonds) {
     if (bonds.isEmpty) {
-      return const Center(
-        child: Text('No bonds found'),
+      return Center(
+        child: Text(
+          'No bonds found',
+          style: GoogleFonts.raleway(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFF939393),
+          ),
+        ),
       );
     }
-    return FutureBuilder(
-      future: Future.wait(bonds.map((bond) => fetchBondUsernames(bond))),
-      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting ||
-            snapshot.hasError) {
-          return const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final userData = snapshot.data![index];
-              final profilePicture = userData['user']['profilePicture'];
-              final username = userData['user']['username'];
-              return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      selectedUserIndex = index;
-                    });
-                    navigateToUserProfile(bonds[index]);
-                  },
-                  child: Container(
-                    color: selectedUserIndex == index
-                        ? Colors.grey.withOpacity(0.5) // Grey when tapped
-                        : null, // Default background color when not tapped
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: profilePicture != null &&
-                                profilePicture != ''
-                            ? MemoryImage(decodeProfilePicture(profilePicture))
-                            : const AssetImage(
-                                    'assets/images/user_profile_icon.png')
-                                as ImageProvider,
-                      ),
-                      title: Text(username ?? 'Unknown'),
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-        }
-      },
-    );
-  }
-
-  Widget buildRequestsTab(List<dynamic> requests) {
-    if (requests.isEmpty) {
-      return const Center(
-        child: Text('No bond requests'),
-      );
-    }
-    return FutureBuilder(
-      future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
-      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final userData = snapshot.data![index];
-              final profilePicture = userData['user']['profilePicture'];
-              final username = userData['user']['username'];
-              final userID = userData['user']['_id'];
-              return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      selectedUserIndex = index;
-                    });
-                    navigateToUserProfile(requests[index]);
-                  },
-                  child: Container(
-                    color: selectedUserIndex == index
-                        ? Colors.grey.withOpacity(0.5) // Grey when tapped
-                        : null, // Default background color when not tapped
-                    child: ListTile(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 15),
+      child: FutureBuilder(
+        future: Future.wait(bonds.map((bond) => fetchBondUsernames(bond))),
+        builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting ||
+              snapshot.hasError) {
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF435F49)),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final userData = snapshot.data![index];
+                final profilePicture = userData['user']['profilePicture'];
+                final username = userData['user']['username'];
+                return MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedUserIndex = index;
+                      });
+                      navigateToUserProfile(bonds[index]);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      // color: selectedUserIndex == index
+                      //     ? Colors.grey.withOpacity(0.5) // Grey when tapped
+                      //     : null, // Default background color when not tapped
+                      child: ListTile(
                         leading: CircleAvatar(
+                          radius: 24,
                           backgroundColor: Colors.white,
                           backgroundImage:
                               profilePicture != null && profilePicture != ''
@@ -536,171 +493,335 @@ class FriendsListPageState extends State<FriendsListPage> {
                         ),
                         title: Text(
                           username ?? 'Unknown',
-                          style: TextStyle(color: Colors.white),
+                          style: GoogleFonts.raleway(
+                              color: Color(0xFF435E49),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700),
                         ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                acceptRequest(userID);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xff3B5F43),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
-                              child: const Text('Accept'),
-                            ),
-                            const SizedBox(width: 8.0),
-                            ElevatedButton(
-                              onPressed: () {
-                                declineRequest(userID);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFABABAB),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                              ),
-                              child: const Text('Decline'),
-                            ),
-                          ],
-                        )),
+                      ),
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        }
-      },
+                );
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget buildRequestsTab(List<dynamic> requests) {
+    if (requests.isEmpty) {
+      return Center(
+        child: Text(
+          'No bond requests',
+          style: GoogleFonts.raleway(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFF939393),
+          ),
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 15),
+      child: FutureBuilder(
+        future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
+        builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final userData = snapshot.data![index];
+                final profilePicture = userData['user']['profilePicture'];
+                final username = userData['user']['username'];
+                final userID = userData['user']['_id'];
+                return MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedUserIndex = index;
+                      });
+                      navigateToUserProfile(requests[index]);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      // color: selectedUserIndex == index
+                      //     ? Colors.grey.withOpacity(0.5) // Grey when tapped
+                      //     : null, // Default background color when not tapped
+                      child: ListTile(
+                          leading: CircleAvatar(
+                            radius: 24,
+                            backgroundColor: Colors.white,
+                            backgroundImage: profilePicture != null &&
+                                    profilePicture != ''
+                                ? MemoryImage(
+                                    decodeProfilePicture(profilePicture))
+                                : const AssetImage(
+                                        'assets/images/user_profile_icon.png')
+                                    as ImageProvider,
+                          ),
+                          title: Text(
+                            username ?? 'Unknown',
+                            style: GoogleFonts.raleway(
+                              color: Color(0xFF435E49),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            overflow: TextOverflow.fade,
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  declineRequest(userID);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  // minimumSize: const Size.fromRadius(15),
+                                  backgroundColor: const Color(0xFFDDDDDD),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  visualDensity:
+                                      const VisualDensity(vertical: -2.5),
+                                ),
+                                child: Text(
+                                  'Decline',
+                                  style: GoogleFonts.raleway(
+                                      color: Color(0xFF939393),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                              const SizedBox(width: 10.0),
+                              ElevatedButton(
+                                onPressed: () {
+                                  acceptRequest(userID);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  backgroundColor: Color(0xFF55685A),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  visualDensity:
+                                      const VisualDensity(vertical: -2.5),
+                                ),
+                                child: Text(
+                                  'Accept',
+                                  style: GoogleFonts.raleway(
+                                      color: Color(0xFFFED154),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              )
+                            ],
+                          )),
+                    ),
+                  ),
+                );
+              },
+            );
+          }
+        },
+      ),
     );
   }
 
   Widget buildPendingTab(List<dynamic> requests) {
     if (requests.isEmpty) {
-      return const Center(
-        child: Text('No pending requests'),
+      return Center(
+        child: Text(
+          'No pending requests',
+          style: GoogleFonts.raleway(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFF939393),
+          ),
+        ),
       );
     }
-    return FutureBuilder(
-      future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
-      builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final userData = snapshot.data![index];
-              final profilePicture = userData['user']['profilePicture'];
-              final username = userData['user']['username'];
-              final userID = userData['user']['_id'];
-              return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      selectedUserIndex = index;
-                    });
-                    navigateToUserProfile(requests[index]);
-                  },
-                  child: Container(
-                    color: selectedUserIndex == index
-                        ? Colors.grey.withOpacity(0.5) // Grey when tapped
-                        : null, // Default background color when not tapped
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: profilePicture != null &&
-                                profilePicture != ''
-                            ? MemoryImage(decodeProfilePicture(profilePicture))
-                            : const AssetImage(
-                                    'assets/images/user_profile_icon.png')
-                                as ImageProvider,
-                      ),
-                      title: Text(username ?? 'Unknown'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.close_rounded),
-                        color: Colors.black,
-                        onPressed: () {
-                          revokeRequest(userID);
-                        },
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 24, horizontal: 15),
+      child: FutureBuilder(
+        future: Future.wait(requests.map((user) => fetchBondUsernames(user))),
+        builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3B5F43)),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final userData = snapshot.data![index];
+                final profilePicture = userData['user']['profilePicture'];
+                final username = userData['user']['username'];
+                final userID = userData['user']['_id'];
+                return MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedUserIndex = index;
+                      });
+                      navigateToUserProfile(requests[index]);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      color: selectedUserIndex == index
+                          ? Colors.grey.withOpacity(0.5) // Grey when tapped
+                          : null, // Default background color when not tapped
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.white,
+                          backgroundImage:
+                              profilePicture != null && profilePicture != ''
+                                  ? MemoryImage(
+                                      decodeProfilePicture(profilePicture))
+                                  : const AssetImage(
+                                          'assets/images/user_profile_icon.png')
+                                      as ImageProvider,
+                        ),
+                        title: Text(
+                          username ?? 'Unknown',
+                          style: GoogleFonts.raleway(
+                              color: Color(0xFF435E49),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700),
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            size: 35,
+                          ),
+                          color: const Color(0xFF939393),
+                          onPressed: () {
+                            revokeRequest(userID);
+                          },
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-          );
-        }
-      },
+                );
+              },
+            );
+          }
+        },
+      ),
     );
   }
 
   Widget buildSearchBar(TextEditingController fieldController) {
-    return Container(
-      height: 48,
-      width: MediaQuery.sizeOf(context).width,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        color: Colors.grey[300],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: TextField(
-                style: const TextStyle(
-                  fontSize: 16,
+    return Material(
+      elevation: 3,
+      color: Color(0xFF435F49),
+      borderRadius: BorderRadius.circular(30.0),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(30, 30, 30, 30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                onPressed: () {
+                  setState(() {
+                    showSearchBar = !showSearchBar;
+                  });
+                },
+                icon: const Icon(
+                  Icons.close_rounded,
+                  color: Color(0xFFFED154),
+                  size: 30.0,
                 ),
-                controller: fieldController,
-                keyboardType: TextInputType.text,
-                decoration: const InputDecoration(
-                  hintText: 'Add bond by username',
-                  border: InputBorder.none,
-                  icon: Icon(
-                    Icons.person_add_rounded,
-                    color: Color(0xFF3B5F43),
+              ),
+            ),
+            SizedBox(height: 30.0),
+            Text(
+              'Add friend by username',
+              style: GoogleFonts.raleway(
+                fontSize: 20.0,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 8.0),
+            Container(
+              // height: 48,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5.0),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30.0),
+                color: Color(0xFF2E4233),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                // Row containing text field and submit button
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: TextField(
+                        style: GoogleFonts.raleway(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF55685A),
+                        ),
+                        controller: fieldController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          hintText: 'Type username...',
+                          hintStyle: GoogleFonts.raleway(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF55685A),
+                          ),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  ElevatedButton(
+                      // Inner button
+                      onPressed: () {
+                        sendRequest();
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF435F49),
+                          shape: const CircleBorder(),
+                          padding: EdgeInsets.all(
+                              5.0)), // need this to keep equal padding around button for some reason
+                      // fixedSize: const Size(30, 30),
+                      child: const Icon(
+                        Icons.send_rounded,
+                        color: Color(0xFFFED154),
+                        size: 22.0,
+                      )),
+                ],
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(7.0),
-            child: ElevatedButton(
-              onPressed: () {
-                sendRequest();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3B5F43),
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: const Text(
-                'Send Bond Request',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
