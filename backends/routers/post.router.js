@@ -28,7 +28,7 @@ router.get('/', protectRouter.protectRoute, postController.getPosts);
 
 /*
 Features to Implement:
-- Comments
+- Comments (check comment.model.js)
 - Attachments and Media
 - Share Link
 - Impressions
