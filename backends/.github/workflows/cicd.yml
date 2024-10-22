@@ -34,7 +34,7 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
 
       - name: Generate Deployment Package
-        run: zip -r broncobond-build.zip .
+        run: zip -r broncobond-build.zip . -x "*.git*" "node_modules/*"
 
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v22
