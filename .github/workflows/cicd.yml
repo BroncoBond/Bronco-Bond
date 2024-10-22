@@ -20,8 +20,13 @@ jobs:
         with:
           node-version: 20
 
+      # Install dependencies
+      - name: Install Dependencies
+        working-directory: backends  # Ensure npm install happens in the backends folder
+        run: npm install
+
       - name: Run Build Script
-        working-directory: backends
+        working-directory: backends  # Ensure npm build runs in the backends folder
         run: npm run build
 
       - name: Set Environment Variables
@@ -37,7 +42,7 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
 
       - name: Generate Deployment Package
-        working-directory: backends
+        working-directory: backends  # Ensure we zip files in the backends folder
         run: zip -r broncobond-build.zip . -x "*.git*" "node_modules/*"
 
       - name: Beanstalk Deploy
