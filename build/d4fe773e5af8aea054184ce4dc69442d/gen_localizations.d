@@ -1,0 +1,1 @@
+ /Users/miafelipe/Desktop/coding/broncobond/Bronco-Bond/.dart_tool/flutter_gen/gen_l10n/app_localizations_en.dart /Users/miafelipe/Desktop/coding/broncobond/Bronco-Bond/.dart_tool/flutter_gen/gen_l10n/app_localizations.dart:  /Users/miafelipe/Desktop/coding/broncobond/Bronco-Bond/l10n.yaml /Users/miafelipe/Desktop/coding/broncobond/Bronco-Bond/lib/src/localization/app_en.arb
