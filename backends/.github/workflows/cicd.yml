@@ -3,7 +3,7 @@ name: CICD
 on:
   push:
     branches:
-      - aws-test-Jay
+      - BroncoBond-Main
 
 jobs:
   build-and-deploy:
