@@ -6,6 +6,7 @@ on:
       - BroncoBond-Main
     paths:
       - 'backends/**'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
