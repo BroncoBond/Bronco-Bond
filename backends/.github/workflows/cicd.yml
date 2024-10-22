@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - BroncoBond-Main
+    paths:
+      - 'backends/**'
 
 jobs:
   build-and-deploy:
