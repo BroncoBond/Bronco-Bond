@@ -45,5 +45,5 @@ jobs:
           application_name: 'BroncoBond-App'
           environment_name: 'BroncoBond-Env'
           version_label: ${{ github.sha }}
-          region: us-east-1
+          region: us-west-1
           deployment_package: broncobond-build.zip
