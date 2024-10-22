@@ -21,6 +21,7 @@ jobs:
           node-version: 20
 
       - name: Run Build Script
+        working-directory: backends
         run: npm run build
 
       - name: Set Environment Variables
@@ -36,6 +37,7 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
 
       - name: Generate Deployment Package
+        working-directory: backends
         run: zip -r broncobond-build.zip . -x "*.git*" "node_modules/*"
 
       - name: Beanstalk Deploy
