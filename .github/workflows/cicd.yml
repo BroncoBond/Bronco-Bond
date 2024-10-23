@@ -50,8 +50,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: 'BroncoBond-App'
-          environment_name: 'BroncoBond-Env'
+          application_name: 'BroncoBond-app'
+          environment_name: 'BroncoBond-app-env'
           version_label: ${{ github.sha }}
           region: us-west-1
           deployment_package: broncobond-build.zip
